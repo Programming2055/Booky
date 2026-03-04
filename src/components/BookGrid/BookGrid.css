@@ -1,0 +1,219 @@
+.book-grid {
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  padding: 16px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  overflow-y: auto;
+}
+
+.book-grid__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 16px;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.book-grid__title {
+  margin: 0;
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: var(--text);
+}
+
+.book-grid__subtitle {
+  margin: 4px 0 0;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.book-grid__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(var(--shelf-card-width, 200px), 1fr));
+  gap: 16px;
+}
+
+.book-grid__empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  text-align: center;
+}
+
+.book-grid__empty-icon {
+  font-size: 4rem;
+  margin-bottom: 16px;
+}
+
+.book-grid__empty h3 {
+  margin: 0;
+  font-size: 1.2rem;
+  color: var(--text);
+}
+
+.book-grid__empty p {
+  margin: 8px 0 20px;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+
+.book-grid__pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+  margin-top: 24px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+}
+
+.book-grid__page-info {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  padding: 8px 16px;
+  background: var(--surface-alt);
+  border-radius: 999px;
+}
+
+.book-grid__page-info strong {
+  color: var(--text);
+}
+
+/* View Mode Tabs */
+.book-grid__tabs {
+  display: flex;
+  gap: 4px;
+  background: var(--surface-alt);
+  padding: 4px;
+  border-radius: 10px;
+}
+
+.book-grid__tab {
+  padding: 8px 16px;
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  font-weight: 500;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.book-grid__tab:hover {
+  color: var(--text);
+}
+
+.book-grid__tab--active {
+  background: var(--surface);
+  color: var(--text);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* Back Button */
+.book-grid__back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  margin-bottom: 16px;
+  background: var(--surface-alt);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  color: var(--text);
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.book-grid__back-btn:hover {
+  background: var(--surface-hover);
+  border-color: var(--border-hover);
+}
+
+/* Collections Grid */
+.book-grid__collections-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(var(--collection-card-width, 160px), 1fr));
+  gap: 16px;
+}
+
+/* Collection Card with 4-cover preview */
+.collection-card {
+  display: flex;
+  flex-direction: column;
+  background: var(--surface-alt);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  user-select: none;
+  overflow: hidden;
+}
+
+.collection-card:hover {
+  border-color: var(--accent);
+  transform: translateY(-4px);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.2);
+}
+
+.collection-card__covers {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+  aspect-ratio: 1;
+  gap: 2px;
+  background: var(--border);
+}
+
+.collection-card__cover {
+  background: var(--surface);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.collection-card__cover img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.collection-card__cover--empty {
+  background: linear-gradient(135deg, var(--surface-alt) 0%, var(--surface) 100%);
+}
+
+.collection-card__cover-placeholder {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  opacity: 0.5;
+}
+
+.collection-card__info {
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.collection-card__name {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.collection-card__count {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}

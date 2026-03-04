@@ -1,0 +1,205 @@
+.pdf-tools {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 400px;
+  max-width: 95vw;
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  z-index: 3000;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.pdf-tools__header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 20px;
+  background: #323639;
+  color: white;
+}
+
+.pdf-tools__header h3 {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+  flex: 1;
+}
+
+.pdf-tools__badge {
+  font-size: 0.7rem;
+  padding: 3px 8px;
+  background: #4ade80;
+  color: #14532d;
+  border-radius: 10px;
+  font-weight: 600;
+}
+
+.pdf-tools__close {
+  width: 32px;
+  height: 32px;
+  border: none;
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background 0.15s;
+}
+
+.pdf-tools__close:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* Content */
+.pdf-tools__content {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.pdf-tools__tool {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.pdf-tools__tool > label {
+  font-weight: 600;
+  color: #333;
+  font-size: 0.95rem;
+}
+
+.pdf-tools__row {
+  display: flex;
+  gap: 8px;
+}
+
+.pdf-tools__row select {
+  flex: 1;
+  padding: 10px 12px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  background: white;
+  cursor: pointer;
+}
+
+.pdf-tools__row select:focus {
+  outline: none;
+  border-color: #4a90d9;
+}
+
+.pdf-tools__row select:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.pdf-tools__row button {
+  padding: 10px 20px;
+  border: none;
+  background: #4a90d9;
+  color: white;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background 0.15s;
+  white-space: nowrap;
+}
+
+.pdf-tools__row button:hover:not(:disabled) {
+  background: #3a7bc4;
+}
+
+.pdf-tools__row button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Messages */
+.pdf-tools__message {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 20px;
+  font-size: 0.9rem;
+}
+
+.pdf-tools__message--error {
+  background: #fee2e2;
+  color: #dc2626;
+}
+
+.pdf-tools__message--success {
+  background: #dcfce7;
+  color: #16a34a;
+}
+
+.pdf-tools__message button {
+  border: none;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  padding: 4px;
+  font-size: 1rem;
+  opacity: 0.7;
+}
+
+.pdf-tools__message button:hover {
+  opacity: 1;
+}
+
+/* Footer */
+.pdf-tools__footer {
+  padding: 12px 20px;
+  background: #f5f5f5;
+  border-top: 1px solid #e0e0e0;
+  font-size: 0.8rem;
+  color: #666;
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.pdf-tools__info {
+  color: #4ade80;
+}
+
+/* Processing */
+.pdf-tools__processing {
+  position: absolute;
+  inset: 0;
+  background: rgba(255, 255, 255, 0.95);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  z-index: 10;
+}
+
+.pdf-tools__spinner {
+  width: 36px;
+  height: 36px;
+  border: 3px solid #e0e0e0;
+  border-top-color: #4a90d9;
+  border-radius: 50%;
+  animation: pdf-tools-spin 0.8s linear infinite;
+}
+
+@keyframes pdf-tools-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Backdrop */
+.pdf-tools-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 2999;
+}

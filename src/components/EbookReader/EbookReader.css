@@ -1,0 +1,403 @@
+/* ============================================ */
+/*  EbookReader – overlay & layout               */
+/* ============================================ */
+
+.ebook-reader-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  background: #000;
+}
+
+.ebook-reader-body {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+}
+
+.ebook-reader-loading,
+.ebook-reader-error {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  font-size: 16px;
+}
+
+.ebook-reader-error { color: #e74c3c; }
+
+.ebook-spinner {
+  width: 24px;
+  height: 24px;
+  border: 3px solid rgba(128, 128, 128, 0.3);
+  border-top-color: #888;
+  border-radius: 50%;
+  animation: ebook-spin 0.8s linear infinite;
+}
+
+@keyframes ebook-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ============================================ */
+/*  Top bar                                      */
+/* ============================================ */
+
+.ebook-reader-topbar {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 12px;
+  gap: 12px;
+  min-height: 44px;
+  z-index: 10;
+  user-select: none;
+}
+
+.ebook-reader-topbar-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  min-width: 0;
+}
+
+.ebook-reader-topbar-title span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ebook-reader-topbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+/* ============================================ */
+/*  Toolbar                                      */
+/* ============================================ */
+
+.ebook-toolbar-group {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 6px;
+  overflow: hidden;
+  margin-right: 4px;
+  background: rgba(128, 128, 128, 0.1);
+}
+
+.ebook-toolbar-group .ebook-toolbar-btn {
+  border-radius: 0;
+}
+
+.ebook-toolbar-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 32px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  border-radius: 6px;
+  transition: background 0.15s;
+  position: relative;
+}
+
+.ebook-toolbar-btn:hover {
+  background: rgba(128, 128, 128, 0.2);
+}
+
+.ebook-toolbar-btn:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+
+.ebook-toolbar-btn.active {
+  background: rgba(59, 130, 246, 0.2);
+  color: #3b82f6 !important;
+}
+
+.ebook-zoom-label {
+  font-size: 12px;
+  min-width: 36px;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ============================================ */
+/*  Page navigation                              */
+/* ============================================ */
+
+.ebook-page-nav {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: 4px;
+}
+
+.ebook-page-input {
+  width: 48px;
+  text-align: center;
+  border: 1px solid;
+  border-radius: 4px;
+  padding: 2px 4px;
+  font-size: 13px;
+  background: transparent;
+  font-variant-numeric: tabular-nums;
+}
+
+.ebook-page-total {
+  font-size: 13px;
+  opacity: 0.7;
+  white-space: nowrap;
+}
+
+.ebook-progress-label {
+  font-size: 12px;
+  opacity: 0.7;
+  font-variant-numeric: tabular-nums;
+  min-width: 32px;
+  text-align: center;
+}
+
+/* ============================================ */
+/*  Panels                                       */
+/* ============================================ */
+
+.ebook-reader-panel {
+  position: absolute;
+  top: 100%;
+  right: 12px;
+  z-index: 20;
+  width: 300px;
+  max-height: 70vh;
+  border: 1px solid;
+  border-radius: 10px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.ebook-panel-header {
+  padding: 10px 14px;
+  font-weight: 600;
+  font-size: 13px;
+  border-bottom: 1px solid rgba(128, 128, 128, 0.15);
+}
+
+/* ============================================ */
+/*  Settings panel                               */
+/* ============================================ */
+
+.ebook-reader-settings {
+  padding: 12px;
+  width: 260px;
+  right: 50px;
+}
+
+.ebook-settings-group {
+  margin-bottom: 14px;
+}
+
+.ebook-settings-group:last-child {
+  margin-bottom: 0;
+}
+
+.ebook-settings-group label {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  margin-bottom: 6px;
+  opacity: 0.7;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.ebook-settings-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.ebook-theme-btn {
+  flex: 1;
+  padding: 6px 0;
+  border: 2px solid transparent;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 500;
+  transition: border-color 0.15s;
+}
+
+.ebook-theme-light { background: #fff; color: #333; }
+.ebook-theme-sepia { background: #f4ecd8; color: #5b4636; }
+.ebook-theme-dark  { background: #1e1e1e; color: #e0e0e0; }
+
+.ebook-theme-btn.active {
+  border-color: #3b82f6;
+}
+
+.ebook-font-btn {
+  padding: 4px 12px;
+  border: 1px solid rgba(128, 128, 128, 0.3);
+  border-radius: 6px;
+  background: transparent;
+  cursor: pointer;
+  font-size: 13px;
+  color: inherit;
+}
+
+.ebook-font-btn:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+
+.ebook-font-preview {
+  flex: 1;
+  text-align: center;
+  font-weight: 600;
+}
+
+/* ============================================ */
+/*  TOC panel                                    */
+/* ============================================ */
+
+.ebook-reader-toc-panel {
+  right: 80px;
+}
+
+.ebook-toc-list {
+  overflow-y: auto;
+  max-height: 60vh;
+  padding: 4px 0;
+}
+
+.ebook-toc-item {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 8px 14px;
+  border: none;
+  background: transparent;
+  color: inherit;
+  font-size: 13px;
+  cursor: pointer;
+  white-space: pre;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: background 0.15s;
+}
+
+.ebook-toc-item:hover {
+  background: rgba(128, 128, 128, 0.12);
+}
+
+/* ============================================ */
+/*  DJVU containers                              */
+/* ============================================ */
+
+.ebook-djvu-container {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  overflow: auto;
+  padding: 20px;
+  cursor: pointer;
+}
+
+.ebook-djvu-two-page {
+  gap: 4px;
+}
+
+.ebook-djvu-canvas {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.15);
+  background: #fff;
+}
+
+.ebook-djvu-scroll {
+  position: absolute;
+  inset: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 12px;
+}
+
+.ebook-scroll-page {
+  position: relative;
+  background: #fff;
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.12);
+  flex-shrink: 0;
+  overflow: hidden;
+}
+
+.ebook-scroll-page canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.ebook-scroll-page-num {
+  position: absolute;
+  bottom: 4px;
+  right: 8px;
+  font-size: 11px;
+  color: rgba(0, 0, 0, 0.3);
+  pointer-events: none;
+}
+
+/* ============================================ */
+/*  Foliate container & navigation               */
+/* ============================================ */
+
+.ebook-foliate-container {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.ebook-foliate-nav {
+  position: absolute;
+  top: 0;
+  width: 80px;
+  height: 100%;
+  z-index: 5;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.ebook-foliate-nav:hover {
+  opacity: 1;
+  background: rgba(128, 128, 128, 0.06);
+}
+
+.ebook-foliate-nav-left {
+  left: 0;
+}
+
+.ebook-foliate-nav-right {
+  right: 0;
+}

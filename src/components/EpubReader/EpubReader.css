@@ -1,0 +1,418 @@
+/* ============================================ */
+/*  EPUB Reader – overlay & layout               */
+/* ============================================ */
+
+.epub-reader-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  background: #000;
+}
+
+.epub-reader-body {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+}
+
+.epub-reader-loading,
+.epub-reader-error {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  font-size: 16px;
+}
+
+.epub-spinner {
+  width: 24px;
+  height: 24px;
+  border: 3px solid rgba(128, 128, 128, 0.3);
+  border-top-color: #888;
+  border-radius: 50%;
+  animation: epub-spin 0.8s linear infinite;
+}
+
+@keyframes epub-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ============================================ */
+/*  Top bar                                      */
+/* ============================================ */
+
+.epub-reader-topbar {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 12px;
+  gap: 12px;
+  min-height: 44px;
+  z-index: 10;
+  user-select: none;
+}
+
+.epub-reader-topbar-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  min-width: 0;
+}
+
+.epub-reader-topbar-title span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.epub-reader-topbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+/* ============================================ */
+/*  Toolbar                                      */
+/* ============================================ */
+
+.epub-toolbar-group {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 6px;
+  overflow: hidden;
+  margin-right: 4px;
+  background: rgba(128, 128, 128, 0.1);
+}
+
+.epub-toolbar-group .epub-toolbar-btn {
+  border-radius: 0;
+}
+
+.epub-toolbar-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 32px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  border-radius: 6px;
+  transition: background 0.15s;
+  position: relative;
+}
+
+.epub-toolbar-btn:hover {
+  background: rgba(128, 128, 128, 0.2);
+}
+
+.epub-toolbar-btn.active {
+  background: rgba(59, 130, 246, 0.2);
+  color: #3b82f6 !important;
+}
+
+/* ============================================ */
+/*  Badge                                        */
+/* ============================================ */
+
+.epub-badge {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  min-width: 14px;
+  height: 14px;
+  padding: 0 3px;
+  border-radius: 7px;
+  background: #3b82f6;
+  color: #fff;
+  font-size: 9px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+
+/* ============================================ */
+/*  Panels (common)                              */
+/* ============================================ */
+
+.epub-reader-panel {
+  position: absolute;
+  top: 100%;
+  right: 12px;
+  z-index: 20;
+  width: 320px;
+  max-height: 70vh;
+  border: 1px solid;
+  border-radius: 10px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.epub-panel-header {
+  padding: 10px 14px;
+  font-weight: 600;
+  font-size: 13px;
+  border-bottom: 1px solid rgba(128, 128, 128, 0.15);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.epub-panel-hint {
+  font-weight: 400;
+  font-size: 11px;
+  opacity: 0.6;
+  margin-left: auto;
+}
+
+/* ============================================ */
+/*  Settings panel                               */
+/* ============================================ */
+
+.epub-reader-settings {
+  padding: 12px;
+  right: 50px;
+  width: 280px;
+}
+
+.epub-settings-group {
+  margin-bottom: 14px;
+}
+
+.epub-settings-group:last-child {
+  margin-bottom: 0;
+}
+
+.epub-settings-group label {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  margin-bottom: 6px;
+  opacity: 0.7;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.epub-settings-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.epub-theme-btn {
+  flex: 1;
+  padding: 6px 0;
+  border: 2px solid transparent;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 500;
+  transition: border-color 0.15s, opacity 0.15s;
+}
+
+.epub-theme-light { background: #fff; color: #333; }
+.epub-theme-sepia { background: #f4ecd8; color: #5b4636; }
+.epub-theme-dark  { background: #1e1e1e; color: #e0e0e0; }
+
+.epub-theme-btn.active {
+  border-color: #3b82f6;
+}
+
+.epub-font-btn {
+  padding: 4px 12px;
+  border: 1px solid rgba(128, 128, 128, 0.3);
+  border-radius: 6px;
+  background: transparent;
+  cursor: pointer;
+  font-size: 13px;
+  color: inherit;
+}
+
+.epub-font-btn:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+
+.epub-font-preview {
+  flex: 1;
+  text-align: center;
+  font-weight: 600;
+}
+
+/* ============================================ */
+/*  Highlight colors                             */
+/* ============================================ */
+
+.epub-highlight-colors {
+  gap: 8px;
+}
+
+.epub-color-swatch {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: transform 0.15s, border-color 0.15s;
+}
+
+.epub-color-swatch:hover {
+  transform: scale(1.15);
+}
+
+.epub-color-swatch.active {
+  border-color: #3b82f6;
+  transform: scale(1.1);
+}
+
+/* ============================================ */
+/*  TOC panel                                    */
+/* ============================================ */
+
+.epub-reader-toc-panel {
+  right: 120px;
+}
+
+.epub-toc-list {
+  overflow-y: auto;
+  max-height: 60vh;
+  padding: 4px 0;
+}
+
+.epub-toc-item {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 8px 14px;
+  border: none;
+  background: transparent;
+  color: inherit;
+  font-size: 13px;
+  cursor: pointer;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: background 0.15s;
+}
+
+.epub-toc-item:hover {
+  background: rgba(128, 128, 128, 0.12);
+}
+
+.epub-toc-empty {
+  padding: 20px;
+  text-align: center;
+  opacity: 0.5;
+  font-size: 13px;
+}
+
+/* ============================================ */
+/*  Highlights panel                             */
+/* ============================================ */
+
+.epub-reader-highlight-panel {
+  right: 80px;
+}
+
+.epub-highlight-list {
+  overflow-y: auto;
+  max-height: 60vh;
+  padding: 4px 0;
+}
+
+.epub-highlight-item {
+  display: flex;
+  align-items: stretch;
+  gap: 0;
+  border-bottom: 1px solid rgba(128, 128, 128, 0.1);
+}
+
+.epub-highlight-color-bar {
+  width: 4px;
+  flex-shrink: 0;
+}
+
+.epub-highlight-text {
+  flex: 1;
+  text-align: left;
+  padding: 8px 10px;
+  border: none;
+  background: transparent;
+  color: inherit;
+  font-size: 12px;
+  cursor: pointer;
+  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.epub-highlight-text:hover {
+  background: rgba(128, 128, 128, 0.08);
+}
+
+.epub-highlight-remove {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  border: none;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  opacity: 0.4;
+  transition: opacity 0.15s;
+}
+
+.epub-highlight-remove:hover {
+  opacity: 1;
+  color: #e74c3c;
+}
+
+/* ============================================ */
+/*  Font family selector                         */
+/* ============================================ */
+
+.epub-font-family-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.epub-font-family-btn {
+  padding: 4px 10px;
+  border: 1px solid rgba(128, 128, 128, 0.25);
+  border-radius: 6px;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  font-size: 12px;
+  transition: border-color 0.15s, background 0.15s;
+}
+
+.epub-font-family-btn:hover {
+  background: rgba(128, 128, 128, 0.1);
+}
+
+.epub-font-family-btn.active {
+  border-color: #3b82f6;
+  background: rgba(59, 130, 246, 0.1);
+  color: #3b82f6;
+  font-weight: 600;
+}
