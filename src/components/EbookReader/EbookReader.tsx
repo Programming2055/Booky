@@ -358,16 +358,18 @@ export function EbookReader({ fileUrl, bookId, fileName, initialPage, initialCfi
         </div>
         
         <div className="reader-header__center">
-          {/* Zoom Controls */}
-          <div className="reader-toolbar-group">
-            <button className="reader-btn reader-btn--icon" onClick={() => setZoom(ZOOM_LEVELS[Math.max(0, zoomIdx - 1)])} disabled={zoomIdx <= 0} title="Zoom out">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="8"/><line x1="7" y1="11" x2="15" y2="11"/></svg>
-            </button>
-            <span className="reader-zoom-display">{Math.round(zoom * 100)}%</span>
-            <button className="reader-btn reader-btn--icon" onClick={() => setZoom(ZOOM_LEVELS[Math.min(ZOOM_LEVELS.length - 1, zoomIdx + 1)])} disabled={zoomIdx >= ZOOM_LEVELS.length - 1} title="Zoom in">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="8"/><line x1="11" y1="7" x2="11" y2="15"/><line x1="7" y1="11" x2="15" y2="11"/></svg>
-            </button>
-          </div>
+          {/* Zoom Controls - Only for DJVU */}
+          {isDjvu && (
+            <div className="reader-toolbar-group">
+              <button className="reader-btn reader-btn--icon" onClick={() => setZoom(ZOOM_LEVELS[Math.max(0, zoomIdx - 1)])} disabled={zoomIdx <= 0} title="Zoom out">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="8"/><line x1="7" y1="11" x2="15" y2="11"/></svg>
+              </button>
+              <span className="reader-zoom-display">{Math.round(zoom * 100)}%</span>
+              <button className="reader-btn reader-btn--icon" onClick={() => setZoom(ZOOM_LEVELS[Math.min(ZOOM_LEVELS.length - 1, zoomIdx + 1)])} disabled={zoomIdx >= ZOOM_LEVELS.length - 1} title="Zoom in">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="8"/><line x1="11" y1="7" x2="11" y2="15"/><line x1="7" y1="11" x2="15" y2="11"/></svg>
+              </button>
+            </div>
+          )}
         </div>
 
         <div className="reader-header__right">
@@ -476,7 +478,7 @@ export function EbookReader({ fileUrl, bookId, fileName, initialPage, initialCfi
             <div 
               ref={foliateContainerRef} 
               className="reader-foliate-container"
-              style={{ display: loading || error ? 'none' : 'block', transform: `scale(${zoom})`, transformOrigin: 'top center' }}
+              style={{ display: loading || error ? 'none' : 'flex' }}
             />
           )}
 
