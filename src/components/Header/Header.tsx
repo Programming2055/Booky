@@ -23,8 +23,8 @@ export function Header({ onAddBook, onImportPDFs, importing }: HeaderProps) {
       <div className="header__brand">
         <div className="header__logo" />
         <div className="header__brand-text">
-          <div className="header__title">Bookshelf</div>
-          <div className="header__subtitle">eBook Library Manager</div>
+          <div className="header__title">Booky</div>
+          <div className="header__subtitle">Your eBook Library</div>
         </div>
       </div>
 

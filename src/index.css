@@ -1,3 +1,6 @@
+/* Google Fonts for sketch styles */
+@import url('https://fonts.googleapis.com/css2?family=Architects+Daughter&family=Caveat:wght@400;600;700&family=Indie+Flower&family=Shadows+Into+Light&family=Patrick+Hand&display=swap');
+
 *,
 *::before,
 *::after {
@@ -7,104 +10,267 @@
 }
 
 :root {
-  font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+  font-family: var(--ui-font, 'Inter', 'Segoe UI', system-ui, sans-serif);
   font-size: 16px;
   line-height: 1.5;
   font-weight: 400;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  --ui-font: 'Inter', 'Segoe UI', system-ui, sans-serif;
 }
 
-/* Light Theme (default) */
+/* Light Theme (default) - Clean & Professional */
 :root,
 [data-theme="light"] {
-  --bg: #f8f9fc;
+  --bg: #f5f7fa;
   --surface: #ffffff;
-  --surface-alt: #f3f4f6;
-  --surface-hover: #e5e7eb;
+  --surface-alt: #f0f2f5;
+  --surface-hover: #e8ebef;
   --modal-bg: #ffffff;
-  --input-bg: #f9fafb;
-  --border: #e5e7eb;
-  --border-hover: #d1d5db;
-  --text: #1f2937;
-  --text-muted: #6b7280;
-  --accent: #6366f1;
-  --accent-bg: rgba(99, 102, 241, 0.1);
-  --danger: #ef4444;
+  --input-bg: #fafbfc;
+  --border: #dde1e6;
+  --border-hover: #c6ccd4;
+  --text: #1a1d21;
+  --text-muted: #5f6b7a;
+  --accent: #4f6ef7;
+  --accent-hover: #3b5ce0;
+  --accent-bg: rgba(79, 110, 247, 0.1);
+  --success: #00c48c;
+  --warning: #ff9f43;
+  --danger: #ff5d5d;
   --sidebar-bg: #ffffff;
+  --card-gradient: linear-gradient(145deg, #ffffff 0%, #f8f9fb 100%);
+  --glow: rgba(79, 110, 247, 0.15);
 }
 
-/* Dark Theme */
+/* Dark Theme - Deep & Modern */
 [data-theme="dark"] {
-  --bg: #0f0f11;
-  --surface: #1a1a1e;
-  --surface-alt: #232328;
-  --surface-hover: #2d2d33;
-  --modal-bg: #1a1a1e;
-  --input-bg: #232328;
-  --border: #2d2d33;
-  --border-hover: #3d3d44;
-  --text: #f3f4f6;
-  --text-muted: #9ca3af;
-  --accent: #818cf8;
-  --accent-bg: rgba(129, 140, 248, 0.15);
-  --danger: #f87171;
-  --sidebar-bg: #141416;
+  --bg: #0d0f12;
+  --surface: #16181d;
+  --surface-alt: #1e2128;
+  --surface-hover: #262a33;
+  --modal-bg: #16181d;
+  --input-bg: #1e2128;
+  --border: #2a2e38;
+  --border-hover: #383d49;
+  --text: #f0f2f5;
+  --text-muted: #8b95a5;
+  --accent: #6c8cff;
+  --accent-hover: #5470e0;
+  --accent-bg: rgba(108, 140, 255, 0.15);
+  --success: #2dd4a8;
+  --warning: #ffb356;
+  --danger: #ff6b6b;
+  --sidebar-bg: #111318;
+  --card-gradient: linear-gradient(145deg, #1a1d24 0%, #16181d 100%);
+  --glow: rgba(108, 140, 255, 0.2);
 }
 
-/* Blue Theme */
-[data-theme="blue"] {
-  --bg: #eff6ff;
+/* Midnight Blue - Sophisticated Dark */
+[data-theme="midnight"] {
+  --bg: #0c1525;
+  --surface: #162035;
+  --surface-alt: #1d2a42;
+  --surface-hover: #263550;
+  --modal-bg: #162035;
+  --input-bg: #1d2a42;
+  --border: #2a3a55;
+  --border-hover: #3a4d6a;
+  --text: #e8edf5;
+  --text-muted: #8fa3c0;
+  --accent: #4da6ff;
+  --accent-hover: #3391ea;
+  --accent-bg: rgba(77, 166, 255, 0.15);
+  --success: #4eeaaa;
+  --warning: #ffd55a;
+  --danger: #ff7085;
+  --sidebar-bg: #0f1829;
+  --card-gradient: linear-gradient(145deg, #1a2740 0%, #162035 100%);
+  --glow: rgba(77, 166, 255, 0.18);
+}
+
+/* Ocean Breeze - Crisp & Calming */
+[data-theme="ocean"] {
+  --bg: #eef5fa;
   --surface: #ffffff;
-  --surface-alt: #dbeafe;
-  --surface-hover: #bfdbfe;
+  --surface-alt: #e3eff8;
+  --surface-hover: #d4e6f4;
   --modal-bg: #ffffff;
-  --input-bg: #f0f7ff;
-  --border: #bfdbfe;
-  --border-hover: #93c5fd;
-  --text: #1e3a5f;
-  --text-muted: #3b82f6;
-  --accent: #2563eb;
-  --accent-bg: rgba(37, 99, 235, 0.1);
-  --danger: #ef4444;
-  --sidebar-bg: #f0f7ff;
+  --input-bg: #f5f9fc;
+  --border: #bdd5ea;
+  --border-hover: #8dc2e0;
+  --text: #0a3d5c;
+  --text-muted: #3a7295;
+  --accent: #0a8ed9;
+  --accent-hover: #0775b8;
+  --accent-bg: rgba(10, 142, 217, 0.1);
+  --success: #00b894;
+  --warning: #f39c12;
+  --danger: #e74c3c;
+  --sidebar-bg: #f5f9fc;
+  --card-gradient: linear-gradient(145deg, #ffffff 0%, #e8f4fc 100%);
+  --glow: rgba(10, 142, 217, 0.12);
 }
 
-/* Rose Theme */
-[data-theme="rose"] {
-  --bg: #fff1f2;
+/* Forest - Natural & Serene */
+[data-theme="forest"] {
+  --bg: #edf5f0;
   --surface: #ffffff;
-  --surface-alt: #ffe4e6;
-  --surface-hover: #fecdd3;
+  --surface-alt: #e0f0e6;
+  --surface-hover: #cfe8d8;
   --modal-bg: #ffffff;
-  --input-bg: #fff5f6;
-  --border: #fecdd3;
-  --border-hover: #fda4af;
-  --text: #4c1d25;
-  --text-muted: #e11d48;
-  --accent: #e11d48;
-  --accent-bg: rgba(225, 29, 72, 0.1);
-  --danger: #be123c;
-  --sidebar-bg: #fff5f6;
+  --input-bg: #f5faf7;
+  --border: #a8d4b8;
+  --border-hover: #7ac294;
+  --text: #1a3d28;
+  --text-muted: #3d7252;
+  --accent: #27ae60;
+  --accent-hover: #1e8f4e;
+  --accent-bg: rgba(39, 174, 96, 0.1);
+  --success: #00c9a7;
+  --warning: #f1c40f;
+  --danger: #e55039;
+  --sidebar-bg: #f5faf7;
+  --card-gradient: linear-gradient(145deg, #ffffff 0%, #e5f5eb 100%);
+  --glow: rgba(39, 174, 96, 0.12);
 }
 
-/* Sketch Theme – hand-drawn paper aesthetic */
-[data-theme="sketch"] {
-  --bg: #fdf6e3;
-  --surface: #fefbf3;
-  --surface-alt: #f5ead6;
-  --surface-hover: #efe2c8;
-  --modal-bg: #fefbf3;
-  --input-bg: #fdf8eb;
-  --border: #d4c4a8;
-  --border-hover: #b8a888;
-  --text: #5b4636;
-  --text-muted: #8b7355;
-  --accent: #c97d4e;
-  --accent-bg: rgba(201, 125, 78, 0.15);
-  --danger: #c0392b;
-  --sidebar-bg: #f9f2e3;
-  --sketch-shadow: 2px 2px 0 rgba(91, 70, 54, 0.1);
+/* Sunset - Warm & Inviting */
+[data-theme="sunset"] {
+  --bg: #fef8f3;
+  --surface: #ffffff;
+  --surface-alt: #fff0e5;
+  --surface-hover: #ffe4d4;
+  --modal-bg: #ffffff;
+  --input-bg: #fffaf6;
+  --border: #f5d0b5;
+  --border-hover: #f0b088;
+  --text: #5c2e10;
+  --text-muted: #a05a32;
+  --accent: #f57c00;
+  --accent-hover: #e06800;
+  --accent-bg: rgba(245, 124, 0, 0.1);
+  --success: #26de81;
+  --warning: #fed330;
+  --danger: #fc5c65;
+  --sidebar-bg: #fffcf9;
+  --card-gradient: linear-gradient(145deg, #ffffff 0%, #fff5ed 100%);
+  --glow: rgba(245, 124, 0, 0.12);
+}
+
+/* Royal Purple - Elegant & Rich */
+[data-theme="royal"] {
+  --bg: #f8f5fc;
+  --surface: #ffffff;
+  --surface-alt: #f0e9f8;
+  --surface-hover: #e5dbf2;
+  --modal-bg: #ffffff;
+  --input-bg: #fbf9fd;
+  --border: #d4c2e8;
+  --border-hover: #b99fd8;
+  --text: #3d1a5c;
+  --text-muted: #7a4a9e;
+  --accent: #9b59b6;
+  --accent-hover: #8344a5;
+  --accent-bg: rgba(155, 89, 182, 0.1);
+  --success: #1abc9c;
+  --warning: #f1c40f;
+  --danger: #e74c3c;
+  --sidebar-bg: #fcfafd;
+  --card-gradient: linear-gradient(145deg, #ffffff 0%, #f5f0fa 100%);
+  --glow: rgba(155, 89, 182, 0.15);
+}
+
+/* Rose Gold - Sophisticated & Warm */
+[data-theme="rosegold"] {
+  --bg: #fcf5f5;
+  --surface: #ffffff;
+  --surface-alt: #faeaea;
+  --surface-hover: #f5dada;
+  --modal-bg: #ffffff;
+  --input-bg: #fefafa;
+  --border: #e8c5c5;
+  --border-hover: #dca5a5;
+  --text: #5c2a2a;
+  --text-muted: #a05050;
+  --accent: #e06666;
+  --accent-hover: #cc4e4e;
+  --accent-bg: rgba(224, 102, 102, 0.1);
+  --success: #00c9a7;
+  --warning: #ffb74d;
+  --danger: #ef5350;
+  --sidebar-bg: #fdf8f8;
+  --card-gradient: linear-gradient(145deg, #ffffff 0%, #faf2f2 100%);
+  --glow: rgba(224, 102, 102, 0.12);
+}
+
+/* Slate - Professional & Neutral */
+[data-theme="slate"] {
+  --bg: #f4f6f8;
+  --surface: #ffffff;
+  --surface-alt: #ebeef2;
+  --surface-hover: #dde2e8;
+  --modal-bg: #ffffff;
+  --input-bg: #f8f9fb;
+  --border: #c8d0da;
+  --border-hover: #a8b5c5;
+  --text: #1e2a3a;
+  --text-muted: #5a6a7f;
+  --accent: #5a7fb8;
+  --accent-hover: #4668a0;
+  --accent-bg: rgba(90, 127, 184, 0.1);
+  --success: #2ecc71;
+  --warning: #f39c12;
+  --danger: #e74c3c;
+  --sidebar-bg: #f8f9fb;
+  --card-gradient: linear-gradient(145deg, #ffffff 0%, #f0f3f6 100%);
+  --glow: rgba(90, 127, 184, 0.12);
+}
+
+/* Coffee - Rich & Cozy */
+[data-theme="coffee"] {
+  --bg: #f9f6f3;
+  --surface: #ffffff;
+  --surface-alt: #f3ebe4;
+  --surface-hover: #e8dcd0;
+  --modal-bg: #ffffff;
+  --input-bg: #fcfaf8;
+  --border: #d4c4b5;
+  --border-hover: #bda890;
+  --text: #3d2b1f;
+  --text-muted: #7a5c42;
+  --accent: #a67c52;
+  --accent-hover: #8b6340;
+  --accent-bg: rgba(166, 124, 82, 0.1);
+  --success: #4caf50;
+  --warning: #ff9800;
+  --danger: #d32f2f;
+  --sidebar-bg: #fcfaf8;
+  --card-gradient: linear-gradient(145deg, #ffffff 0%, #f5ede5 100%);
+  --glow: rgba(166, 124, 82, 0.12);
+}
+
+/* Nord - Cool Scandinavian */
+[data-theme="nord"] {
+  --bg: #eceff4;
+  --surface: #e5e9f0;
+  --surface-alt: #d8dee9;
+  --surface-hover: #c4ccd9;
+  --modal-bg: #e5e9f0;
+  --input-bg: #eceff4;
+  --border: #c4ccd9;
+  --border-hover: #a3b0c5;
+  --text: #2e3440;
+  --text-muted: #4c566a;
+  --accent: #5e81ac;
+  --accent-hover: #4a6d96;
+  --accent-bg: rgba(94, 129, 172, 0.12);
+  --success: #a3be8c;
+  --warning: #ebcb8b;
+  --danger: #bf616a;
+  --sidebar-bg: #e5e9f0;
+  --card-gradient: linear-gradient(145deg, #e5e9f0 0%, #d8dee9 100%);
+  --glow: rgba(94, 129, 172, 0.15);
 }
 
 html, body, #root {
@@ -171,6 +337,60 @@ button {
   font-family: inherit;
 }
 
+/* Global button styling for consistent theme colors */
+.btn {
+  padding: 10px 20px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--text);
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn:hover {
+  background: var(--surface-hover);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.btn--primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: white;
+}
+
+.btn--primary:hover {
+  background: var(--accent-hover);
+  border-color: var(--accent-hover);
+  filter: brightness(1.1);
+}
+
+.btn--ghost {
+  background: transparent;
+  border-color: var(--border);
+  color: var(--text-muted);
+}
+
+.btn--ghost:hover {
+  background: var(--surface-alt);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.btn--ghost:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  color: var(--text-muted);
+}
+
+.btn--ghost:disabled:hover {
+  background: transparent;
+  border-color: var(--border);
+  color: var(--text-muted);
+}
+
 /* Global input reset */
 input, textarea, select {
   font-family: inherit;
@@ -189,33 +409,495 @@ input, textarea, select {
   border: 0;
 }
 
-/* Sketch theme special styles */
-[data-theme="sketch"] .sidebar,
-[data-theme="sketch"] .header,
-[data-theme="sketch"] .book-card {
-  box-shadow: var(--sketch-shadow);
-  border: 2px solid var(--border);
+/* ====== SKETCH STYLE OVERLAYS ====== */
+/* Real sketch effects - cards, frames, fonts, backgrounds */
+/* Book sizes are NOT affected by sketch styles */
+
+/* ============================================ */
+/* HAND-DRAWN SKETCH - Pencil on Paper Feel */
+/* ============================================ */
+[data-sketch="hand-drawn"] {
+  --sketch-font: 'Caveat', 'Patrick Hand', cursive;
+  --sketch-font-alt: 'Architects Daughter', cursive;
 }
 
-[data-theme="sketch"] .book-card {
+/* Sketchy background - paper texture */
+[data-sketch="hand-drawn"] .app {
+  background: 
+    repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 28px,
+      rgba(0, 0, 0, 0.02) 28px,
+      rgba(0, 0, 0, 0.02) 29px
+    ),
+    linear-gradient(135deg, #faf8f5 0%, #f5f3f0 50%, #eae7e2 100%);
+}
+
+[data-sketch="hand-drawn"] .sidebar,
+[data-sketch="hand-drawn"] .book-grid,
+[data-sketch="hand-drawn"] .header {
+  background: 
+    url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E"),
+    var(--surface);
+  border: 3px solid var(--border);
+  border-radius: 2px;
+  box-shadow: 
+    4px 4px 0 rgba(0, 0, 0, 0.08),
+    -1px -1px 0 rgba(255, 255, 255, 0.5);
+  position: relative;
+}
+
+/* Hand-drawn border effect via pseudo-element */
+[data-sketch="hand-drawn"] .sidebar::before,
+[data-sketch="hand-drawn"] .book-grid::before {
+  content: '';
+  position: absolute;
+  inset: -4px;
+  border: 2px solid rgba(0, 0, 0, 0.15);
   border-radius: 4px;
-  transition: transform 0.2s, box-shadow 0.2s;
+  pointer-events: none;
+  transform: rotate(-0.3deg);
 }
 
-[data-theme="sketch"] .book-card:hover {
-  transform: rotate(-0.5deg) translateY(-2px);
-  box-shadow: 3px 3px 0 rgba(91, 70, 54, 0.15);
+/* Sketchy cards with rough borders */
+[data-sketch="hand-drawn"] .book-card,
+[data-sketch="hand-drawn"] .collection-card {
+  border: 2.5px solid var(--text);
+  border-radius: 3px;
+  box-shadow: 
+    3px 3px 0 rgba(0, 0, 0, 0.12),
+    inset 0 0 20px rgba(0, 0, 0, 0.02);
+  background: 
+    url("data:image/svg+xml,%3Csvg viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='paper'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23paper)' opacity='0.03'/%3E%3C/svg%3E"),
+    var(--surface);
+  transform: rotate(calc(-0.5deg + var(--card-tilt, 0deg)));
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-[data-theme="sketch"] button,
-[data-theme="sketch"] input,
-[data-theme="sketch"] select {
-  font-family: 'Patrick Hand', 'Architects Daughter', cursive, sans-serif;
+[data-sketch="hand-drawn"] .book-card:nth-child(odd) {
+  --card-tilt: 0.3deg;
 }
 
-[data-theme="sketch"] h1,
-[data-theme="sketch"] h2,
-[data-theme="sketch"] h3,
-[data-theme="sketch"] .sidebar__title {
-  font-family: 'Architects Daughter', 'Patrick Hand', cursive, sans-serif;
+[data-sketch="hand-drawn"] .book-card:nth-child(even) {
+  --card-tilt: -0.4deg;
+}
+
+[data-sketch="hand-drawn"] .book-card:hover,
+[data-sketch="hand-drawn"] .collection-card:hover {
+  transform: rotate(0deg) translateY(-4px) scale(1.02);
+  box-shadow: 5px 5px 0 rgba(0, 0, 0, 0.15);
+}
+
+/* Sketchy list items */
+[data-sketch="hand-drawn"] .list-item {
+  border: 2px solid var(--text);
+  border-radius: 2px;
+  box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.1);
+  background: var(--surface);
+}
+
+/* Sketchy fonts everywhere */
+[data-sketch="hand-drawn"] h1,
+[data-sketch="hand-drawn"] h2,
+[data-sketch="hand-drawn"] h3,
+[data-sketch="hand-drawn"] .book-card__title,
+[data-sketch="hand-drawn"] .collection-card h3,
+[data-sketch="hand-drawn"] .sidebar h2 {
+  font-family: var(--sketch-font) !important;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+[data-sketch="hand-drawn"] button,
+[data-sketch="hand-drawn"] input,
+[data-sketch="hand-drawn"] select,
+[data-sketch="hand-drawn"] .book-card__author,
+[data-sketch="hand-drawn"] p,
+[data-sketch="hand-drawn"] span,
+[data-sketch="hand-drawn"] label {
+  font-family: var(--sketch-font-alt) !important;
+}
+
+[data-sketch="hand-drawn"] button {
+  border: 2px solid var(--border) !important;
+  border-radius: 3px !important;
+  box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.1);
+}
+
+/* Hand-drawn button hover state */
+[data-sketch="hand-drawn"] button:hover {
+  border-color: var(--accent) !important;
+  box-shadow: 3px 3px 0 rgba(0, 0, 0, 0.15);
+  transform: translateY(-1px);
+}
+
+/* Hand-drawn button active/click state */
+[data-sketch="hand-drawn"] button:active {
+  transform: translateY(1px);
+  box-shadow: 1px 1px 0 rgba(0, 0, 0, 0.1);
+}
+
+/* Hand-drawn primary/accent buttons */
+[data-sketch="hand-drawn"] .btn--primary,
+[data-sketch="hand-drawn"] .book-card__side-btn--primary,
+[data-sketch="hand-drawn"] .convert-modal__convert,
+[data-sketch="hand-drawn"] .book-spine__open-btn {
+  background: var(--accent) !important;
+  border-color: var(--accent) !important;
+  color: white !important;
+}
+
+[data-sketch="hand-drawn"] .btn--primary:hover,
+[data-sketch="hand-drawn"] .book-card__side-btn--primary:hover,
+[data-sketch="hand-drawn"] .convert-modal__convert:hover,
+[data-sketch="hand-drawn"] .book-spine__open-btn:hover {
+  filter: brightness(1.1);
+}
+
+/* Hand-drawn active/selected buttons */
+[data-sketch="hand-drawn"] .convert-modal__btn--active,
+[data-sketch="hand-drawn"] .settings-modal__view-btn.active,
+[data-sketch="hand-drawn"] .settings-modal__sketch-btn--active,
+[data-sketch="hand-drawn"] .settings-modal__row-btn--active,
+[data-sketch="hand-drawn"] .settings-modal__reader-btn--active,
+[data-sketch="hand-drawn"] .book-grid__view-btn--active,
+[data-sketch="hand-drawn"] .book-grid__tab--active {
+  background: var(--accent) !important;
+  border-color: var(--accent) !important;
+  color: white !important;
+}
+
+/* Sketch icon buttons - hand drawn style */
+[data-sketch="hand-drawn"] .book-card__delete,
+[data-sketch="hand-drawn"] .book-card__side-btn,
+[data-sketch="hand-drawn"] .book-spine__actions button {
+  border: 2px solid var(--accent) !important;
+  border-radius: 4px !important;
+  box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.15);
+  transform: rotate(-1deg);
+  background: var(--surface) !important;
+  color: var(--accent) !important;
+}
+
+[data-sketch="hand-drawn"] .book-card__side-btn:hover,
+[data-sketch="hand-drawn"] .book-spine__actions button:hover {
+  background: var(--accent) !important;
+  color: white !important;
+  transform: rotate(-1deg) scale(1.05);
+}
+
+[data-sketch="hand-drawn"] .book-card__delete {
+  border-color: var(--danger) !important;
+  color: var(--danger) !important;
+}
+
+[data-sketch="hand-drawn"] .book-card__delete:hover {
+  background: var(--danger) !important;
+  color: white !important;
+}
+
+/* Danger buttons (delete) in bookshelf view */
+[data-sketch="hand-drawn"] .book-spine__actions button:last-child {
+  border-color: var(--danger) !important;
+  color: var(--danger) !important;
+}
+
+[data-sketch="hand-drawn"] .book-spine__actions button:last-child:hover {
+  background: var(--danger) !important;
+  color: white !important;
+}
+
+[data-sketch="hand-drawn"] input,
+[data-sketch="hand-drawn"] select {
+  border: 2px solid var(--border) !important;
+  border-radius: 2px !important;
+  background: var(--input-bg) !important;
+}
+
+/* ============================================ */
+/* GLOBAL SKETCH OVERRIDES - UI Controls */
+/* ============================================ */
+/* Ensure modal close buttons maintain proper colors in all sketch modes */
+[data-sketch] .settings-modal__close,
+[data-sketch] .book-form-modal__close,
+[data-sketch] .convert-modal__close,
+[data-sketch] .pdf-tools__close {
+  background: var(--surface) !important;
+  border: 1px solid var(--border) !important;
+  color: var(--text) !important;
+}
+
+[data-sketch] .settings-modal__close:hover,
+[data-sketch] .book-form-modal__close:hover,
+[data-sketch] .convert-modal__close:hover,
+[data-sketch] .pdf-tools__close:hover {
+  background: var(--danger) !important;
+  border-color: var(--danger) !important;
+  color: white !important;
+}
+
+/* Ensure sidebar controls maintain proper colors */
+[data-sketch] .sidebar__slider-btn,
+[data-sketch] .sidebar__shelf-btn {
+  background: var(--surface) !important;
+  border-color: var(--border) !important;
+  color: var(--text) !important;
+}
+
+[data-sketch] .sidebar__slider-btn:hover,
+[data-sketch] .sidebar__shelf-btn:hover {
+  border-color: var(--accent) !important;
+  color: var(--accent) !important;
+}
+
+[data-sketch] .sidebar__slider-btn svg,
+[data-sketch] .sidebar__shelf-btn svg {
+  color: inherit !important;
+}
+
+/* Settings modal view buttons */
+[data-sketch] .settings-modal__view-btn {
+  background: var(--surface) !important;
+  border: 1px solid var(--border) !important;
+  color: var(--text) !important;
+}
+
+[data-sketch] .settings-modal__view-btn:hover {
+  border-color: var(--accent) !important;
+  color: var(--accent) !important;
+}
+
+[data-sketch] .settings-modal__view-btn.active {
+  background: var(--accent) !important;
+  border-color: var(--accent) !important;
+  color: white !important;
+}
+
+/* Book grid view buttons (grid/list/bookshelf toggle) */
+[data-sketch] .book-grid__view-btn {
+  background: var(--surface) !important;
+  border: 1px solid var(--border) !important;
+  color: var(--text-muted) !important;
+}
+
+[data-sketch] .book-grid__view-btn:hover {
+  border-color: var(--accent) !important;
+  color: var(--text) !important;
+}
+
+[data-sketch] .book-grid__view-btn--active {
+  background: var(--surface) !important;
+  border-color: var(--accent) !important;
+  color: var(--accent) !important;
+}
+
+/* Book grid tab buttons */
+[data-sketch] .book-grid__tab {
+  background: transparent !important;
+  color: var(--text-muted) !important;
+}
+
+[data-sketch] .book-grid__tab:hover {
+  color: var(--text) !important;
+}
+
+[data-sketch] .book-grid__tab--active {
+  background: var(--surface) !important;
+  color: var(--text) !important;
+}
+
+/* Pagination and ghost buttons */
+[data-sketch] .btn--ghost {
+  background: transparent !important;
+  border: 1px solid var(--border) !important;
+  color: var(--text-muted) !important;
+}
+
+[data-sketch] .btn--ghost:hover:not(:disabled) {
+  background: var(--surface-alt) !important;
+  border-color: var(--accent) !important;
+  color: var(--accent) !important;
+}
+
+[data-sketch] .btn--ghost:disabled {
+  opacity: 0.5 !important;
+}
+
+[data-sketch] .btn--primary {
+  background: var(--accent) !important;
+  border-color: var(--accent) !important;
+  color: white !important;
+}
+
+[data-sketch] .btn--primary:hover {
+  filter: brightness(1.1);
+}
+
+/* Ensure header buttons work properly */
+[data-sketch] .header__btn {
+  background: var(--surface) !important;
+  border: 1px solid var(--border) !important;
+  color: var(--text) !important;
+}
+
+[data-sketch] .header__btn:hover {
+  border-color: var(--accent) !important;
+  color: var(--accent) !important;
+}
+
+/* Sketch style picker buttons */
+[data-sketch] .settings-modal__sketch-btn {
+  background: var(--surface) !important;
+  border: 1px solid var(--border) !important;
+  color: var(--text) !important;
+}
+
+[data-sketch] .settings-modal__sketch-btn:hover {
+  border-color: var(--accent) !important;
+  color: var(--accent) !important;
+}
+
+[data-sketch] .settings-modal__sketch-btn--active {
+  background: var(--accent) !important;
+  border-color: var(--accent) !important;
+  color: white !important;
+}
+
+/* Theme picker buttons */
+[data-sketch] .settings-modal__theme-btn {
+  border: 2px solid var(--border) !important;
+}
+
+[data-sketch] .settings-modal__theme-btn:hover {
+  border-color: var(--accent) !important;
+}
+
+[data-sketch] .settings-modal__theme-btn--active {
+  border-color: var(--accent) !important;
+  box-shadow: 0 0 0 2px var(--accent) !important;
+}
+
+/* Row options buttons */
+[data-sketch] .settings-modal__row-btn {
+  background: var(--surface) !important;
+  border: 1px solid var(--border) !important;
+  color: var(--text) !important;
+}
+
+[data-sketch] .settings-modal__row-btn:hover {
+  border-color: var(--accent) !important;
+}
+
+[data-sketch] .settings-modal__row-btn--active {
+  background: var(--accent) !important;
+  border-color: var(--accent) !important;
+  color: white !important;
+}
+
+/* Save and cancel buttons */
+[data-sketch] .settings-modal__save-btn {
+  background: var(--surface-alt) !important;
+  border: 1px solid var(--border) !important;
+  color: var(--text-muted) !important;
+}
+
+[data-sketch] .settings-modal__save-btn--active {
+  background: var(--accent) !important;
+  border-color: var(--accent) !important;
+  color: white !important;
+}
+
+[data-sketch] .settings-modal__cancel-btn {
+  background: var(--surface) !important;
+  border: 1px solid var(--border) !important;
+  color: var(--text) !important;
+}
+
+[data-sketch] .settings-modal__cancel-btn:hover {
+  border-color: var(--accent) !important;
+  color: var(--accent) !important;
+}
+
+/* Reader buttons in settings */
+[data-sketch] .settings-modal__reader-btn {
+  background: var(--surface) !important;
+  border: 1px solid var(--border) !important;
+  color: var(--text-muted) !important;
+}
+
+[data-sketch] .settings-modal__reader-btn:hover {
+  border-color: var(--accent) !important;
+  color: var(--text) !important;
+}
+
+[data-sketch] .settings-modal__reader-btn--active {
+  background: var(--accent) !important;
+  border-color: var(--accent) !important;
+  color: white !important;
+}
+
+/* Convert modal buttons */
+[data-sketch] .convert-modal__close {
+  background: var(--surface) !important;
+  border: 1px solid var(--border) !important;
+  color: var(--text) !important;
+}
+
+[data-sketch] .convert-modal__close:hover {
+  background: var(--danger) !important;
+  border-color: var(--danger) !important;
+  color: white !important;
+}
+
+[data-sketch] .convert-modal__btn {
+  background: var(--surface) !important;
+  border: 1px solid var(--border) !important;
+  color: var(--text) !important;
+}
+
+[data-sketch] .convert-modal__btn:hover:not(.convert-modal__btn--active) {
+  border-color: var(--accent) !important;
+  color: var(--accent) !important;
+}
+
+[data-sketch] .convert-modal__btn--active {
+  background: var(--accent) !important;
+  border-color: var(--accent) !important;
+  color: white !important;
+}
+
+[data-sketch] .convert-modal__cancel {
+  background: var(--surface) !important;
+  border: 1px solid var(--border) !important;
+  color: var(--text) !important;
+}
+
+[data-sketch] .convert-modal__cancel:hover {
+  border-color: var(--accent) !important;
+  color: var(--accent) !important;
+}
+
+[data-sketch] .convert-modal__convert {
+  background: var(--accent) !important;
+  border: 1px solid var(--accent) !important;
+  color: white !important;
+}
+
+[data-sketch] .convert-modal__convert:hover:not(:disabled) {
+  filter: brightness(1.1);
+}
+
+/* Color buttons in settings */
+[data-sketch] .settings-modal__color-btn {
+  border: 2px solid var(--border) !important;
+}
+
+[data-sketch] .settings-modal__color-btn:hover {
+  transform: scale(1.1);
+}
+
+[data-sketch] .settings-modal__color-btn--active {
+  border-color: var(--accent) !important;
+  box-shadow: 0 0 0 2px var(--accent) !important;
 }

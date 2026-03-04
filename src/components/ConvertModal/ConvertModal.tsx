@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useApp } from '../../context';
 import type { Book, PdfConversionSettings } from '../../types';
-import { convertToPdf, downloadPdf, isPythonServerRunning } from '../../services';
+import { convertToPdf, downloadPdf, isPythonServerRunning, verifyFilePermission } from '../../services';
 import './ConvertModal.css';
 
 interface ConvertModalProps {
@@ -56,6 +56,14 @@ export function ConvertModal({ book, onClose }: ConvertModalProps) {
     setProgress(0);
     
     try {
+      // Verify file access permission first
+      const hasPermission = await verifyFilePermission(book.fileHandle);
+      if (!hasPermission) {
+        throw new Error('File access denied. Please grant permission when prompted.');
+      }
+      
+      setProgress(2);
+      
       // Check if Python server is running
       const serverRunning = await isPythonServerRunning();
       if (!serverRunning) {
@@ -273,9 +281,11 @@ export function ConvertModal({ book, onClose }: ConvertModalProps) {
 
         <div className="convert-modal__footer">
           <p className="convert-modal__note">
-            ⚠️ Conversion requires Python server with Calibre installed.
+            ⚠️ Conversion uses Calibre. Complex layouts (equations, graphs) may not preserve perfectly.
             <br />
-            Run: <code>pip install calibre</code> then <code>python server/ebook_server.py</code>
+            <strong>For best results:</strong> Open the book in the reader and use Print → Save as PDF.
+            <br />
+            <small>Server required: <code>python server/ebook_server.py</code></small>
           </p>
           <div className="convert-modal__actions">
             <button className="convert-modal__cancel" onClick={onClose}>

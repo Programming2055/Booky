@@ -14,6 +14,22 @@ const HIGHLIGHT_COLORS = [
   { name: 'Orange', value: '#ff9800' },
 ];
 
+// Rect relative to page
+interface HighlightRect {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+}
+
+interface SelectionData {
+  x: number;
+  y: number;
+  text: string;
+  page: number;
+  rects: HighlightRect[];
+}
+
 interface PdfReaderProps {
   fileUrl: string;
   bookId: string;
@@ -29,7 +45,7 @@ export function PdfReader({
   initialPage = 1,
   onClose,
 }: PdfReaderProps) {
-  const { saveReadingProgress, state, dispatch } = useApp();
+  const { saveReadingProgress, state, updateBook } = useApp();
   const viewerRef = useRef<HTMLElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const lastSavedPageRef = useRef(initialPage);
@@ -41,8 +57,9 @@ export function PdfReader({
     return book?.annotations?.filter(a => a.type === 'highlight') || [];
   });
   const [showHighlightPanel, setShowHighlightPanel] = useState(false);
-  const [selectionPopup, setSelectionPopup] = useState<{ x: number; y: number; text: string; page: number } | null>(null);
+  const [selectionPopup, setSelectionPopup] = useState<SelectionData | null>(null);
   const highlightPanelRef = useRef<HTMLDivElement>(null);
+  const iframeDocRef = useRef<Document | null>(null);
 
   const bookFileName = fileName || state.books.find(b => b.id === bookId)?.fileName || 'document.pdf';
   const title = bookFileName.replace(/\.pdf$/i, '');
@@ -103,39 +120,56 @@ export function PdfReader({
     if (!el) return;
     const injectStyles = () => {
       el.injectViewerStyles?.(`
-        /* Improved text selection */
+        /* Selection styling */
         .textLayer ::selection {
-          background: rgba(0, 100, 200, 0.3) !important;
-          mix-blend-mode: multiply;
-        }
-        /* Highlight annotation colors */
-        .annotationLayer .highlightAnnotation {
-          mix-blend-mode: multiply;
-        }
-        /* Smooth text layer readability */
-        .textLayer {
-          opacity: 0.25;
-          transition: opacity 0.3s ease;
-        }
-        .textLayer:hover {
-          opacity: 0.6;
-        }
-        .textLayer span {
-          cursor: text;
+          background: rgba(66, 133, 244, 0.35) !important;
         }
         /* Custom highlight overlays */
-        .pdf-custom-highlight {
+        .pdf-highlight-overlay {
           position: absolute;
-          mix-blend-mode: multiply;
           pointer-events: none;
           border-radius: 2px;
           opacity: 0.4;
+          mix-blend-mode: multiply;
+          z-index: 1;
+        }
+        /* Hide the annotationLayer default highlights */
+        .annotationLayer .highlightAnnotation {
+          display: none !important;
         }
       `);
     };
     el.addEventListener('initialized', injectStyles, { once: true });
     return () => el.removeEventListener('initialized', injectStyles);
   }, []);
+
+  // Helper: render highlight overlays in the iframe
+  const renderHighlightOverlays = useCallback((iframeDoc: Document, highlightsToRender?: PdfAnnotation[]) => {
+    const toRender = highlightsToRender ?? highlights;
+    // Remove existing overlays
+    iframeDoc.querySelectorAll('.pdf-highlight-overlay').forEach(el => el.remove());
+    
+    // Add overlays for each highlight
+    toRender.forEach(h => {
+      if (!h.rects || h.rects.length === 0) return;
+      const pageEl = iframeDoc.querySelector(`.page[data-page-number="${h.page}"]`);
+      if (!pageEl) return;
+      
+      h.rects.forEach((rect) => {
+        const overlay = iframeDoc.createElement('div');
+        overlay.className = 'pdf-highlight-overlay';
+        overlay.dataset.highlightId = h.id;
+        overlay.style.cssText = `
+          left: ${rect.x}px;
+          top: ${rect.y}px;
+          width: ${rect.width}px;
+          height: ${rect.height}px;
+          background: ${h.color};
+        `;
+        pageEl.appendChild(overlay);
+      });
+    });
+  }, [highlights]);
 
   // Listen for text selection inside the PDF iframe
   useEffect(() => {
@@ -146,6 +180,10 @@ export function PdfReader({
       const iframe = el.querySelector?.('iframe') || el.shadowRoot?.querySelector?.('iframe');
       if (!iframe?.contentDocument) return;
       const iframeDoc = iframe.contentDocument;
+      iframeDocRef.current = iframeDoc;
+
+      // Render existing highlights
+      renderHighlightOverlays(iframeDoc);
 
       const handleMouseUp = () => {
         const sel = iframeDoc.getSelection?.();
@@ -156,65 +194,116 @@ export function PdfReader({
         const text = sel.toString().trim();
         if (!text) return;
 
-        // Get page number from the selection
+        // Get page element and page number
         const range = sel.getRangeAt(0);
-        const pageEl = range.startContainer?.parentElement?.closest?.('.page');
-        const pageNum = pageEl ? parseInt(pageEl.getAttribute('data-page-number') || '1') : 1;
+        const pageEl = range.startContainer?.parentElement?.closest?.('.page') as HTMLElement;
+        if (!pageEl) {
+          setSelectionPopup(null);
+          return;
+        }
+        const pageNum = parseInt(pageEl.getAttribute('data-page-number') || '1');
 
-        // Position popup near selection
-        const rect = range.getBoundingClientRect();
+        // Get rects relative to page
+        const pageRect = pageEl.getBoundingClientRect();
+        const clientRects = range.getClientRects();
+        const rects: HighlightRect[] = [];
+        
+        for (let i = 0; i < clientRects.length; i++) {
+          const r = clientRects[i];
+          // Only include rects within this page
+          if (r.width > 0 && r.height > 0) {
+            rects.push({
+              x: r.left - pageRect.left,
+              y: r.top - pageRect.top,
+              width: r.width,
+              height: r.height,
+            });
+          }
+        }
+
+        if (rects.length === 0) {
+          setSelectionPopup(null);
+          return;
+        }
+
+        // Position popup near selection (in viewport coords)
+        const firstRect = clientRects[0];
         const iframeRect = iframe.getBoundingClientRect();
+        
         setSelectionPopup({
-          x: iframeRect.left + rect.left + rect.width / 2,
-          y: iframeRect.top + rect.top - 40,
+          x: iframeRect.left + firstRect.left + firstRect.width / 2,
+          y: iframeRect.top + firstRect.top - 50,
           text: text.slice(0, 500),
           page: pageNum,
+          rects,
         });
       };
 
+      // Re-render highlights when pages change
+      const handlePageChange = () => {
+        setTimeout(() => renderHighlightOverlays(iframeDoc), 100);
+      };
+      
       iframeDoc.addEventListener('mouseup', handleMouseUp);
-      return () => iframeDoc.removeEventListener('mouseup', handleMouseUp);
+      iframeDoc.addEventListener('scroll', handlePageChange);
+      
+      return () => {
+        iframeDoc.removeEventListener('mouseup', handleMouseUp);
+        iframeDoc.removeEventListener('scroll', handlePageChange);
+      };
     };
 
     // Retry since iframe may not be ready immediately
     let cleanup: (() => void) | undefined;
     const timer = setTimeout(() => { cleanup = setupSelectionListener(); }, 1500);
     return () => { clearTimeout(timer); cleanup?.(); };
-  }, []);
+  }, [renderHighlightOverlays]);
 
   // Add a highlight from selection
-  const addHighlight = useCallback(() => {
+  const addHighlight = useCallback(async (color: string) => {
     if (!selectionPopup) return;
+    
     const newAnnotation: PdfAnnotation = {
       id: `hl-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
       page: selectionPopup.page,
       type: 'highlight',
-      color: highlightColor,
+      color: color,
       text: selectionPopup.text,
+      rects: selectionPopup.rects,
       createdAt: Date.now(),
     };
-    setHighlights(prev => {
-      const updated = [...prev, newAnnotation];
-      // Save to book annotations
-      const book = state.books.find(b => b.id === bookId);
-      if (book) {
-        dispatch({ type: 'UPDATE_BOOK', payload: { ...book, annotations: updated } });
+    
+    const book = state.books.find(b => b.id === bookId);
+    if (book) {
+      const updated = [...(book.annotations || []), newAnnotation];
+      const newHighlights = updated.filter(a => a.type === 'highlight');
+      setHighlights(newHighlights);
+      await updateBook({ ...book, annotations: updated, updatedAt: Date.now() });
+      
+      // Immediately render the new highlight, passing new highlights to avoid closure issues
+      if (iframeDocRef.current) {
+        iframeDocRef.current.getSelection?.()?.removeAllRanges();
+        renderHighlightOverlays(iframeDocRef.current, newHighlights);
       }
-      return updated;
-    });
+    }
+    
     setSelectionPopup(null);
-  }, [selectionPopup, highlightColor, bookId, state.books]);
+  }, [selectionPopup, bookId, state.books, updateBook, renderHighlightOverlays]);
 
-  const removeHighlight = useCallback((id: string) => {
-    setHighlights(prev => {
-      const updated = prev.filter(h => h.id !== id);
-      const book = state.books.find(b => b.id === bookId);
-      if (book) {
-        dispatch({ type: 'UPDATE_BOOK', payload: { ...book, annotations: updated } });
+  const removeHighlight = useCallback(async (id: string) => {
+    const book = state.books.find(b => b.id === bookId);
+    if (book) {
+      const updated = (book.annotations || []).filter(h => h.id !== id);
+      const newHighlights = updated.filter(a => a.type === 'highlight');
+      setHighlights(newHighlights);
+      await updateBook({ ...book, annotations: updated, updatedAt: Date.now() });
+      
+      // Re-render highlights, passing new highlights to avoid closure issues
+      if (iframeDocRef.current) {
+        renderHighlightOverlays(iframeDocRef.current, newHighlights);
       }
-      return updated;
-    });
-  }, [bookId, state.books]);
+    }
+  }, [bookId, state.books, updateBook, renderHighlightOverlays]);
 
   // Close panels on outside click
   useEffect(() => {
@@ -370,7 +459,7 @@ export function PdfReader({
               key={c.name}
               className="pdf-popup-color"
               style={{ background: c.value }}
-              onClick={() => { setHighlightColor(c.value); addHighlight(); }}
+              onClick={() => addHighlight(c.value)}
               title={c.name}
             />
           ))}

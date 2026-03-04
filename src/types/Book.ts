@@ -65,15 +65,33 @@ export type SortOption =
   | 'title_asc' 
   | 'author_asc' 
   | 'year_desc' 
-  | 'year_asc';
+  | 'year_asc'
+  | 'custom';
 
-export type Theme = 'light' | 'dark' | 'blue' | 'rose' | 'sketch';
+export type Theme = 
+  | 'light' 
+  | 'dark' 
+  | 'midnight'
+  | 'ocean' 
+  | 'forest' 
+  | 'sunset' 
+  | 'royal' 
+  | 'rosegold'
+  | 'slate'
+  | 'coffee'
+  | 'nord';
+
+export type SketchStyle = 'none' | 'hand-drawn';
+
+export type BookViewMode = 'grid' | 'list' | 'bookshelf';
 
 export interface GridSettings {
-  shelfSize: number;
+  shelfWidth: number;
+  shelfHeight: number;
   shelfPerRow: number;
   collectionSize: number;
   collectionPerRow: number;
+  viewMode: BookViewMode;
 }
 
 export interface Collection {
@@ -109,6 +127,8 @@ export interface ReaderSettings {
   libraryPath: string; // Folder where ebooks are stored, for system app opening
   pdfViewer: PdfReaderSettings;
   conversion: PdfConversionSettings;
+  uiFont: string;
+  sketchStyle: SketchStyle;
 }
 
 export interface ReadingBook {

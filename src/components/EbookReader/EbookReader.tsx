@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { jsPDF } from 'jspdf';
 import { useApp } from '../../context';
+import { ConvertModal } from '../ConvertModal';
 import './EbookReader.css';
 
 /* ------------------------------------------------------------------ */
@@ -55,6 +56,7 @@ function getFoliateCss(theme: ReaderTheme, fontSize: number) {
 export function EbookReader({ fileUrl, bookId, fileName, initialPage, initialCfi, onClose }: EbookReaderProps) {
   const { saveReadingProgress, state } = useApp();
   const isDjvu = /\.djvu$/i.test(fileName || '');
+  const currentBook = state.books.find(b => b.id === bookId);
 
   /* -- Common state -- */
   const [loading, setLoading] = useState(true);
@@ -64,6 +66,7 @@ export function EbookReader({ fileUrl, bookId, fileName, initialPage, initialCfi
   const [viewMode, setViewMode] = useState<ViewMode>('single');
   const [showSettings, setShowSettings] = useState(false);
   const [showToc, setShowToc] = useState(false);
+  const [showConvertModal, setShowConvertModal] = useState(false);
   const [exporting, setExporting] = useState(false);
 
   /* -- DJVU state -- */
@@ -471,6 +474,19 @@ export function EbookReader({ fileUrl, bookId, fileName, initialPage, initialCfi
             </button>
           )}
 
+          {/* Convert to PDF - for non-PDF formats */}
+          {currentBook && currentBook.format && currentBook.format !== 'pdf' && (
+            <button className="ebook-toolbar-btn" onClick={() => setShowConvertModal(true)} title="Convert to PDF" style={{ color: t.fg }}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" />
+                <polyline points="14 2 14 8 20 8" />
+                <line x1="16" y1="13" x2="8" y2="13" />
+                <line x1="16" y1="17" x2="8" y2="17" />
+                <polyline points="10 9 9 9 8 9" />
+              </svg>
+            </button>
+          )}
+
           {/* Settings */}
           <button className="ebook-toolbar-btn" onClick={() => { closeAllPanels(); setShowSettings(v => !v); }} title="Settings" style={{ color: t.fg }}>
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="3" /><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09a1.65 1.65 0 00-1.08-1.51 1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09a1.65 1.65 0 001.51-1.08 1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001.08 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1.08z" /></svg>
@@ -584,6 +600,14 @@ export function EbookReader({ fileUrl, bookId, fileName, initialPage, initialCfi
         {/* ---- Foliate container ---- */}
         {!isDjvu && <div ref={foliateContainerRef} className="ebook-foliate-container" style={{ display: loading || error ? 'none' : 'block' }} />}
       </div>
+
+      {/* Convert Modal */}
+      {showConvertModal && currentBook && (
+        <ConvertModal
+          book={currentBook}
+          onClose={() => setShowConvertModal(false)}
+        />
+      )}
     </div>
   );
 }

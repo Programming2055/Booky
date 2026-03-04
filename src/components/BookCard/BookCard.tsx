@@ -2,7 +2,6 @@ import { useMemo, useState, useRef, useEffect } from 'react';
 import type { Book } from '../../types';
 import { openPdf, verifyFilePermission, downloadFile, openFileViaPythonServer, isPythonServerRunning } from '../../services';
 import { useApp } from '../../context';
-import { ConvertModal } from '../ConvertModal';
 import './BookCard.css';
 
 interface BookCardProps {
@@ -28,7 +27,6 @@ export function BookCard({
 }: BookCardProps) {
   const { state, dispatch } = useApp();
   const [showCollectionMenu, setShowCollectionMenu] = useState(false);
-  const [showConvertModal, setShowConvertModal] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const coverUrl = useMemo(() => {
     if (!book.coverBytes) return null;
@@ -162,93 +160,77 @@ export function BookCard({
         </button>
       </div>
 
-      <div className="book-card__body">
+      <div className="book-card__info">
         <h3 className="book-card__title">{book.title || 'Untitled'}</h3>
-        <p className="book-card__meta">
-          {book.author || 'Unknown'}
-          {book.year && ` • ${book.year}`}
-          {book.language && ` • ${book.language}`}
-        </p>
-
-        {book.tags.length > 0 && (
-          <div className="book-card__tags">
-            {book.tags.slice(0, 4).map((tag) => (
-              <span key={tag} className="book-card__tag">
-                {tag}
-              </span>
-            ))}
-          </div>
-        )}
-
-        <div className="book-card__actions">
-          <button className="btn btn--primary btn--sm" onClick={handleOpen}>
-            Open
-          </button>
-          <button className="btn btn--ghost btn--sm" onClick={() => onEdit(book)}>
-            Edit
-          </button>
-          {book.format && book.format !== 'pdf' && (
-            <button 
-              className="btn btn--ghost btn--sm" 
-              onClick={() => setShowConvertModal(true)}
-              title="Convert to PDF"
-            >
-              → PDF
-            </button>
-          )}
-          <div className="book-card__collection-wrapper" ref={menuRef}>
-            <button
-              className="btn btn--ghost btn--sm"
-              onClick={() => setShowCollectionMenu(!showCollectionMenu)}
-              title="Add to collection"
-            >
-              + Col
-            </button>
-            {showCollectionMenu && (
-              <div className="book-card__collection-menu">
-                <div className="book-card__collection-menu-header">Add to Collection</div>
-                {allCollections.filter(c => !book.collections.includes(c)).map((col) => (
-                  <button
-                    key={col}
-                    className="book-card__collection-menu-item"
-                    onClick={() => {
-                      onAddToCollection(book.id, col);
-                      setShowCollectionMenu(false);
-                    }}
-                  >
-                    {col}
-                  </button>
-                ))}
-                <button
-                  className="book-card__collection-menu-item book-card__collection-menu-item--new"
-                  onClick={handleAddToNewCollection}
-                >
-                  + New Collection
-                </button>
-              </div>
-            )}
-          </div>
-          <button className="btn btn--ghost btn--sm" onClick={() => onToggleReadLater(book)}>
-            {book.readLater ? '✓ Later' : 'Later'}
-          </button>
-          {activeCollection && (
-            <button
-              className="btn btn--ghost btn--sm"
-              onClick={handleRemoveFromCollection}
-            >
-              Remove
-            </button>
-          )}
-        </div>
       </div>
 
-      {showConvertModal && (
-        <ConvertModal
-          book={book}
-          settings={state.readerSettings.conversion}
-          onClose={() => setShowConvertModal(false)}
-        />
-      )}
+      {/* Side action buttons - appear on hover */}
+      <div className="book-card__side-actions">
+        <button
+          className="book-card__side-btn book-card__side-btn--primary"
+          onClick={handleOpen}
+          title="Open"
+        >
+          ▶
+        </button>
+        <button
+          className="book-card__side-btn"
+          onClick={() => onEdit(book)}
+          title="Edit"
+        >
+          ✎
+        </button>
+        <div className="book-card__collection-wrapper" ref={menuRef}>
+          <button
+            className="book-card__side-btn"
+            onClick={() => setShowCollectionMenu(!showCollectionMenu)}
+            title="Add to collection"
+          >
+            +
+          </button>
+          {showCollectionMenu && (
+            <div className="book-card__collection-menu">
+              <div className="book-card__collection-menu-header">Add to Collection</div>
+              {allCollections.filter(c => !book.collections.includes(c)).map((col) => (
+                <button
+                  key={col}
+                  className="book-card__collection-menu-item"
+                  onClick={() => {
+                    onAddToCollection(book.id, col);
+                    setShowCollectionMenu(false);
+                  }}
+                >
+                  {col}
+                </button>
+              ))}
+              <button
+                className="book-card__collection-menu-item book-card__collection-menu-item--new"
+                onClick={handleAddToNewCollection}
+              >
+                + New Collection
+              </button>
+            </div>
+          )}
+        </div>
+        <button
+          className="book-card__side-btn"
+          onClick={() => onToggleReadLater(book)}
+          title={book.readLater ? 'Remove from Read Later' : 'Read Later'}
+        >
+          {book.readLater ? '★' : '☆'}
+        </button>
+
+        {activeCollection && (
+          <button
+            className="book-card__side-btn book-card__side-btn--danger"
+            onClick={handleRemoveFromCollection}
+            title={`Remove from ${activeCollection}`}
+          >
+            ✕
+          </button>
+        )}
+      </div>
+
     </article>
   );
 }

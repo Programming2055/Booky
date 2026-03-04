@@ -19,9 +19,10 @@
   background: var(--modal-bg);
   border: 1px solid var(--border);
   border-radius: 16px;
-  width: 90%;
-  max-width: 600px;
-  max-height: 85vh;
+  width: 98%;
+  max-width: 1100px;
+  min-height: 600px;
+  max-height: 95vh;
   overflow-y: auto;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
 }
@@ -91,11 +92,17 @@
 }
 
 .convert-modal__body {
-  padding: 16px 24px;
+  padding: 32px 40px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 24px;
 }
 
 .convert-modal__section {
-  margin-bottom: 20px;
+  padding: 24px;
+  background: var(--surface-alt);
+  border-radius: 12px;
+  height: fit-content;
 }
 
 .convert-modal__section-title {
@@ -108,14 +115,13 @@
 }
 
 .convert-modal__row {
-  display: flex;
-  gap: 16px;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
 }
 
 .convert-modal__field {
-  flex: 1;
-  min-width: 140px;
+  min-width: 0;
 }
 
 .convert-modal__label {
@@ -132,7 +138,7 @@
   padding: 8px 12px;
   border: 1px solid var(--border);
   border-radius: 8px;
-  background: var(--surface-alt);
+  background: var(--input-bg);
   color: var(--text);
   font-size: 0.9rem;
 }
@@ -145,18 +151,19 @@
 
 .convert-modal__btn-group {
   display: flex;
-  gap: 4px;
+  gap: 0;
 }
 
 .convert-modal__btn {
   flex: 1;
   padding: 8px 12px;
   border: 1px solid var(--border);
-  background: var(--surface-alt);
+  background: var(--surface);
   color: var(--text);
   font-size: 0.85rem;
   cursor: pointer;
   transition: all 0.15s ease;
+  font-weight: 500;
 }
 
 .convert-modal__btn:first-child {
@@ -167,14 +174,16 @@
   border-radius: 0 8px 8px 0;
 }
 
-.convert-modal__btn:hover {
+.convert-modal__btn:not(.convert-modal__btn--active):hover {
   background: var(--surface-hover);
+  border-color: var(--accent);
+  color: var(--accent);
 }
 
 .convert-modal__btn--active {
-  background: var(--accent);
-  border-color: var(--accent);
-  color: white;
+  background: var(--accent) !important;
+  border-color: var(--accent) !important;
+  color: white !important;
 }
 
 .convert-modal__margins {
@@ -198,6 +207,16 @@
   width: 100%;
   padding: 6px 8px;
   text-align: center;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--input-bg);
+  color: var(--text);
+  font-size: 0.85rem;
+}
+
+.convert-modal__margin-field input:focus {
+  outline: none;
+  border-color: var(--accent);
 }
 
 .convert-modal__checkboxes {

@@ -1,6 +1,6 @@
-# Bookshelf React
+# Booky 📚
 
-A React-based ebook library manager with support for multiple ebook formats.
+A modern React-based ebook library manager with support for multiple ebook formats.
 
 ## Features
 

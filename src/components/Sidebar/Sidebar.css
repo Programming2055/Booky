@@ -53,7 +53,7 @@
 }
 
 .sidebar__shelf-btn svg {
-  color: var(--accent);
+  color: var(--accent) !important;
   transition: transform 0.2s ease;
 }
 
@@ -65,12 +65,13 @@
 
 .sidebar__shelf-btn:hover svg {
   transform: scale(1.1);
+  color: var(--accent) !important;
 }
 
 .sidebar__shelf-btn--active {
   background: var(--accent-bg);
   border-color: var(--accent);
-  color: var(--accent);
+  color: var(--accent) !important;
 }
 
 .sidebar__slider-row {
@@ -85,18 +86,22 @@
   justify-content: center;
   width: 26px;
   height: 26px;
-  background: var(--surface-alt);
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  color: var(--text-muted);
+  background: var(--surface-alt) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: 6px !important;
+  color: var(--text-muted) !important;
   cursor: pointer;
   transition: all 0.15s ease;
 }
 
 .sidebar__slider-btn:hover {
-  background: var(--surface-hover);
-  border-color: var(--accent);
-  color: var(--accent);
+  background: var(--surface-hover) !important;
+  border-color: var(--accent) !important;
+  color: var(--accent) !important;
+}
+
+.sidebar__slider-btn svg {
+  color: inherit !important;
 }
 
 .sidebar--hidden {

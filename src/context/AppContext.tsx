@@ -60,13 +60,15 @@ const initialState: AppState = {
   theme: 'light',
   panelVisible: true,
   gridSettings: {
-    shelfSize: 200,
-    shelfPerRow: 0, // 0 = auto
+    shelfWidth: 120,
+    shelfHeight: 350,
+    shelfPerRow: 4,
     collectionSize: 160,
-    collectionPerRow: 0,
+    collectionPerRow: 4,
+    viewMode: 'grid',
   },
   readerSettings: {
-    pdf: 'browser',
+    pdf: 'builtin',
     libraryPath: '',
     pdfViewer: {
       zoom: 1,
@@ -86,6 +88,8 @@ const initialState: AppState = {
       includeImages: true,
       includeToc: true,
     },
+    uiFont: 'system-ui',
+    sketchStyle: 'none',
   },
   pageSize: 24,
   currentPage: 1,
@@ -209,7 +213,14 @@ export function AppProvider({ children }: { children: ReactNode }) {
     if (prefs.theme) dispatch({ type: 'SET_THEME', payload: prefs.theme });
     if (prefs.panelVisible !== undefined && !prefs.panelVisible) dispatch({ type: 'TOGGLE_PANEL' });
     if (prefs.gridSettings) dispatch({ type: 'SET_GRID_SETTINGS', payload: prefs.gridSettings });
-    if (prefs.readerSettings) dispatch({ type: 'SET_READER_SETTINGS', payload: prefs.readerSettings });
+    if (prefs.readerSettings) {
+      // Sanitize legacy sketch styles that have been removed
+      const validSketchStyles = ['none', 'hand-drawn'];
+      if (prefs.readerSettings.sketchStyle && !validSketchStyles.includes(prefs.readerSettings.sketchStyle)) {
+        prefs.readerSettings.sketchStyle = 'none';
+      }
+      dispatch({ type: 'SET_READER_SETTINGS', payload: prefs.readerSettings });
+    }
     if (prefs.pageSize) dispatch({ type: 'SET_PAGE_SIZE', payload: prefs.pageSize });
     
     // Load collections from localStorage
@@ -243,9 +254,27 @@ export function AppProvider({ children }: { children: ReactNode }) {
     document.documentElement.setAttribute('data-theme', state.theme);
   }, [state.theme]);
 
+  // Apply sketch style overlay
+  useEffect(() => {
+    const validSketchStyles = ['none', 'hand-drawn'];
+    const sketchStyle = state.readerSettings.sketchStyle || 'none';
+    if (sketchStyle !== 'none' && validSketchStyles.includes(sketchStyle)) {
+      document.documentElement.setAttribute('data-sketch', sketchStyle);
+    } else {
+      document.documentElement.removeAttribute('data-sketch');
+    }
+  }, [state.readerSettings.sketchStyle]);
+
+  // Apply UI font
+  useEffect(() => {
+    const font = state.readerSettings.uiFont || 'system-ui';
+    document.documentElement.style.setProperty('--ui-font', font);
+  }, [state.readerSettings.uiFont]);
+
   // Apply grid size
   useEffect(() => {
-    document.documentElement.style.setProperty('--shelf-card-width', `${state.gridSettings.shelfSize}px`);
+    document.documentElement.style.setProperty('--shelf-card-width', `${state.gridSettings.shelfWidth}px`);
+    document.documentElement.style.setProperty('--shelf-card-height', `${state.gridSettings.shelfHeight}px`);
     document.documentElement.style.setProperty('--collection-card-width', `${state.gridSettings.collectionSize}px`);
   }, [state.gridSettings]);
 

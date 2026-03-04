@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <defs>
+    <linearGradient id="bookGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#6366f1"/>
+      <stop offset="100%" style="stop-color:#8b5cf6"/>
+    </linearGradient>
+    <linearGradient id="pageGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#fef3c7"/>
+      <stop offset="100%" style="stop-color:#fde68a"/>
+    </linearGradient>
+  </defs>
+  <!-- Book spine/back -->
+  <rect x="15" y="12" width="70" height="76" rx="4" fill="url(#bookGrad)" />
+  <!-- Pages -->
+  <rect x="22" y="16" width="58" height="68" rx="2" fill="url(#pageGrad)" />
+  <!-- Page lines -->
+  <line x1="28" y1="28" x2="68" y2="28" stroke="#d4a373" stroke-width="2" stroke-linecap="round"/>
+  <line x1="28" y1="38" x2="72" y2="38" stroke="#d4a373" stroke-width="2" stroke-linecap="round"/>
+  <line x1="28" y1="48" x2="65" y2="48" stroke="#d4a373" stroke-width="2" stroke-linecap="round"/>
+  <line x1="28" y1="58" x2="70" y2="58" stroke="#d4a373" stroke-width="2" stroke-linecap="round"/>
+  <line x1="28" y1="68" x2="55" y2="68" stroke="#d4a373" stroke-width="2" stroke-linecap="round"/>
+  <!-- Bookmark ribbon -->
+  <path d="M62 12 L62 35 L67 28 L72 35 L72 12" fill="#ef4444"/>
+  <!-- Book cover edge highlight -->
+  <rect x="15" y="12" width="5" height="76" rx="2" fill="#4f46e5" opacity="0.5"/>
+</svg>

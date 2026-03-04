@@ -107,7 +107,7 @@ export function Sidebar() {
               className="sidebar__slider-btn"
               onClick={() => dispatch({
                 type: 'SET_GRID_SETTINGS',
-                payload: { shelfSize: Math.max(140, state.gridSettings.shelfSize - 20) },
+                payload: { shelfWidth: Math.max(120, state.gridSettings.shelfWidth - 20) },
               })}
             >
               {icons.minus}
@@ -115,14 +115,14 @@ export function Sidebar() {
             <input
               type="range"
               className="sidebar__range"
-              min="140"
-              max="300"
+              min="120"
+              max="280"
               step="10"
-              value={state.gridSettings.shelfSize}
+              value={state.gridSettings.shelfWidth}
               onChange={(e) =>
                 dispatch({
                   type: 'SET_GRID_SETTINGS',
-                  payload: { shelfSize: Number(e.target.value) },
+                  payload: { shelfWidth: Number(e.target.value) },
                 })
               }
             />
@@ -130,13 +130,13 @@ export function Sidebar() {
               className="sidebar__slider-btn"
               onClick={() => dispatch({
                 type: 'SET_GRID_SETTINGS',
-                payload: { shelfSize: Math.min(300, state.gridSettings.shelfSize + 20) },
+                payload: { shelfWidth: Math.min(280, state.gridSettings.shelfWidth + 20) },
               })}
             >
               {icons.plus}
             </button>
           </div>
-          <span className="sidebar__hint">{state.gridSettings.shelfSize}px</span>
+          <span className="sidebar__hint">{state.gridSettings.shelfWidth}px</span>
         </div>
 
         <div className="sidebar__section">
@@ -149,6 +149,7 @@ export function Sidebar() {
             value={state.sort}
             onChange={(e) => dispatch({ type: 'SET_SORT', payload: e.target.value as SortOption })}
           >
+            <option value="custom">Custom Order</option>
             <option value="updated_desc">Recently Updated</option>
             <option value="title_asc">Title (A→Z)</option>
             <option value="author_asc">Author (A→Z)</option>

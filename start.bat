@@ -1,7 +1,7 @@
 @echo off
-title Bookshelf App
+title Booky App
 echo ================================
-echo      Bookshelf App Starter
+echo        Booky App Starter
 echo ================================
 echo.
 

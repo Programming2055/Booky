@@ -1,8 +1,8 @@
-# Bookshelf App Startup Script
+# Booky App Startup Script
 # Starts both React dev server and Python ebook server
 
 Write-Host "================================" -ForegroundColor Cyan
-Write-Host "     Bookshelf App Starter      " -ForegroundColor Cyan
+Write-Host "       Booky App Starter        " -ForegroundColor Cyan
 Write-Host "================================" -ForegroundColor Cyan
 Write-Host ""
 

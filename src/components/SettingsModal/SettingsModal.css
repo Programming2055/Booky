@@ -44,18 +44,19 @@
 .settings-modal__close {
   width: 36px;
   height: 36px;
-  border: none;
-  background: var(--surface-alt);
-  border-radius: 10px;
+  border: 2px solid var(--border) !important;
+  background: var(--surface-alt) !important;
+  border-radius: 10px !important;
   cursor: pointer;
   font-size: 1.2rem;
-  color: var(--text-muted);
+  color: var(--text-muted) !important;
   transition: all 0.15s ease;
 }
 
 .settings-modal__close:hover {
-  background: var(--surface-hover);
-  color: var(--text);
+  background: var(--danger) !important;
+  border-color: var(--danger) !important;
+  color: white !important;
 }
 
 .settings-modal__section {
@@ -142,24 +143,25 @@
 .settings-modal__themes {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 10px;
+  gap: 8px;
 }
 
 .settings-modal__theme-btn {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 8px;
-  padding: 12px;
+  gap: 6px;
+  padding: 8px;
   background: var(--surface-alt);
   border: 2px solid var(--border);
-  border-radius: 12px;
+  border-radius: 10px;
   cursor: pointer;
   transition: all 0.15s ease;
 }
 
 .settings-modal__theme-btn:hover {
   border-color: var(--border-hover);
+  transform: translateY(-1px);
 }
 
 .settings-modal__theme-btn--active {
@@ -168,16 +170,61 @@
 }
 
 .settings-modal__theme-preview {
-  width: 40px;
-  height: 40px;
-  border-radius: 8px;
+  width: 100%;
+  height: 28px;
+  border-radius: 6px;
+  overflow: hidden;
   border: 1px solid rgba(0, 0, 0, 0.1);
 }
 
+.settings-modal__theme-colors {
+  display: flex;
+  height: 100%;
+}
+
+.settings-modal__theme-colors > div {
+  flex: 1;
+}
+
 .settings-modal__theme-name {
-  font-size: 0.75rem;
+  font-size: 0.7rem;
   font-weight: 500;
   color: var(--text);
+}
+
+/* Sketch Style Picker */
+.settings-modal__sketch-styles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.settings-modal__sketch-btn {
+  padding: 8px 14px;
+  background: var(--surface-alt);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text);
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.settings-modal__sketch-btn:hover {
+  border-color: var(--border-hover);
+  background: var(--surface-hover);
+}
+
+.settings-modal__sketch-btn--active {
+  background: var(--accent) !important;
+  border-color: var(--accent) !important;
+  color: white !important;
+}
+
+.settings-modal__hint-inline {
+  font-size: 0.7rem;
+  font-weight: 400;
+  color: var(--text-muted);
 }
 
 /* Per Row Options */
@@ -203,9 +250,9 @@
 }
 
 .settings-modal__row-btn--active {
-  background: var(--accent);
-  border-color: var(--accent);
-  color: white;
+  background: var(--accent) !important;
+  border-color: var(--accent) !important;
+  color: white !important;
 }
 
 /* Hint Text */
@@ -271,9 +318,9 @@
 }
 
 .settings-modal__reader-btn--active {
-  background: var(--accent);
-  border-color: var(--accent);
-  color: white;
+  background: var(--accent) !important;
+  border-color: var(--accent) !important;
+  color: white !important;
 }
 
 /* Footer */
@@ -353,4 +400,46 @@
 .settings-modal__color-btn--active {
   border-color: var(--text);
   box-shadow: 0 0 0 2px var(--modal-bg), 0 0 0 4px var(--text);
+}
+
+/* View Mode Settings */
+.settings-modal__view-modes {
+  display: flex;
+  gap: 8px;
+}
+
+.settings-modal__view-btn {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 12px;
+  border: 2px solid var(--border) !important;
+  background: var(--surface) !important;
+  border-radius: 12px !important;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  color: var(--text) !important;
+}
+
+.settings-modal__view-btn:hover {
+  border-color: var(--accent) !important;
+  background: var(--surface-alt) !important;
+}
+
+.settings-modal__view-btn--active {
+  border-color: var(--accent) !important;
+  background: var(--accent) !important;
+  color: white !important;
+}
+
+.settings-modal__view-icon {
+  font-size: 1.5rem;
+  color: inherit;
+}
+
+.settings-modal__view-label {
+  font-size: 0.8rem;
+  font-weight: 500;
 }
