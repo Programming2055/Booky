@@ -1,84 +1,201 @@
-# Booky 📚
+<div align="center">
 
-A modern React-based ebook library manager with support for multiple ebook formats.
+# 📚 Booky
 
-## Features
+### Your Personal eBook Library Manager
 
-- **Multi-format support**: PDF, EPUB, MOBI, FB2, CBZ, AZW3, DJVU
-- **Cover generation**: Automatic cover extraction from PDFs
-- **Collections**: Organize books into custom collections
-- **Built-in reader**: Read EPUB, MOBI, FB2, CBZ directly in the browser (powered by foliate-js)
-- **System app integration**: Open DJVU/PDF with your system's default apps via Python server
+[![React](https://img.shields.io/badge/React-19-61DAFB?style=for-the-badge&logo=react&logoColor=white)](https://react.dev/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.7-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![Vite](https://img.shields.io/badge/Vite-8-646CFF?style=for-the-badge&logo=vite&logoColor=white)](https://vitejs.dev/)
+[![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)](LICENSE)
 
-## Getting Started
+**A beautiful, modern ebook library manager with built-in readers, PDF tools, and support for 7+ formats.**
+
+[Features](#-features) • [Demo](#-demo) • [Installation](#-installation) • [Usage](#-usage) • [Screenshots](#-screenshots)
+
+---
+
+</div>
+
+## ✨ Features
+
+<table>
+<tr>
+<td width="50%">
+
+### 📖 Multi-Format Support
+- **PDF** - Full-featured reader with highlights
+- **EPUB** - Beautiful reflowable text
+- **MOBI** - Kindle format support
+- **FB2** - Fiction Book format
+- **CBZ** - Comic book archives
+- **AZW3** - Amazon Kindle format
+- **DJVU** - Scanned documents
+
+</td>
+<td width="50%">
+
+### 🎨 Beautiful Interface
+- **Multiple Themes** - Light, Dark, Sepia, Nord, Dracula
+- **View Modes** - Grid, List, Compact views
+- **Sketch Styles** - Hand-drawn book covers
+- **Responsive Design** - Works on any screen size
+- **Smooth Animations** - Polished user experience
+
+</td>
+</tr>
+<tr>
+<td width="50%">
+
+### 📂 Library Organization
+- **Collections** - Create custom book collections
+- **Search** - Find books instantly
+- **Metadata Editing** - Update book info
+- **Auto Cover Extraction** - From PDFs automatically
+- **Reading Progress** - Track where you left off
+
+</td>
+<td width="50%">
+
+### 🛠️ PDF Power Tools
+- **Compress** - Reduce file size
+- **Rotate** - Rotate pages
+- **Extract Pages** - Split PDFs
+- **OCR** - Make searchable
+- **Watermark** - Add text overlays
+- **Convert to Images** - Export as PNG/JPEG
+
+</td>
+</tr>
+</table>
+
+---
+
+## 🎬 Demo
+
+> **Coming Soon!** A live demo will be available at GitHub Pages.
+
+To try Booky locally:
+
+```bash
+git clone https://github.com/Programming2055/Booky.git
+cd Booky
+npm install
+npm start
+```
+
+---
+
+## 📸 Screenshots
+
+<div align="center">
+
+| Library View | PDF Reader |
+|:---:|:---:|
+| ![Library](https://via.placeholder.com/400x250/1a1a2e/eee?text=Library+View) | ![Reader](https://via.placeholder.com/400x250/2d2d2d/eee?text=PDF+Reader) |
+
+| EPUB Reader | Collections |
+|:---:|:---:|
+| ![EPUB](https://via.placeholder.com/400x250/f8f4e8/333?text=EPUB+Reader) | ![Collections](https://via.placeholder.com/400x250/1a1a2e/eee?text=Collections) |
+
+</div>
+
+---
+
+## 🚀 Installation
 
 ### Prerequisites
 
-- Node.js 18+
-- Python 3.8+ (optional, for DJVU and PDF "System App" mode)
-- Flask (`pip install flask flask-cors`)
+- **Node.js 18+** - [Download](https://nodejs.org/)
+- **Python 3.8+** *(optional)* - For DJVU/PDF system app integration
 
-### Installation
+### Quick Start
 
 ```bash
+# Clone the repository
+git clone https://github.com/Programming2055/Booky.git
+cd Booky
+
+# Install dependencies
 npm install
-pip install flask flask-cors  # optional, for system app integration
-```
 
-### Running the App
+# Optional: Install Python dependencies for system app integration
+pip install flask flask-cors
 
-**Option 1: One command (recommended)**
-```bash
+# Start the app
 npm start
 ```
-Or double-click `start.bat` (Windows)
 
-This starts both the React dev server and Python server together.
+### Windows Users
+Simply double-click `start.bat` to launch everything!
 
-**Option 2: Separate terminals**
-```bash
-# Terminal 1 - React app
-npm run dev
+---
 
-# Terminal 2 - Python server (optional)
-python server/ebook_server.py
-```
+## 📖 Usage
 
-## Reader Support
+### Adding Books
 
-| Format | Reader |
-|--------|--------|
-| PDF    | Browser tab or System app |
-| EPUB   | Built-in reader (foliate-js) |
-| MOBI   | Built-in reader (foliate-js) |
-| FB2    | Built-in reader (foliate-js) |
-| CBZ    | Built-in reader (foliate-js) |
-| AZW3   | Built-in reader (foliate-js) |
-| DJVU   | System app (via Python server) |
+1. Click the **+ Add Book** button in the header
+2. Select your ebook files (PDF, EPUB, MOBI, etc.)
+3. Books are automatically added with cover extraction
 
-## PDF Tools (Stirling-PDF Integration)
+### Reading Books
 
-The app includes integration with [Stirling-PDF](https://github.com/Stirling-Tools/Stirling-PDF) for advanced PDF manipulation features:
+- **Click** any book cover to open in the built-in reader
+- Use **arrow keys** or click edges to navigate pages
+- Press **Escape** to close the reader
 
-- **Compress** - Reduce PDF file size
-- **Rotate** - Rotate pages 90°, 180°, 270°
-- **Extract Pages** - Extract specific pages from PDF
-- **OCR** - Make scanned PDFs searchable
-- **Add Watermark** - Add text watermark to pages
-- **Add Page Numbers** - Number all pages
-- **Remove Blank Pages** - Clean up documents
-- **Repair PDF** - Fix corrupted PDFs
-- **Flatten** - Remove interactive elements
-- **Convert to Images** - Export pages as PNG/JPEG
+### Organizing Collections
 
-### Setup Stirling-PDF
+1. Click **+ New Collection** in the sidebar
+2. Drag and drop books into collections
+3. Right-click collections to rename or delete
 
-**Using Docker (recommended):**
+### Using PDF Tools
+
+1. Open any PDF in the reader
+2. Click the **🔧 Tools** button in the toolbar
+3. Select a tool (requires [Stirling-PDF](#pdf-tools-setup))
+
+---
+
+## ⌨️ Keyboard Shortcuts
+
+| Shortcut | Action |
+|----------|--------|
+| `←` / `→` | Previous / Next page |
+| `Escape` | Close reader |
+| `+` / `-` | Zoom in / out |
+| `Ctrl + F` | Search in book |
+
+---
+
+## 📋 Format Support
+
+| Format | Built-in Reader | System App | Notes |
+|--------|:---------------:|:----------:|-------|
+| PDF | ✅ | ✅ | Full highlights & annotations |
+| EPUB | ✅ | - | Reflowable text, TOC support |
+| MOBI | ✅ | - | Kindle format |
+| FB2 | ✅ | - | Fiction Book format |
+| CBZ | ✅ | - | Comic book archive |
+| AZW3 | ✅ | - | Amazon Kindle |
+| DJVU | ✅ | ✅ | Export to PDF available |
+
+---
+
+## 🔧 PDF Tools Setup
+
+Booky integrates with [Stirling-PDF](https://github.com/Stirling-Tools/Stirling-PDF) for advanced PDF operations.
+
+### Using Docker (Recommended)
+
 ```bash
 docker run -d -p 8080:8080 --name stirling-pdf frooodle/s-pdf:latest
 ```
 
-**Using Docker Compose:**
+### Using Docker Compose
+
 ```yaml
 services:
   stirling-pdf:
@@ -88,82 +205,95 @@ services:
     restart: unless-stopped
 ```
 
-Once running, click the **🔧 Tools** button in the PDF reader to access all manipulation features.
-
-> **Note:** Stirling-PDF runs as a separate service. If it's not running, the Tools panel will show instructions to start it.
+Once running, the **🔧 Tools** button in the PDF reader will be active!
 
 ---
 
-## React + TypeScript + Vite
+## 🏗️ Tech Stack
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+<div align="center">
 
-Currently, two official plugins are available:
+| Technology | Purpose |
+|------------|---------|
+| ![React](https://img.shields.io/badge/React_19-61DAFB?style=flat-square&logo=react&logoColor=black) | UI Framework |
+| ![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=flat-square&logo=typescript&logoColor=white) | Type Safety |
+| ![Vite](https://img.shields.io/badge/Vite-646CFF?style=flat-square&logo=vite&logoColor=white) | Build Tool |
+| ![IndexedDB](https://img.shields.io/badge/IndexedDB-FF6F00?style=flat-square&logo=databricks&logoColor=white) | Local Storage |
+| ![PDF.js](https://img.shields.io/badge/PDF.js-FF0000?style=flat-square&logo=adobe&logoColor=white) | PDF Rendering |
+| ![Foliate-js](https://img.shields.io/badge/Foliate--js-4CAF50?style=flat-square&logo=bookstack&logoColor=white) | EPUB/MOBI Reader |
+| ![Flask](https://img.shields.io/badge/Flask-000000?style=flat-square&logo=flask&logoColor=white) | Python Server |
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+</div>
 
-## React Compiler
+---
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## 📁 Project Structure
 
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```
+booky/
+├── 📂 public/
+│   ├── 📂 foliate-js/      # EPUB/MOBI reader engine
+│   ├── djvu.js             # DJVU support
+│   └── booky-icon.svg      # App icon
+├── 📂 server/
+│   └── ebook_server.py     # Python server for system apps
+├── 📂 src/
+│   ├── 📂 components/
+│   │   ├── BookCard/       # Book cover cards
+│   │   ├── BookGrid/       # Library grid view
+│   │   ├── EbookReader/    # EPUB/MOBI/FB2 reader
+│   │   ├── PdfReader/      # PDF reader with highlights
+│   │   ├── PdfTools/       # Stirling-PDF integration
+│   │   ├── CollectionTree/ # Sidebar collections
+│   │   └── ...
+│   ├── 📂 context/         # React context (state)
+│   ├── 📂 services/        # IndexedDB, API services
+│   └── 📂 types/           # TypeScript definitions
+├── package.json
+└── README.md
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+---
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## 🤝 Contributing
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+Contributions are welcome! Here's how you can help:
+
+1. **Fork** the repository
+2. **Create** a feature branch (`git checkout -b feature/amazing-feature`)
+3. **Commit** your changes (`git commit -m 'Add amazing feature'`)
+4. **Push** to the branch (`git push origin feature/amazing-feature`)
+5. **Open** a Pull Request
+
+### Ideas for Contributions
+
+- [ ] Cloud sync support
+- [ ] Book recommendations
+- [ ] Reading statistics
+- [ ] Annotation export
+- [ ] More themes
+
+---
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+---
+
+## 🙏 Acknowledgments
+
+- [Foliate-js](https://github.com/johnfactotum/foliate-js) - EPUB rendering engine
+- [PDF.js](https://github.com/nicholasweston/pdf-viewer-reactjs) - PDF rendering
+- [Stirling-PDF](https://github.com/Stirling-Tools/Stirling-PDF) - PDF tools
+- [DjVu.js](https://djvu.js.org/) - DJVU support
+
+---
+
+<div align="center">
+
+**Made with ❤️ for book lovers**
+
+⭐ Star this repo if you find it useful!
+
+</div>
