@@ -92,16 +92,24 @@ npm start
 
 <div align="center">
 
-### Library View
+### 📚 Library View
 *Organize your ebooks with beautiful cover displays, multiple themes, and collection management.*
 
-### PDF Reader  
-*Full-featured PDF reader with highlights, annotations, zoom, and page navigation.*
+![Library View](screenshots/library.png)
 
-### EPUB Reader
-*Clean, distraction-free reading with adjustable fonts, themes, and progress tracking.*
+---
 
-> 📷 *Screenshots coming soon! Try the [live demo](https://programming2055.github.io/Booky/) to see Booky in action.*
+### 📖 Reader View
+*Full-featured reader with highlights, annotations, zoom, and page navigation.*
+
+![Reader View](screenshots/reader.png)
+
+---
+
+### 📂 Collections
+*Create custom collections and organize your library your way.*
+
+![Collections](screenshots/collections.png)
 
 </div>
 
