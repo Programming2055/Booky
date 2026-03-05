@@ -73,9 +73,11 @@
 
 ## 🎬 Demo
 
-> **Coming Soon!** A live demo will be available at GitHub Pages.
+### 🌐 [**Live Demo →**](https://programming2055.github.io/Booky/)
 
-To try Booky locally:
+> **Note:** The demo runs entirely in your browser. Add some ebooks to try it out!
+
+### Run Locally
 
 ```bash
 git clone https://github.com/Programming2055/Booky.git
@@ -90,13 +92,16 @@ npm start
 
 <div align="center">
 
-| Library View | PDF Reader |
-|:---:|:---:|
-| ![Library](https://via.placeholder.com/400x250/1a1a2e/eee?text=Library+View) | ![Reader](https://via.placeholder.com/400x250/2d2d2d/eee?text=PDF+Reader) |
+### Library View
+*Organize your ebooks with beautiful cover displays, multiple themes, and collection management.*
 
-| EPUB Reader | Collections |
-|:---:|:---:|
-| ![EPUB](https://via.placeholder.com/400x250/f8f4e8/333?text=EPUB+Reader) | ![Collections](https://via.placeholder.com/400x250/1a1a2e/eee?text=Collections) |
+### PDF Reader  
+*Full-featured PDF reader with highlights, annotations, zoom, and page navigation.*
+
+### EPUB Reader
+*Clean, distraction-free reading with adjustable fonts, themes, and progress tracking.*
+
+> 📷 *Screenshots coming soon! Try the [live demo](https://programming2055.github.io/Booky/) to see Booky in action.*
 
 </div>
 
