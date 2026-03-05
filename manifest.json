@@ -1,0 +1,22 @@
+{
+  "name": "Booky - eBook Library Manager",
+  "short_name": "Booky",
+  "description": "Organize and read your ebooks with a beautiful, modern interface. Support for PDF, EPUB, MOBI, FB2, CBZ, AZW3, DJVU formats.",
+  "start_url": "/Booky/",
+  "scope": "/Booky/",
+  "display": "standalone",
+  "background_color": "#1a1a2e",
+  "theme_color": "#3b82f6",
+  "orientation": "any",
+  "icons": [
+    {
+      "src": "booky-icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["books", "education", "productivity"],
+  "lang": "en",
+  "dir": "ltr"
+}

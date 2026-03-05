@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://programming2055.github.io/Booky/sitemap.xml
