@@ -1,7 +1,7 @@
 {
   "name": "booky",
   "private": true,
-  "version": "0.0.0",
+  "version": "0.1.0",
   "type": "module",
   "homepage": "https://programming2055.github.io/Booky",
   "scripts": {
