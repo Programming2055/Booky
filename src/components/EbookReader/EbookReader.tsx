@@ -25,18 +25,20 @@ type ZoomMode = 'custom' | 'fit-width' | 'fit-page';
 interface TocItem { label: string; href: string; subitems?: TocItem[] }
 
 const ZOOM_PRESETS = [0.25, 0.5, 0.75, 1, 1.25, 1.5, 1.75, 2, 2.5, 3, 4];
+const FONT_SIZES = [12, 14, 16, 18, 20, 22, 24, 28, 32, 36, 40];
+const LINE_HEIGHTS = [1.2, 1.4, 1.6, 1.8, 2.0, 2.2];
 
 /* ------------------------------------------------------------------ */
 /*  Helper: get foliate-js CSS for themes                              */
 /* ------------------------------------------------------------------ */
-function getFoliateCss(theme: ReaderTheme, fontSize: number) {
+function getFoliateCss(theme: ReaderTheme, fontSize: number, lineHeight: number) {
   const bg = theme === 'dark' ? '#2d2d2d' : theme === 'sepia' ? '#f8f4e8' : '#ffffff';
   const fg = theme === 'dark' ? '#e8e8e8' : theme === 'sepia' ? '#5c4b37' : '#1a1a1a';
   return `
     @namespace epub "http://www.idpf.org/2007/ops";
     html { color-scheme: ${theme === 'dark' ? 'dark' : 'light'}; background: ${bg}; color: ${fg}; }
-    body { font-size: ${fontSize}px !important; line-height: 1.7; font-family: 'Segoe UI', 'Source Serif 4', Georgia, serif; padding: 20px 40px; }
-    p, li, blockquote, dd { line-height: 1.7; text-align: justify; }
+    body { font-size: ${fontSize}px !important; line-height: ${lineHeight} !important; font-family: 'Segoe UI', 'Source Serif 4', Georgia, serif; padding: 20px 40px; }
+    p, li, blockquote, dd { line-height: ${lineHeight} !important; text-align: justify; }
     pre { white-space: pre-wrap !important; }
     img { max-width: 100% !important; height: auto !important; }
     h1, h2, h3, h4, h5, h6 { font-weight: 600; line-height: 1.3; }
@@ -56,6 +58,7 @@ export function EbookReader({ fileUrl, bookId, fileName, initialPage, initialCfi
   const [error, setError] = useState<string | null>(null);
   const [theme, setTheme] = useState<ReaderTheme>(state.theme === 'dark' ? 'dark' : 'light');
   const [fontSize, setFontSize] = useState(18);
+  const [lineHeight, setLineHeight] = useState(1.6);
   const [showSidebar, setShowSidebar] = useState(false);
 
   /* -- DJVU state -- */
@@ -343,7 +346,7 @@ export function EbookReader({ fileUrl, bookId, fileName, initialPage, initialCfi
         foliateRef.current = view;
 
         await view.open(file);
-        view.renderer?.setStyles?.(getFoliateCss(theme, fontSize));
+        view.renderer?.setStyles?.(getFoliateCss(theme, fontSize, lineHeight));
 
         if (initialCfi) await view.init({ lastLocation: initialCfi });
         else await view.init({ showTextStart: true });
@@ -374,8 +377,8 @@ export function EbookReader({ fileUrl, bookId, fileName, initialPage, initialCfi
 
   useEffect(() => {
     if (isDjvu || !foliateRef.current) return;
-    foliateRef.current.renderer?.setStyles?.(getFoliateCss(theme, fontSize));
-  }, [isDjvu, theme, fontSize]);
+    foliateRef.current.renderer?.setStyles?.(getFoliateCss(theme, fontSize, lineHeight));
+  }, [isDjvu, theme, fontSize, lineHeight]);
 
   const foliateNav = useCallback((dir: 'prev' | 'next') => {
     const v = foliateRef.current;
@@ -511,15 +514,45 @@ export function EbookReader({ fileUrl, bookId, fileName, initialPage, initialCfi
             </button>
           </div>
 
-          {/* Font size (for ebooks) */}
+          {/* Font size & line height (for ebooks) */}
           {!isDjvu && (
-            <div className="reader-toolbar-group">
-              <button className="reader-btn reader-btn--icon" onClick={() => setFontSize(f => Math.max(12, f - 2))} disabled={fontSize <= 12} title="Smaller text">
-                <span style={{ fontSize: '12px', fontWeight: 600 }}>A−</span>
+            <div className="reader-toolbar-group ebook-text-controls">
+              <button className="reader-btn reader-btn--icon" onClick={() => setFontSize(f => {
+                const idx = FONT_SIZES.indexOf(f);
+                return idx > 0 ? FONT_SIZES[idx - 1] : f;
+              })} disabled={fontSize <= FONT_SIZES[0]} title="Smaller text">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <circle cx="11" cy="11" r="8"/><line x1="7" y1="11" x2="15" y2="11"/>
+                </svg>
               </button>
-              <button className="reader-btn reader-btn--icon" onClick={() => setFontSize(f => Math.min(32, f + 2))} disabled={fontSize >= 32} title="Larger text">
-                <span style={{ fontSize: '16px', fontWeight: 600 }}>A+</span>
+              <select 
+                className="reader-font-select" 
+                value={fontSize}
+                onChange={(e) => setFontSize(Number(e.target.value))}
+                title="Font size"
+              >
+                {FONT_SIZES.map(s => (
+                  <option key={s} value={s}>{s}px</option>
+                ))}
+              </select>
+              <button className="reader-btn reader-btn--icon" onClick={() => setFontSize(f => {
+                const idx = FONT_SIZES.indexOf(f);
+                return idx < FONT_SIZES.length - 1 ? FONT_SIZES[idx + 1] : f;
+              })} disabled={fontSize >= FONT_SIZES[FONT_SIZES.length - 1]} title="Larger text">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <circle cx="11" cy="11" r="8"/><line x1="11" y1="7" x2="11" y2="15"/><line x1="7" y1="11" x2="15" y2="11"/>
+                </svg>
               </button>
+              <select 
+                className="reader-line-select" 
+                value={lineHeight}
+                onChange={(e) => setLineHeight(Number(e.target.value))}
+                title="Line spacing"
+              >
+                {LINE_HEIGHTS.map(h => (
+                  <option key={h} value={h}>{h.toFixed(1)}×</option>
+                ))}
+              </select>
             </div>
           )}
 
