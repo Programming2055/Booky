@@ -237,7 +237,7 @@ export function EbookReader({ fileUrl, bookId, fileName, initialPage, initialCfi
           await new Promise<void>((resolve, reject) => {
             const script = document.createElement('script');
             script.type = 'module';
-            script.src = '/foliate-js/view.js';
+            script.src = `${import.meta.env.BASE_URL}foliate-js/view.js`;
             script.onload = () => {
               customElements.whenDefined('foliate-view').then(() => resolve());
             };
