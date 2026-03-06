@@ -98,8 +98,6 @@ interface ListBookItemProps {
   isDragOver?: boolean;
   onDragStart?: (e: React.DragEvent) => void;
   onDragEnd?: () => void;
-  onDragOver?: (e: React.DragEvent) => void;
-  onDrop?: (e: React.DragEvent) => void;
 }
 
 function ListBookItem({
@@ -111,8 +109,6 @@ function ListBookItem({
   isDragOver,
   onDragStart,
   onDragEnd,
-  onDragOver,
-  onDrop,
 }: ListBookItemProps) {
   const coverUrl = useMemo(() => {
     if (!book.coverBytes) return null;
@@ -139,8 +135,6 @@ function ListBookItem({
       draggable={!!onDragStart}
       onDragStart={onDragStart}
       onDragEnd={onDragEnd}
-      onDragOver={onDragOver}
-      onDrop={onDrop}
     >
       <div className="list-item__cover">
         {coverUrl ? (
@@ -196,8 +190,6 @@ interface BookSpineProps {
   isDragOver?: boolean;
   onDragStart?: (e: React.DragEvent) => void;
   onDragEnd?: () => void;
-  onDragOver?: (e: React.DragEvent) => void;
-  onDrop?: (e: React.DragEvent) => void;
 }
 
 // Generate a color based on book title
@@ -227,8 +219,6 @@ function BookSpine({
   isDragOver,
   onDragStart,
   onDragEnd,
-  onDragOver,
-  onDrop,
 }: BookSpineProps) {
   const spineColor = useMemo(() => getSpineColor(book.title), [book.title]);
   const textColor = '#f5f5dc'; // Beige/cream text
@@ -258,8 +248,6 @@ function BookSpine({
       draggable={!!onDragStart}
       onDragStart={onDragStart}
       onDragEnd={onDragEnd}
-      onDragOver={onDragOver}
-      onDrop={onDrop}
       onClick={() => onEdit(book)}
       title={`${book.title} by ${book.author || 'Unknown'}`}
     >
@@ -404,7 +392,6 @@ export function BookGrid() {
     setDraggedBookId(bookId);
     e.dataTransfer.effectAllowed = 'move';
     e.dataTransfer.setData('text/plain', bookId);
-    // Add dragging class to body
     document.body.classList.add('dragging-book');
   }, []);
 
@@ -415,79 +402,54 @@ export function BookGrid() {
     document.body.classList.remove('dragging-book');
   }, []);
 
-  const reorderToTarget = useCallback((targetBookId: string) => {
+  // Shared swap logic used by container-level drag handler
+  const performSwap = useCallback((targetBookId: string) => {
     if (!draggedBookId || targetBookId === draggedBookId) return;
     if (dragOverRef.current === targetBookId) return;
 
     dragOverRef.current = targetBookId;
     setDragOverBookId(targetBookId);
 
-    const currentBookIds = customOrder.length > 0 ? [...customOrder] : filteredAndSortedBooks.map((book) => book.id);
+    const currentBookIds = customOrder.length > 0 ? [...customOrder] : filteredAndSortedBooks.map(b => b.id);
     const sourceIndex = currentBookIds.indexOf(draggedBookId);
-    const targetIndex = currentBookIds.indexOf(targetBookId);
+    const destIndex = currentBookIds.indexOf(targetBookId);
 
-    if (sourceIndex === -1 || targetIndex === -1 || sourceIndex === targetIndex) return;
+    if (sourceIndex !== -1 && destIndex !== -1 && sourceIndex !== destIndex) {
+      const newOrder = [...currentBookIds];
+      newOrder.splice(sourceIndex, 1);
+      newOrder.splice(destIndex, 0, draggedBookId);
 
-    const newOrder = [...currentBookIds];
-    newOrder.splice(sourceIndex, 1);
-    newOrder.splice(targetIndex, 0, draggedBookId);
+      setCustomOrder(newOrder);
+      saveCustomOrder(newOrder);
 
-    setCustomOrder(newOrder);
-    saveCustomOrder(newOrder);
-
-    if (state.sort !== 'custom') {
-      dispatch({ type: 'SET_SORT', payload: 'custom' });
+      if (state.sort !== 'custom') {
+        dispatch({ type: 'SET_SORT', payload: 'custom' });
+      }
     }
   }, [draggedBookId, customOrder, filteredAndSortedBooks, state.sort, dispatch]);
 
-  // Universal drag over handler - works for individual items
-  const handleDragOver = useCallback((e: React.DragEvent, targetBookId: string) => {
+  // Container-level drag over handler.
+  // Because dragging elements have pointer-events:none, the browser fires
+  // dragover on whatever element is visually beneath the cursor. We walk up
+  // from e.target to find the [data-book-id] wrapper and swap with that book.
+  const handleContainerDragOver = useCallback((e: React.DragEvent) => {
     e.preventDefault();
     e.dataTransfer.dropEffect = 'move';
+    if (!draggedBookId) return;
 
-    reorderToTarget(targetBookId);
-  }, [reorderToTarget]);
+    const target = (e.target as HTMLElement).closest?.('[data-book-id]');
+    if (target) {
+      const targetBookId = target.getAttribute('data-book-id');
+      if (targetBookId) {
+        performSwap(targetBookId);
+      }
+    }
+  }, [draggedBookId, performSwap]);
 
-  const handleDrop = useCallback((e: React.DragEvent) => {
+  const handleContainerDrop = useCallback((e: React.DragEvent) => {
     e.preventDefault();
     handleDragEnd();
   }, [handleDragEnd]);
-
-  // Grid container drag over - handles empty spaces and multi-row drops
-  const handleGridDragOver = useCallback((e: React.DragEvent) => {
-    e.preventDefault();
-    e.dataTransfer.dropEffect = 'move';
-
-    if (!draggedBookId || !gridContainerRef.current) return;
-
-    const element = document.elementFromPoint(e.clientX, e.clientY) as HTMLElement | null;
-    const target = element?.closest('[data-book-id]') as HTMLElement | null;
-    const targetBookId = target?.dataset.bookId;
-
-    if (targetBookId) {
-      reorderToTarget(targetBookId);
-      return;
-    }
-
-    const wrappers = Array.from(gridContainerRef.current.querySelectorAll('.book-grid__card-wrapper[data-book-id]')) as HTMLElement[];
-    if (wrappers.length === 0) return;
-
-    const nearest = wrappers
-      .map((wrapper) => {
-        const rect = wrapper.getBoundingClientRect();
-        const centerX = rect.left + rect.width / 2;
-        const centerY = rect.top + rect.height / 2;
-        const dx = e.clientX - centerX;
-        const dy = e.clientY - centerY;
-        return { id: wrapper.dataset.bookId ?? '', distance: Math.hypot(dx, dy) };
-      })
-      .filter((entry) => entry.id)
-      .sort((a, b) => a.distance - b.distance)[0];
-
-    if (nearest?.id) {
-      reorderToTarget(nearest.id);
-    }
-  }, [draggedBookId, reorderToTarget]);
 
   const totalPages = Math.max(1, Math.ceil(filteredAndSortedBooks.length / state.pageSize));
 
@@ -701,8 +663,8 @@ export function BookGrid() {
                       ? { gridTemplateColumns: `repeat(${state.gridSettings.shelfPerRow}, 1fr)` }
                       : {}),
                   } as React.CSSProperties}
-                  onDragOver={handleGridDragOver}
-                  onDrop={(e) => { e.preventDefault(); handleDragEnd(); }}
+                  onDragOver={handleContainerDragOver}
+                  onDrop={handleContainerDrop}
                 >
                   {paginatedBooks.map((book) => (
                     <div
@@ -712,8 +674,6 @@ export function BookGrid() {
                       draggable
                       onDragStart={(e) => handleDragStart(e, book.id)}
                       onDragEnd={handleDragEnd}
-                      onDragOver={(e) => handleDragOver(e, book.id)}
-                      onDrop={handleDrop}
                     >
                       <BookCard
                         book={book}
@@ -732,7 +692,11 @@ export function BookGrid() {
 
               {/* List View */}
               {bookViewMode === 'list' && (
-                <div className="book-grid__list">
+                <div
+                  className="book-grid__list"
+                  onDragOver={handleContainerDragOver}
+                  onDrop={handleContainerDrop}
+                >
                   {paginatedBooks.map((book) => (
                     <ListBookItem
                       key={book.id}
@@ -748,8 +712,6 @@ export function BookGrid() {
                       isDragOver={dragOverBookId === book.id && draggedBookId !== book.id}
                       onDragStart={(e) => handleDragStart(e, book.id)}
                       onDragEnd={handleDragEnd}
-                      onDragOver={(e) => handleDragOver(e, book.id)}
-                      onDrop={handleDrop}
                     />
                   ))}
                 </div>
@@ -757,7 +719,12 @@ export function BookGrid() {
 
               {/* Bookshelf View */}
               {bookViewMode === 'bookshelf' && (
-                <div className="book-grid__bookshelf" ref={bookshelfContainerRef}>
+                <div
+                  className="book-grid__bookshelf"
+                  ref={bookshelfContainerRef}
+                  onDragOver={handleContainerDragOver}
+                  onDrop={handleContainerDrop}
+                >
                   {Array.from({ length: Math.ceil(paginatedBooks.length / booksPerShelf) }).map((_, shelfIndex) => {
                     const shelfBooks = paginatedBooks.slice(
                       shelfIndex * booksPerShelf,
@@ -778,8 +745,6 @@ export function BookGrid() {
                               isDragOver={dragOverBookId === book.id && draggedBookId !== book.id}
                               onDragStart={(e) => handleDragStart(e, book.id)}
                               onDragEnd={handleDragEnd}
-                              onDragOver={(e) => handleDragOver(e, book.id)}
-                              onDrop={handleDrop}
                             />
                           ))}
                         </div>

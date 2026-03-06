@@ -50,6 +50,7 @@
 .book-grid__card-wrapper.dragging {
   opacity: 0.4;
   transform: scale(0.95);
+  pointer-events: none;
 }
 
 .book-grid__card-wrapper.drag-over::before {
@@ -321,6 +322,7 @@ body.dragging-book [data-book-id] > * {
 .list-item.dragging {
   opacity: 0.4;
   transform: scale(0.98);
+  pointer-events: none;
 }
 
 .list-item.drag-over {
@@ -579,6 +581,7 @@ body.dragging-book [data-book-id] > * {
 .book-spine.dragging {
   opacity: 0.4;
   transform: scale(0.9);
+  pointer-events: none;
 }
 
 .book-spine.drag-over {
