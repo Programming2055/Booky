@@ -135,8 +135,6 @@ export function EbookReader({ fileUrl, bookId, fileName, initialPage, initialCfi
     return zoom;
   }, [zoom, zoomMode, pageSizes]);
 
-  const effectiveZoom = isDjvu ? calculateEffectiveZoom() : zoom;
-
   /* ---- Render a DJVU page to a canvas with zoom ---- */
   const renderDjvuPage = useCallback((pageNum: number, canvas: HTMLCanvasElement, zoomLevel: number) => {
     const doc = djvuDocRef.current;
