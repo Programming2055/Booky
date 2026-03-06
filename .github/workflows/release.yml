@@ -1,6 +1,9 @@
 name: Create Release
 
 on:
+  push:
+    branches: ['main']
+    paths: ['package.json']
   workflow_dispatch:
     inputs:
       version:
@@ -18,28 +21,56 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Read version from package.json
+        id: pkg
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+          echo "version=V.$VERSION" >> $GITHUB_OUTPUT
+
+      - name: Resolve release version
+        id: ver
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "tag=${{ github.event.inputs.version }}" >> $GITHUB_OUTPUT
+          else
+            echo "tag=${{ steps.pkg.outputs.version }}" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Check if release already exists
+        id: check
+        run: |
+          EXISTS=$(gh release view "${{ steps.ver.outputs.tag }}" --repo ${{ github.repository }} 2>/dev/null && echo "true" || echo "false")
+          echo "exists=$EXISTS" >> $GITHUB_OUTPUT
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Setup Node
+        if: steps.check.outputs.exists == 'false'
         uses: actions/setup-node@v4
         with:
           node-version: '20'
           cache: 'npm'
 
       - name: Install dependencies
+        if: steps.check.outputs.exists == 'false'
         run: npm ci
 
       - name: Build
+        if: steps.check.outputs.exists == 'false'
         run: npm run build
 
       - name: Zip dist
-        run: zip -r booky-${{ github.event.inputs.version }}.zip dist/
+        if: steps.check.outputs.exists == 'false'
+        run: zip -r booky-${{ steps.ver.outputs.tag }}.zip dist/
 
       - name: Create Release
+        if: steps.check.outputs.exists == 'false'
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: ${{ github.event.inputs.version }}
-          name: Booky ${{ github.event.inputs.version }}
+          tag_name: ${{ steps.ver.outputs.tag }}
+          name: Booky ${{ steps.ver.outputs.tag }}
           body: |
-            ## Booky ${{ github.event.inputs.version }}
+            ## Booky ${{ steps.ver.outputs.tag }}
 
             First stable release of Booky – your personal eBook library manager.
 
@@ -57,6 +88,6 @@ jobs:
             npm install
             npm start
             ```
-          files: booky-${{ github.event.inputs.version }}.zip
+          files: booky-${{ steps.ver.outputs.tag }}.zip
           draft: false
           prerelease: false
