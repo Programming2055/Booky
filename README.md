@@ -77,7 +77,9 @@
 
 > **Note:** The demo runs entirely in your browser. Add some ebooks to try it out!
 
-### Run Locally
+---
+
+## 🚀 Installation
 
 ```bash
 git clone https://github.com/Programming2055/Booky.git
@@ -85,6 +87,8 @@ cd Booky
 npm install
 npm start
 ```
+
+**Windows Users:** Double-click `start.bat` to launch!
 
 ---
 
@@ -93,60 +97,16 @@ npm start
 <div align="center">
 
 ### 📚 Library View
-*Organize your ebooks with beautiful cover displays, multiple themes, and collection management.*
-
 ![Library View](screenshots/library.png)
 
----
-
 ### 📖 Reader View
-*Full-featured reader with highlights, annotations, zoom, and page navigation.*
-
 ![Reader View](screenshots/reader.png)
-
----
-
-### 📂 Collections
-*Create custom collections and organize your library your way.*
-
-![Collections](screenshots/collections.png)
 
 </div>
 
 ---
 
-## 🚀 Installation
-
-### Prerequisites
-
-- **Node.js 18+** - [Download](https://nodejs.org/)
-- **Python 3.8+** *(optional)* - For DJVU/PDF system app integration
-
-### Quick Start
-
-```bash
-# Clone the repository
-git clone https://github.com/Programming2055/Booky.git
-cd Booky
-
-# Install dependencies
-npm install
-
-# Optional: Install Python dependencies for system app integration
-pip install flask flask-cors
-
-# Start the app
-npm start
-```
-
-### Windows Users
-Simply double-click `start.bat` to launch everything!
-
----
-
 ## 📖 Usage
-
-### Adding Books
 
 1. Click the **+ Add Book** button in the header
 2. Select your ebook files (PDF, EPUB, MOBI, etc.)
