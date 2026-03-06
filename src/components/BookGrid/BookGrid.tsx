@@ -393,19 +393,23 @@ export function BookGrid() {
     setDraggedBookId(bookId);
     e.dataTransfer.effectAllowed = 'move';
     e.dataTransfer.setData('text/plain', bookId);
+    // Add body class to disable pointer-events on children during drag
+    document.body.classList.add('dragging-book');
   }, []);
 
   const handleDragEnd = useCallback(() => {
     dragSourceRef.current = null;
     setDraggedBookId(null);
     setDragOverBookId(null);
+    document.body.classList.remove('dragging-book');
   }, []);
 
-  // Single container-level dragover: uses closest() to find which book is under cursor
+  // Single container-level dragover: uses elementFromPoint + closest() for reliable hit-testing
   const handleContainerDragOver = useCallback((e: React.DragEvent) => {
     e.preventDefault();
     e.dataTransfer.dropEffect = 'move';
-    const target = (e.target as HTMLElement).closest('[data-book-id]');
+    const el = document.elementFromPoint(e.clientX, e.clientY);
+    const target = el?.closest('[data-book-id]');
     const bookId = target?.getAttribute('data-book-id') || null;
     if (bookId && dragSourceRef.current && bookId !== dragSourceRef.current) {
       setDragOverBookId(bookId);
@@ -414,11 +418,12 @@ export function BookGrid() {
     }
   }, []);
 
-  // Single container-level drop: uses closest() to find target, performs swap
+  // Single container-level drop: uses elementFromPoint + closest() for reliable hit-testing
   const handleContainerDrop = useCallback((e: React.DragEvent) => {
     e.preventDefault();
     const sourceId = dragSourceRef.current;
-    const target = (e.target as HTMLElement).closest('[data-book-id]');
+    const el = document.elementFromPoint(e.clientX, e.clientY);
+    const target = el?.closest('[data-book-id]');
     const targetBookId = target?.getAttribute('data-book-id') || null;
 
     if (!sourceId || !targetBookId || sourceId === targetBookId) {
@@ -426,8 +431,19 @@ export function BookGrid() {
       return;
     }
 
-    const allBookIds = state.books.map(b => b.id);
-    const currentBookIds = customOrder.length > 0 ? [...customOrder] : allBookIds;
+    // Build initial order from the VISUAL sort order, not raw state.books
+    // This ensures swapping produces the result the user expects
+    let currentBookIds: string[];
+    if (customOrder.length > 0) {
+      currentBookIds = [...customOrder];
+    } else {
+      // Start from the current visual order, then append any books not visible (filtered out)
+      const visualIds = filteredAndSortedBooks.map(b => b.id);
+      const allIds = state.books.map(b => b.id);
+      const missingIds = allIds.filter(id => !visualIds.includes(id));
+      currentBookIds = [...visualIds, ...missingIds];
+    }
+
     const sourceIndex = currentBookIds.indexOf(sourceId);
     const destIndex = currentBookIds.indexOf(targetBookId);
 
@@ -445,7 +461,7 @@ export function BookGrid() {
       }
     }
     handleDragEnd();
-  }, [customOrder, state.books, state.sort, dispatch, handleDragEnd]);
+  }, [customOrder, filteredAndSortedBooks, state.books, state.sort, dispatch, handleDragEnd]);
 
   const totalPages = Math.max(1, Math.ceil(filteredAndSortedBooks.length / state.pageSize));
 

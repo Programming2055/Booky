@@ -69,6 +69,12 @@
   transform: scale(1.03);
 }
 
+/* During drag, make all children of draggable items transparent to pointer events
+   so elementFromPoint always hits the [data-book-id] wrapper */
+body.dragging-book [data-book-id] > * {
+  pointer-events: none !important;
+}
+
 .book-grid__card-wrapper .book-card {
   height: var(--shelf-card-height, 220px);
 }
