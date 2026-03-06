@@ -98,6 +98,13 @@
   color: #64b5f6;
 }
 
+/* Bigger highlight button */
+.pdf-reader-topbar-btn.pdf-highlight-btn {
+  width: 38px;
+  height: 32px;
+  position: relative;
+}
+
 /* ---- viewer body ---- */
 .pdf-reader-body {
   flex: 1;

@@ -24,13 +24,13 @@
 <td width="50%">
 
 ### 📖 Multi-Format Support
-- **PDF** - Full-featured reader with highlights
+- **PDF** - Full-featured reader with text highlights
 - **EPUB** - Beautiful reflowable text
 - **MOBI** - Kindle format support
 - **FB2** - Fiction Book format
 - **CBZ** - Comic book archives
 - **AZW3** - Amazon Kindle format
-- **DJVU** - Scanned documents
+- **DJVU** - Continuous scroll with professional zoom
 
 </td>
 <td width="50%">
@@ -187,13 +187,13 @@ Simply double-click `start.bat` to launch everything!
 
 | Format | Built-in Reader | System App | Notes |
 |--------|:---------------:|:----------:|-------|
-| PDF | ✅ | ✅ | Full highlights & annotations |
+| PDF | ✅ | ✅ | Text selection & highlights |
 | EPUB | ✅ | - | Reflowable text, TOC support |
 | MOBI | ✅ | - | Kindle format |
 | FB2 | ✅ | - | Fiction Book format |
 | CBZ | ✅ | - | Comic book archive |
 | AZW3 | ✅ | - | Amazon Kindle |
-| DJVU | ✅ | ✅ | Export to PDF available |
+| DJVU | ✅ | ✅ | Vertical scroll, fit-width/fit-page zoom |
 
 ---
 

@@ -541,7 +541,6 @@ input, textarea, select {
 /* Hand-drawn primary/accent buttons */
 [data-sketch="hand-drawn"] .btn--primary,
 [data-sketch="hand-drawn"] .book-card__side-btn--primary,
-[data-sketch="hand-drawn"] .convert-modal__convert,
 [data-sketch="hand-drawn"] .book-spine__open-btn {
   background: var(--accent) !important;
   border-color: var(--accent) !important;
@@ -550,13 +549,11 @@ input, textarea, select {
 
 [data-sketch="hand-drawn"] .btn--primary:hover,
 [data-sketch="hand-drawn"] .book-card__side-btn--primary:hover,
-[data-sketch="hand-drawn"] .convert-modal__convert:hover,
 [data-sketch="hand-drawn"] .book-spine__open-btn:hover {
   filter: brightness(1.1);
 }
 
 /* Hand-drawn active/selected buttons */
-[data-sketch="hand-drawn"] .convert-modal__btn--active,
 [data-sketch="hand-drawn"] .settings-modal__view-btn.active,
 [data-sketch="hand-drawn"] .settings-modal__sketch-btn--active,
 [data-sketch="hand-drawn"] .settings-modal__row-btn--active,
@@ -621,7 +618,6 @@ input, textarea, select {
 /* Ensure modal close buttons maintain proper colors in all sketch modes */
 [data-sketch] .settings-modal__close,
 [data-sketch] .book-form-modal__close,
-[data-sketch] .convert-modal__close,
 [data-sketch] .pdf-tools__close {
   background: var(--surface) !important;
   border: 1px solid var(--border) !important;
@@ -630,7 +626,6 @@ input, textarea, select {
 
 [data-sketch] .settings-modal__close:hover,
 [data-sketch] .book-form-modal__close:hover,
-[data-sketch] .convert-modal__close:hover,
 [data-sketch] .pdf-tools__close:hover {
   background: var(--danger) !important;
   border-color: var(--danger) !important;
@@ -835,57 +830,6 @@ input, textarea, select {
   background: var(--accent) !important;
   border-color: var(--accent) !important;
   color: white !important;
-}
-
-/* Convert modal buttons */
-[data-sketch] .convert-modal__close {
-  background: var(--surface) !important;
-  border: 1px solid var(--border) !important;
-  color: var(--text) !important;
-}
-
-[data-sketch] .convert-modal__close:hover {
-  background: var(--danger) !important;
-  border-color: var(--danger) !important;
-  color: white !important;
-}
-
-[data-sketch] .convert-modal__btn {
-  background: var(--surface) !important;
-  border: 1px solid var(--border) !important;
-  color: var(--text) !important;
-}
-
-[data-sketch] .convert-modal__btn:hover:not(.convert-modal__btn--active) {
-  border-color: var(--accent) !important;
-  color: var(--accent) !important;
-}
-
-[data-sketch] .convert-modal__btn--active {
-  background: var(--accent) !important;
-  border-color: var(--accent) !important;
-  color: white !important;
-}
-
-[data-sketch] .convert-modal__cancel {
-  background: var(--surface) !important;
-  border: 1px solid var(--border) !important;
-  color: var(--text) !important;
-}
-
-[data-sketch] .convert-modal__cancel:hover {
-  border-color: var(--accent) !important;
-  color: var(--accent) !important;
-}
-
-[data-sketch] .convert-modal__convert {
-  background: var(--accent) !important;
-  border: 1px solid var(--accent) !important;
-  color: white !important;
-}
-
-[data-sketch] .convert-modal__convert:hover:not(:disabled) {
-  filter: brightness(1.1);
 }
 
 /* Color buttons in settings */

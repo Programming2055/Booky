@@ -2,7 +2,6 @@ import { useState, useEffect, useCallback, useRef, type CSSProperties } from 're
 import { ReactReader, ReactReaderStyle } from 'react-reader';
 import type { Rendition, Contents, NavItem } from 'epubjs';
 import JSZip from 'jszip';
-import { jsPDF } from 'jspdf';
 import { useApp } from '../../context';
 import './EpubReader.css';
 
@@ -147,7 +146,6 @@ export function EpubReader({
   const [toc, setToc] = useState<NavItem[]>([]);
   const [showTocPanel, setShowTocPanel] = useState(false);
   const [readerKey, setReaderKey] = useState(0);
-  const [exporting, setExporting] = useState(false);
 
   const renditionRef = useRef<Rendition | null>(null);
   const settingsRef = useRef<HTMLDivElement>(null);
@@ -236,51 +234,6 @@ export function EpubReader({
 
   const goToHighlight = useCallback((cfi: string) => { setLocation(cfi); setShowHighlightPanel(false); }, []);
 
-  /* ---- Export EPUB to PDF ---- */
-  const exportEpubToPdf = useCallback(async () => {
-    if (!renditionRef.current || exporting) return;
-    setExporting(true);
-    try {
-      const book = renditionRef.current.book;
-      const spine = book.spine as any;
-      const pdf = new jsPDF({ unit: 'pt', format: 'a4', putOnlyUsedFonts: true });
-      const pW = pdf.internal.pageSize.getWidth();
-      const pH = pdf.internal.pageSize.getHeight();
-      const margin = 50;
-      const maxW = pW - margin * 2;
-      let y = margin;
-      let firstPage = true;
-
-      const addNewPage = () => { pdf.addPage(); y = margin; };
-
-      for (const section of spine.items || spine.spineItems || []) {
-        try {
-          const doc = await book.load(section.href);
-          const body = (doc as any)?.body || (doc as any)?.documentElement?.querySelector?.('body');
-          if (!body) continue;
-          const text = body.textContent || '';
-          if (!text.trim()) continue;
-
-          const lines = pdf.splitTextToSize(text, maxW);
-          for (const line of lines) {
-            if (y + 14 > pH - margin) {
-              addNewPage();
-            }
-            if (firstPage) { firstPage = false; } else if (y === margin && pdf.getNumberOfPages() === 1) { /* skip */ }
-            pdf.setFontSize(11);
-            pdf.text(line, margin, y);
-            y += 14;
-          }
-          y += 10; // gap between chapters
-        } catch { continue; }
-      }
-      pdf.save(`${title}.pdf`);
-    } catch (e) {
-      console.error('Export to PDF failed:', e);
-    } finally {
-      setExporting(false);
-    }
-  }, [exporting, title]);
   const removeHighlight = useCallback((cfi: string) => {
     renditionRef.current?.annotations.remove(cfi, 'highlight');
     setHighlights(prev => prev.filter(h => h.cfi !== cfi));
@@ -363,15 +316,6 @@ export function EpubReader({
           <button className={`epub-toolbar-btn${showHighlightPanel ? ' active' : ''}`} onClick={() => { closeAllPanels(); setShowHighlightPanel(v => !v); }} title="Highlights" style={{ color: t.headerFg }}>
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 20h9" /><path d="M16.5 3.5a2.121 2.121 0 113 3L7 19l-4 1 1-4 12.5-12.5z" /></svg>
             {highlights.length > 0 && <span className="epub-badge">{highlights.length}</span>}
-          </button>
-
-          {/* Export to PDF */}
-          <button className="epub-toolbar-btn" onClick={exportEpubToPdf} disabled={exporting} title="Export to PDF" style={{ color: t.headerFg }}>
-            {exporting ? (
-              <div className="epub-spinner" style={{ width: 14, height: 14 }} />
-            ) : (
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4" /><polyline points="7 10 12 15 17 10" /><line x1="12" y1="15" x2="12" y2="3" /></svg>
-            )}
           </button>
 
           {/* Settings */}

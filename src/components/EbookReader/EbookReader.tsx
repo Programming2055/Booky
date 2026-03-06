@@ -1,7 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { jsPDF } from 'jspdf';
 import { useApp } from '../../context';
-import { ConvertModal } from '../ConvertModal';
 import './EbookReader.css';
 
 /* ------------------------------------------------------------------ */
@@ -22,9 +20,11 @@ interface EbookReaderProps {
 }
 
 type ReaderTheme = 'light' | 'sepia' | 'dark';
+type DjvuViewMode = 'single' | 'continuous';
+type ZoomMode = 'custom' | 'fit-width' | 'fit-page';
 interface TocItem { label: string; href: string; subitems?: TocItem[] }
 
-const ZOOM_LEVELS = [0.5, 0.75, 1, 1.25, 1.5, 2, 2.5, 3];
+const ZOOM_PRESETS = [0.25, 0.5, 0.75, 1, 1.25, 1.5, 1.75, 2, 2.5, 3, 4];
 
 /* ------------------------------------------------------------------ */
 /*  Helper: get foliate-js CSS for themes                              */
@@ -50,7 +50,6 @@ function getFoliateCss(theme: ReaderTheme, fontSize: number) {
 export function EbookReader({ fileUrl, bookId, fileName, initialPage, initialCfi, onClose }: EbookReaderProps) {
   const { saveReadingProgress, state } = useApp();
   const isDjvu = /\.djvu$/i.test(fileName || '');
-  const currentBook = state.books.find(b => b.id === bookId);
 
   /* -- Common state -- */
   const [loading, setLoading] = useState(true);
@@ -58,18 +57,20 @@ export function EbookReader({ fileUrl, bookId, fileName, initialPage, initialCfi
   const [theme, setTheme] = useState<ReaderTheme>(state.theme === 'dark' ? 'dark' : 'light');
   const [fontSize, setFontSize] = useState(18);
   const [showSidebar, setShowSidebar] = useState(false);
-  const [showConvertModal, setShowConvertModal] = useState(false);
-  const [exporting, setExporting] = useState(false);
-  const [zoom, setZoom] = useState(1);
 
   /* -- DJVU state -- */
   const djvuDocRef = useRef<any>(null);
   const [totalPages, setTotalPages] = useState(0);
   const [currentPage, setCurrentPage] = useState(initialPage || 1);
   const [pageInput, setPageInput] = useState(String(initialPage || 1));
-  const canvasRef = useRef<HTMLCanvasElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
-  const renderedPagesRef = useRef<Set<number>>(new Set());
+  const renderedPagesRef = useRef<Map<number, HTMLCanvasElement>>(new Map());
+  const pageRefs = useRef<Map<number, HTMLDivElement>>(new Map());
+  const [djvuViewMode, setDjvuViewMode] = useState<DjvuViewMode>('continuous');
+  const [zoom, setZoom] = useState(1);
+  const [zoomMode, setZoomMode] = useState<ZoomMode>('fit-width');
+  const [pageSizes, setPageSizes] = useState<{ w: number; h: number }[]>([]);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   /* -- Foliate state -- */
   const foliateRef = useRef<any>(null);
@@ -79,7 +80,6 @@ export function EbookReader({ fileUrl, bookId, fileName, initialPage, initialCfi
 
   const bookFileName = fileName || state.books.find(b => b.id === bookId)?.fileName || 'book';
   const title = bookFileName.replace(/\.[^/.]+$/, '');
-  const zoomIdx = ZOOM_LEVELS.indexOf(zoom);
 
   /* ================================================================ */
   /*  DJVU loading                                                     */
@@ -97,77 +97,177 @@ export function EbookReader({ fileUrl, bookId, fileName, initialPage, initialCfi
         const doc = new window.DjVu.Document(buf);
         djvuDocRef.current = doc;
         setTotalPages(doc.pages.length);
+        
+        // Collect page sizes upfront
+        const sizes: { w: number; h: number }[] = [];
+        for (let i = 0; i < doc.pages.length; i++) {
+          try {
+            const p = doc.pages[i];
+            sizes.push({ w: p.getWidth(), h: p.getHeight() });
+          } catch {
+            sizes.push({ w: 800, h: 1000 }); // fallback
+          }
+        }
+        setPageSizes(sizes);
         setLoading(false);
       })
       .catch(e => { if (!cancelled) { setError(e.message); setLoading(false); } });
     return () => { cancelled = true; };
   }, [isDjvu, fileUrl]);
 
-  /* ---- Render a DJVU page to a canvas ---- */
-  const renderDjvuPage = useCallback((pageNum: number, canvas: HTMLCanvasElement) => {
+  /* ---- Calculate effective zoom based on mode ---- */
+  const calculateEffectiveZoom = useCallback(() => {
+    if (!containerRef.current || pageSizes.length === 0) return zoom;
+    const containerWidth = containerRef.current.clientWidth - 48; // padding
+    const containerHeight = containerRef.current.clientHeight - 48;
+    
+    // Get max page dimensions
+    const maxPageWidth = Math.max(...pageSizes.map(s => s.w), 800);
+    const maxPageHeight = Math.max(...pageSizes.map(s => s.h), 1000);
+    
+    if (zoomMode === 'fit-width') {
+      return Math.min(containerWidth / maxPageWidth, 3);
+    } else if (zoomMode === 'fit-page') {
+      const widthRatio = containerWidth / maxPageWidth;
+      const heightRatio = containerHeight / maxPageHeight;
+      return Math.min(widthRatio, heightRatio, 3);
+    }
+    return zoom;
+  }, [zoom, zoomMode, pageSizes]);
+
+  const effectiveZoom = isDjvu ? calculateEffectiveZoom() : zoom;
+
+  /* ---- Render a DJVU page to a canvas with zoom ---- */
+  const renderDjvuPage = useCallback((pageNum: number, canvas: HTMLCanvasElement, zoomLevel: number) => {
     const doc = djvuDocRef.current;
-    if (!doc || pageNum < 1 || pageNum > doc.pages.length) return;
+    if (!doc || pageNum < 1 || pageNum > doc.pages.length) return { width: 0, height: 0 };
     try {
       const page = doc.pages[pageNum - 1];
       const imageData = page.getImageData();
-      const scale = (window.devicePixelRatio || 1);
+      const dpr = window.devicePixelRatio || 1;
       const w = imageData.width;
       const h = imageData.height;
+      
+      // Apply zoom to display size
+      const displayW = Math.round(w * zoomLevel);
+      const displayH = Math.round(h * zoomLevel);
 
+      // Create temp canvas for original image
       const tmpCanvas = document.createElement('canvas');
       tmpCanvas.width = w;
       tmpCanvas.height = h;
       const tmpCtx = tmpCanvas.getContext('2d')!;
       tmpCtx.putImageData(imageData, 0, 0);
 
-      canvas.width = Math.round(w * scale);
-      canvas.height = Math.round(h * scale);
-      canvas.style.width = `${w}px`;
-      canvas.style.height = `${h}px`;
+      // Set canvas size for high-DPI display
+      canvas.width = Math.round(displayW * dpr);
+      canvas.height = Math.round(displayH * dpr);
+      canvas.style.width = `${displayW}px`;
+      canvas.style.height = `${displayH}px`;
 
       const ctx = canvas.getContext('2d')!;
       ctx.imageSmoothingEnabled = true;
       ctx.imageSmoothingQuality = 'high';
-      ctx.scale(scale, scale);
-      ctx.drawImage(tmpCanvas, 0, 0);
+      ctx.scale(dpr, dpr);
+      ctx.drawImage(tmpCanvas, 0, 0, displayW, displayH);
+      
+      return { width: displayW, height: displayH };
     } catch (e) {
       console.error(`Error rendering DJVU page ${pageNum}:`, e);
+      return { width: 0, height: 0 };
     }
   }, []);
 
-  /* ---- Render current page ---- */
+  /* ---- Continuous scroll mode: lazy render pages ---- */
   useEffect(() => {
-    if (!isDjvu || loading || !djvuDocRef.current) return;
-    if (canvasRef.current) renderDjvuPage(currentPage, canvasRef.current);
-  }, [isDjvu, loading, currentPage, renderDjvuPage]);
-
-  /* ---- Scroll mode: lazy rendering ---- */
-  useEffect(() => {
-    if (!isDjvu || !djvuDocRef.current || loading) return;
+    if (!isDjvu || !djvuDocRef.current || loading || djvuViewMode !== 'continuous') return;
+    
+    const effectZoom = calculateEffectiveZoom();
     renderedPagesRef.current.clear();
-    const container = scrollRef.current;
-    if (!container) return;
-
-    const observer = new IntersectionObserver(entries => {
+    
+    const observer = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
-        if (!entry.isIntersecting) return;
         const pg = parseInt(entry.target.getAttribute('data-page') || '0');
-        if (pg > 0 && !renderedPagesRef.current.has(pg)) {
-          renderedPagesRef.current.add(pg);
-          const canvas = document.createElement('canvas');
-          renderDjvuPage(pg, canvas);
-          const wrapper = entry.target as HTMLElement;
-          canvas.style.width = '100%';
-          canvas.style.height = '100%';
-          wrapper.innerHTML = '';
-          wrapper.appendChild(canvas);
+        if (pg <= 0) return;
+        
+        if (entry.isIntersecting) {
+          // Render page if not already rendered at current zoom
+          const cached = renderedPagesRef.current.get(pg);
+          if (!cached) {
+            const canvas = document.createElement('canvas');
+            renderDjvuPage(pg, canvas, effectZoom);
+            const wrapper = entry.target as HTMLElement;
+            wrapper.innerHTML = '';
+            wrapper.appendChild(canvas);
+            renderedPagesRef.current.set(pg, canvas);
+          }
         }
       });
-    }, { root: container, rootMargin: '400px' });
+    }, { root: scrollRef.current, rootMargin: '600px 0px' });
 
-    container.querySelectorAll('.reader-scroll-page').forEach(el => observer.observe(el));
+    // Observe all page containers
+    pageRefs.current.forEach((el) => observer.observe(el));
+    
     return () => observer.disconnect();
-  }, [isDjvu, loading, renderDjvuPage, totalPages, zoom]);
+  }, [isDjvu, loading, renderDjvuPage, totalPages, djvuViewMode, calculateEffectiveZoom, zoom, zoomMode, pageSizes]);
+
+  /* ---- Re-render all visible pages when zoom changes ---- */
+  useEffect(() => {
+    if (!isDjvu || loading || djvuViewMode !== 'continuous') return;
+    
+    const effectZoom = calculateEffectiveZoom();
+    // Clear cache and re-render visible pages
+    renderedPagesRef.current.forEach((canvas, pg) => {
+      renderDjvuPage(pg, canvas, effectZoom);
+    });
+  }, [isDjvu, loading, djvuViewMode, calculateEffectiveZoom, renderDjvuPage]);
+
+  /* ---- Single page mode: render current page ---- */
+  useEffect(() => {
+    if (!isDjvu || loading || djvuViewMode !== 'single' || !djvuDocRef.current) return;
+    
+    const effectZoom = calculateEffectiveZoom();
+    const wrapper = pageRefs.current.get(1);
+    if (wrapper) {
+      const canvas = document.createElement('canvas');
+      renderDjvuPage(currentPage, canvas, effectZoom);
+      wrapper.innerHTML = '';
+      wrapper.appendChild(canvas);
+    }
+  }, [isDjvu, loading, djvuViewMode, currentPage, calculateEffectiveZoom, renderDjvuPage]);
+
+  /* ---- Track current page on scroll ---- */
+  useEffect(() => {
+    if (!isDjvu || djvuViewMode !== 'continuous' || !scrollRef.current) return;
+    
+    const handleScroll = () => {
+      const container = scrollRef.current;
+      if (!container) return;
+      
+      const scrollTop = container.scrollTop;
+      const containerHeight = container.clientHeight;
+      const midPoint = scrollTop + containerHeight / 3;
+      
+      // Find which page is at the midpoint
+      let cumHeight = 0;
+      const effectZoom = calculateEffectiveZoom();
+      for (let i = 0; i < pageSizes.length; i++) {
+        const pageH = pageSizes[i].h * effectZoom + 16; // include gap
+        if (cumHeight + pageH > midPoint) {
+          if (currentPage !== i + 1) {
+            setCurrentPage(i + 1);
+            setPageInput(String(i + 1));
+          }
+          break;
+        }
+        cumHeight += pageH;
+      }
+    };
+    
+    const container = scrollRef.current;
+    container.addEventListener('scroll', handleScroll, { passive: true });
+    return () => container.removeEventListener('scroll', handleScroll);
+  }, [isDjvu, djvuViewMode, pageSizes, currentPage, calculateEffectiveZoom]);
 
   /* ---- Save DJVU progress ---- */
   useEffect(() => {
@@ -175,52 +275,40 @@ export function EbookReader({ fileUrl, bookId, fileName, initialPage, initialCfi
     saveReadingProgress(bookId, { currentPage, totalPages, percentage: Math.round((currentPage / totalPages) * 100) });
   }, [isDjvu, bookId, currentPage, totalPages, saveReadingProgress]);
 
+  /* ---- Navigation functions ---- */
   const djvuGoTo = useCallback((p: number) => {
     const page = Math.max(1, Math.min(p, totalPages));
     setCurrentPage(page);
     setPageInput(String(page));
-  }, [totalPages]);
+    
+    // Scroll to page in continuous mode
+    if (djvuViewMode === 'continuous' && scrollRef.current && pageSizes.length > 0) {
+      const effectZoom = calculateEffectiveZoom();
+      let scrollTop = 0;
+      for (let i = 0; i < page - 1; i++) {
+        scrollTop += pageSizes[i].h * effectZoom + 16; // include gap
+      }
+      scrollRef.current.scrollTo({ top: scrollTop, behavior: 'smooth' });
+    }
+  }, [totalPages, djvuViewMode, pageSizes, calculateEffectiveZoom]);
 
   const djvuPrev = useCallback(() => djvuGoTo(currentPage - 1), [currentPage, djvuGoTo]);
   const djvuNext = useCallback(() => djvuGoTo(currentPage + 1), [currentPage, djvuGoTo]);
 
-  /* ---- Export DJVU to PDF ---- */
-  const exportDjvuToPdf = useCallback(async () => {
-    const doc = djvuDocRef.current;
-    if (!doc || exporting) return;
-    setExporting(true);
-    try {
-      const pdf = new jsPDF({ unit: 'pt', format: 'a4' });
-      let firstPage = true;
-      for (let i = 0; i < doc.pages.length; i++) {
-        const page = doc.pages[i];
-        const imageData = page.getImageData();
-        const tmpCanvas = document.createElement('canvas');
-        tmpCanvas.width = imageData.width;
-        tmpCanvas.height = imageData.height;
-        const ctx = tmpCanvas.getContext('2d')!;
-        ctx.putImageData(imageData, 0, 0);
-        const imgData = tmpCanvas.toDataURL('image/jpeg', 0.92);
+  /* ---- Zoom controls for DJVU ---- */
+  const handleZoomIn = useCallback(() => {
+    setZoomMode('custom');
+    const currentIdx = ZOOM_PRESETS.findIndex(z => z >= zoom);
+    const nextIdx = Math.min(currentIdx + 1, ZOOM_PRESETS.length - 1);
+    setZoom(ZOOM_PRESETS[nextIdx]);
+  }, [zoom]);
 
-        const pWidth = pdf.internal.pageSize.getWidth();
-        const pHeight = pdf.internal.pageSize.getHeight();
-        const ratio = Math.min(pWidth / imageData.width, pHeight / imageData.height);
-        const imgW = imageData.width * ratio;
-        const imgH = imageData.height * ratio;
-        const x = (pWidth - imgW) / 2;
-        const y = (pHeight - imgH) / 2;
-
-        if (!firstPage) pdf.addPage();
-        pdf.addImage(imgData, 'JPEG', x, y, imgW, imgH);
-        firstPage = false;
-      }
-      pdf.save(`${title}.pdf`);
-    } catch (e) {
-      console.error('Export to PDF failed:', e);
-    } finally {
-      setExporting(false);
-    }
-  }, [exporting, title]);
+  const handleZoomOut = useCallback(() => {
+    setZoomMode('custom');
+    const currentIdx = ZOOM_PRESETS.findIndex(z => z >= zoom);
+    const prevIdx = Math.max(currentIdx - 1, 0);
+    setZoom(ZOOM_PRESETS[prevIdx]);
+  }, [zoom]);
 
   /* ================================================================ */
   /*  Foliate-js loading                                               */
@@ -319,30 +407,23 @@ export function EbookReader({ fileUrl, bookId, fileName, initialPage, initialCfi
       if (e.key === 'Escape') onClose();
       if (e.key === 'ArrowLeft') isDjvu ? djvuPrev() : foliateNav('prev');
       if (e.key === 'ArrowRight') isDjvu ? djvuNext() : foliateNav('next');
+      // Zoom shortcuts for DJVU
+      if (isDjvu && (e.ctrlKey || e.metaKey)) {
+        if (e.key === '=' || e.key === '+') { e.preventDefault(); handleZoomIn(); }
+        if (e.key === '-') { e.preventDefault(); handleZoomOut(); }
+        if (e.key === '0') { e.preventDefault(); setZoomMode('fit-width'); }
+      }
     };
     window.addEventListener('keydown', h);
     return () => window.removeEventListener('keydown', h);
-  }, [onClose, isDjvu, djvuPrev, djvuNext, foliateNav]);
-
-  /* ---- Page sizes for DJVU scroll mode ---- */
-  const djvuPageSizes = useRef<{ w: number; h: number }[]>([]);
-  useEffect(() => {
-    if (!isDjvu || !djvuDocRef.current) return;
-    const doc = djvuDocRef.current;
-    const sizes: { w: number; h: number }[] = [];
-    for (let i = 0; i < doc.pages.length; i++) {
-      const p = doc.pages[i];
-      try { sizes.push({ w: p.getWidth(), h: p.getHeight() }); }
-      catch { sizes.push({ w: 800, h: 1000 }); }
-    }
-    djvuPageSizes.current = sizes;
-  }, [isDjvu, totalPages]);
+  }, [onClose, isDjvu, djvuPrev, djvuNext, foliateNav, handleZoomIn, handleZoomOut]);
 
   /* ================================================================ */
   /*  Render - Adobe Reader Style                                      */
   /* ================================================================ */
 
   const themeClass = theme === 'dark' ? 'reader--dark' : theme === 'sepia' ? 'reader--sepia' : 'reader--light';
+  const displayZoom = zoomMode === 'custom' ? zoom : calculateEffectiveZoom();
 
   return (
     <div className={`reader-overlay ${themeClass}`}>
@@ -358,14 +439,60 @@ export function EbookReader({ fileUrl, bookId, fileName, initialPage, initialCfi
         </div>
         
         <div className="reader-header__center">
-          {/* Zoom Controls - Only for DJVU */}
+          {/* DJVU View Mode Toggle */}
           {isDjvu && (
             <div className="reader-toolbar-group">
-              <button className="reader-btn reader-btn--icon" onClick={() => setZoom(ZOOM_LEVELS[Math.max(0, zoomIdx - 1)])} disabled={zoomIdx <= 0} title="Zoom out">
+              <button 
+                className={`reader-btn reader-btn--icon ${djvuViewMode === 'single' ? 'active' : ''}`} 
+                onClick={() => setDjvuViewMode('single')} 
+                title="Single page"
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <rect x="5" y="3" width="14" height="18" rx="2"/>
+                </svg>
+              </button>
+              <button 
+                className={`reader-btn reader-btn--icon ${djvuViewMode === 'continuous' ? 'active' : ''}`} 
+                onClick={() => setDjvuViewMode('continuous')} 
+                title="Continuous scroll"
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <rect x="5" y="2" width="14" height="8" rx="1"/>
+                  <rect x="5" y="14" width="14" height="8" rx="1"/>
+                </svg>
+              </button>
+            </div>
+          )}
+
+          {/* Zoom Controls - DJVU */}
+          {isDjvu && (
+            <div className="reader-toolbar-group djvu-zoom-controls">
+              <button className="reader-btn reader-btn--icon" onClick={handleZoomOut} disabled={zoom <= ZOOM_PRESETS[0]} title="Zoom out (Ctrl+-)">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="8"/><line x1="7" y1="11" x2="15" y2="11"/></svg>
               </button>
-              <span className="reader-zoom-display">{Math.round(zoom * 100)}%</span>
-              <button className="reader-btn reader-btn--icon" onClick={() => setZoom(ZOOM_LEVELS[Math.min(ZOOM_LEVELS.length - 1, zoomIdx + 1)])} disabled={zoomIdx >= ZOOM_LEVELS.length - 1} title="Zoom in">
+              <select 
+                className="reader-zoom-select" 
+                value={zoomMode === 'custom' ? String(zoom) : zoomMode}
+                onChange={(e) => {
+                  const val = e.target.value;
+                  if (val === 'fit-width' || val === 'fit-page') {
+                    setZoomMode(val);
+                  } else {
+                    setZoomMode('custom');
+                    setZoom(parseFloat(val));
+                  }
+                }}
+              >
+                <option value="fit-width">Fit Width</option>
+                <option value="fit-page">Fit Page</option>
+                <optgroup label="Custom Zoom">
+                  {ZOOM_PRESETS.map(z => (
+                    <option key={z} value={z}>{Math.round(z * 100)}%</option>
+                  ))}
+                </optgroup>
+              </select>
+              <span className="reader-zoom-display">{Math.round(displayZoom * 100)}%</span>
+              <button className="reader-btn reader-btn--icon" onClick={handleZoomIn} disabled={zoom >= ZOOM_PRESETS[ZOOM_PRESETS.length - 1]} title="Zoom in (Ctrl++)">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="8"/><line x1="11" y1="7" x2="11" y2="15"/><line x1="7" y1="11" x2="15" y2="11"/></svg>
               </button>
             </div>
@@ -396,22 +523,6 @@ export function EbookReader({ fileUrl, bookId, fileName, initialPage, initialCfi
                 <span style={{ fontSize: '16px', fontWeight: 600 }}>A+</span>
               </button>
             </div>
-          )}
-
-          {/* Export DJVU to PDF */}
-          {isDjvu && totalPages > 0 && (
-            <button className="reader-btn reader-btn--icon" onClick={exportDjvuToPdf} disabled={exporting} title="Export to PDF">
-              {exporting ? <div className="reader-spinner" style={{ width: 14, height: 14 }} /> : (
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-              )}
-            </button>
-          )}
-
-          {/* Convert to PDF */}
-          {currentBook && currentBook.format && currentBook.format !== 'pdf' && (
-            <button className="reader-btn reader-btn--icon" onClick={() => setShowConvertModal(true)} title="Convert to PDF">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-            </button>
           )}
 
           {/* Close */}
@@ -455,7 +566,7 @@ export function EbookReader({ fileUrl, bookId, fileName, initialPage, initialCfi
         </aside>
 
         {/* Document Area */}
-        <div className="reader-document">
+        <div className="reader-document" ref={containerRef}>
           {loading && (
             <div className="reader-loading">
               <div className="reader-spinner" />
@@ -464,12 +575,46 @@ export function EbookReader({ fileUrl, bookId, fileName, initialPage, initialCfi
           )}
           {error && <div className="reader-error">Failed to load: {error}</div>}
 
-          {/* DJVU Document */}
-          {isDjvu && !loading && !error && (
-            <div className="reader-page-container" ref={scrollRef}>
-              <div className="reader-page" style={{ transform: `scale(${zoom})` }}>
-                <canvas ref={canvasRef} />
+          {/* DJVU Document - Continuous Scroll Mode */}
+          {isDjvu && !loading && !error && djvuViewMode === 'continuous' && (
+            <div className="djvu-scroll-container" ref={scrollRef}>
+              <div className="djvu-pages-wrapper">
+                {Array.from({ length: totalPages }, (_, i) => {
+                  const pageNum = i + 1;
+                  const size = pageSizes[i] || { w: 800, h: 1000 };
+                  const effectZoom = calculateEffectiveZoom();
+                  const displayW = size.w * effectZoom;
+                  const displayH = size.h * effectZoom;
+                  return (
+                    <div
+                      key={pageNum}
+                      className="djvu-page-wrapper"
+                      data-page={pageNum}
+                      ref={el => { if (el) pageRefs.current.set(pageNum, el); }}
+                      style={{
+                        width: displayW,
+                        height: displayH,
+                        minHeight: displayH,
+                      }}
+                    >
+                      <div className="djvu-page-placeholder">
+                        <span>Page {pageNum}</span>
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
+            </div>
+          )}
+
+          {/* DJVU Document - Single Page Mode */}
+          {isDjvu && !loading && !error && djvuViewMode === 'single' && (
+            <div className="djvu-single-container">
+              <div
+                className="djvu-page-wrapper djvu-page-single"
+                data-page={currentPage}
+                ref={el => { if (el) pageRefs.current.set(1, el); }}
+              />
             </div>
           )}
 
@@ -544,11 +689,6 @@ export function EbookReader({ fileUrl, bookId, fileName, initialPage, initialCfi
           )}
         </div>
       </footer>
-
-      {/* Convert Modal */}
-      {showConvertModal && currentBook && (
-        <ConvertModal book={currentBook} onClose={() => setShowConvertModal(false)} />
-      )}
     </div>
   );
 }

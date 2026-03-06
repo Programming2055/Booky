@@ -137,6 +137,18 @@ export function PdfReader({
         .annotationLayer .highlightAnnotation {
           display: none !important;
         }
+        /* Hide the pdfjs annotation editor toolbar entirely */
+        #editorModeButtons,
+        .editorParamsToolbar,
+        #editorHighlight,
+        #editorFreeText,
+        #editorInk,
+        #editorStamp,
+        .secondaryToolbarButtonContainer button[id^="editor"],
+        [data-element="editorModeButtons"],
+        .annotationEditorLayer {
+          display: none !important;
+        }
       `);
     };
     el.addEventListener('initialized', injectStyles, { once: true });
@@ -373,11 +385,11 @@ export function PdfReader({
 
           {/* Highlights */}
           <button
-            className={`pdf-reader-topbar-btn${showHighlightPanel ? ' active' : ''}`}
+            className={`pdf-reader-topbar-btn pdf-highlight-btn${showHighlightPanel ? ' active' : ''}`}
             onClick={() => setShowHighlightPanel(v => !v)}
             title="Highlights"
           >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <path d="M12 20h9" />
               <path d="M16.5 3.5a2.121 2.121 0 113 3L7 19l-4 1 1-4 12.5-12.5z" />
             </svg>

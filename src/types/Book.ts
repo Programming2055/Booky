@@ -107,26 +107,10 @@ export interface PdfReaderSettings {
   highlightColor: string;
 }
 
-// PDF conversion settings
-export interface PdfConversionSettings {
-  pageSize: 'a4' | 'letter' | 'a5' | 'legal';
-  orientation: 'portrait' | 'landscape';
-  marginTop: number;
-  marginBottom: number;
-  marginLeft: number;
-  marginRight: number;
-  fontSize: number;
-  fontFamily: string;
-  lineHeight: number;
-  includeImages: boolean;
-  includeToc: boolean;
-}
-
 export interface ReaderSettings {
   pdf: PdfReaderMode;
   libraryPath: string; // Folder where ebooks are stored, for system app opening
   pdfViewer: PdfReaderSettings;
-  conversion: PdfConversionSettings;
   uiFont: string;
   sketchStyle: SketchStyle;
 }
