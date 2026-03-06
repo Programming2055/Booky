@@ -94,12 +94,12 @@ interface ListBookItemProps {
   onToggleReadLater: (book: Book) => void;
   onAddToCollection: (bookId: string, collection: string) => void;
   onRemoveFromCollection: (bookId: string, collection: string) => void;
-  isDragging: boolean;
-  isDragOver: boolean;
-  onDragStart: (e: React.DragEvent) => void;
-  onDragEnd: () => void;
-  onDragOver: (e: React.DragEvent) => void;
-  onDrop: (e: React.DragEvent) => void;
+  isDragging?: boolean;
+  isDragOver?: boolean;
+  onDragStart?: (e: React.DragEvent) => void;
+  onDragEnd?: () => void;
+  onDragOver?: (e: React.DragEvent) => void;
+  onDrop?: (e: React.DragEvent) => void;
 }
 
 function ListBookItem({
@@ -135,7 +135,7 @@ function ListBookItem({
   return (
     <div
       className={`list-item ${isDragging ? 'dragging' : ''} ${isDragOver ? 'drag-over' : ''}`}
-      draggable
+      draggable={!!onDragStart}
       onDragStart={onDragStart}
       onDragEnd={onDragEnd}
       onDragOver={onDragOver}
@@ -191,12 +191,12 @@ interface BookSpineProps {
   onEdit: (book: Book) => void;
   onDelete: (id: string) => void;
   onToggleReadLater: (book: Book) => void;
-  isDragging: boolean;
-  isDragOver: boolean;
-  onDragStart: (e: React.DragEvent) => void;
-  onDragEnd: () => void;
-  onDragOver: (e: React.DragEvent) => void;
-  onDrop: (e: React.DragEvent) => void;
+  isDragging?: boolean;
+  isDragOver?: boolean;
+  onDragStart?: (e: React.DragEvent) => void;
+  onDragEnd?: () => void;
+  onDragOver?: (e: React.DragEvent) => void;
+  onDrop?: (e: React.DragEvent) => void;
 }
 
 // Generate a color based on book title
@@ -253,7 +253,7 @@ function BookSpine({
     <div
       className={`book-spine ${isDragging ? 'dragging' : ''} ${isDragOver ? 'drag-over' : ''}`}
       style={{ '--spine-color': spineColor } as React.CSSProperties}
-      draggable
+      draggable={!!onDragStart}
       onDragStart={onDragStart}
       onDragEnd={onDragEnd}
       onDragOver={onDragOver}
@@ -413,36 +413,41 @@ export function BookGrid() {
     document.body.classList.remove('dragging-book');
   }, []);
 
-  const handleDragOver = useCallback((e: React.DragEvent, bookId: string) => {
+  // Universal drag over handler - works for individual items
+  const handleDragOver = useCallback((e: React.DragEvent, targetBookId: string) => {
     e.preventDefault();
+    e.stopPropagation();
     e.dataTransfer.dropEffect = 'move';
     
-    // Live swap: when dragging over a different book, swap positions immediately
-    if (draggedBookId && bookId !== draggedBookId && dragOverRef.current !== bookId) {
-      dragOverRef.current = bookId;
-      setDragOverBookId(bookId);
+    if (!draggedBookId || targetBookId === draggedBookId) return;
+    if (dragOverRef.current === targetBookId) return;
+    
+    dragOverRef.current = targetBookId;
+    setDragOverBookId(targetBookId);
+    
+    // Perform live swap
+    const currentBookIds = customOrder.length > 0 ? [...customOrder] : filteredAndSortedBooks.map(b => b.id);
+    const sourceIndex = currentBookIds.indexOf(draggedBookId);
+    const destIndex = currentBookIds.indexOf(targetBookId);
+    
+    if (sourceIndex !== -1 && destIndex !== -1 && sourceIndex !== destIndex) {
+      const newOrder = [...currentBookIds];
+      newOrder.splice(sourceIndex, 1);
+      newOrder.splice(destIndex, 0, draggedBookId);
       
-      // Perform live swap in custom order
-      const currentBookIds = customOrder.length > 0 ? [...customOrder] : filteredAndSortedBooks.map(b => b.id);
-      const sourceIndex = currentBookIds.indexOf(draggedBookId);
-      const targetIndex = currentBookIds.indexOf(bookId);
+      setCustomOrder(newOrder);
+      saveCustomOrder(newOrder);
       
-      if (sourceIndex !== -1 && targetIndex !== -1 && sourceIndex !== targetIndex) {
-        // Swap positions
-        const newOrder = [...currentBookIds];
-        newOrder.splice(sourceIndex, 1);
-        newOrder.splice(targetIndex, 0, draggedBookId);
-        
-        setCustomOrder(newOrder);
-        saveCustomOrder(newOrder);
-        
-        // Switch to custom sort if not already
-        if (state.sort !== 'custom') {
-          dispatch({ type: 'SET_SORT', payload: 'custom' });
-        }
+      if (state.sort !== 'custom') {
+        dispatch({ type: 'SET_SORT', payload: 'custom' });
       }
     }
   }, [draggedBookId, customOrder, filteredAndSortedBooks, state.sort, dispatch]);
+
+  const handleDrop = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    handleDragEnd();
+  }, [handleDragEnd]);
 
   // Grid container drag over - handles empty spaces and multi-row drops
   const handleGridDragOver = useCallback((e: React.DragEvent) => {
@@ -511,12 +516,6 @@ export function BookGrid() {
       }
     }
   }, [draggedBookId, customOrder, filteredAndSortedBooks, paginatedBooks, state.sort, dispatch]);
-
-  const handleDrop = useCallback((e: React.DragEvent, _targetBookId: string) => {
-    e.preventDefault();
-    // Live swap already handled in handleDragOver, just clean up
-    handleDragEnd();
-  }, [handleDragEnd]);
 
   const totalPages = Math.max(1, Math.ceil(filteredAndSortedBooks.length / state.pageSize));
 
@@ -741,7 +740,7 @@ export function BookGrid() {
                       onDragStart={(e) => handleDragStart(e, book.id)}
                       onDragEnd={handleDragEnd}
                       onDragOver={(e) => handleDragOver(e, book.id)}
-                      onDrop={(e) => handleDrop(e, book.id)}
+                      onDrop={handleDrop}
                     >
                       <BookCard
                         book={book}
@@ -777,7 +776,7 @@ export function BookGrid() {
                       onDragStart={(e) => handleDragStart(e, book.id)}
                       onDragEnd={handleDragEnd}
                       onDragOver={(e) => handleDragOver(e, book.id)}
-                      onDrop={(e) => handleDrop(e, book.id)}
+                      onDrop={handleDrop}
                     />
                   ))}
                 </div>
@@ -807,7 +806,7 @@ export function BookGrid() {
                               onDragStart={(e) => handleDragStart(e, book.id)}
                               onDragEnd={handleDragEnd}
                               onDragOver={(e) => handleDragOver(e, book.id)}
-                              onDrop={(e) => handleDrop(e, book.id)}
+                              onDrop={handleDrop}
                             />
                           ))}
                         </div>
