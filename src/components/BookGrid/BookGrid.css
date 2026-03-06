@@ -50,7 +50,6 @@
 .book-grid__card-wrapper.dragging {
   opacity: 0.4;
   transform: scale(0.95);
-  pointer-events: none;
 }
 
 .book-grid__card-wrapper.drag-over::before {
@@ -72,17 +71,6 @@
 
 .book-grid__card-wrapper .book-card {
   height: var(--shelf-card-height, 220px);
-}
-
-/* Prevent children from capturing drag events during drag */
-body.dragging-book .book-grid__card-wrapper > *,
-body.dragging-book .list-item > *,
-body.dragging-book .book-spine > * {
-  pointer-events: none;
-}
-
-body.dragging-book * {
-  cursor: grabbing !important;
 }
 
 .book-grid__empty {
@@ -327,7 +315,6 @@ body.dragging-book * {
 .list-item.dragging {
   opacity: 0.4;
   transform: scale(0.98);
-  pointer-events: none;
 }
 
 .list-item.drag-over {
@@ -586,7 +573,6 @@ body.dragging-book * {
 .book-spine.dragging {
   opacity: 0.4;
   transform: scale(0.9);
-  pointer-events: none;
 }
 
 .book-spine.drag-over {

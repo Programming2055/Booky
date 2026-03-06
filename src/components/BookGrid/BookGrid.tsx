@@ -299,9 +299,6 @@ export function BookGrid() {
   const [customOrder, setCustomOrder] = useState<string[]>(() => getCustomOrder());
   const [draggedBookId, setDraggedBookId] = useState<string | null>(null);
   const [dragOverBookId, setDragOverBookId] = useState<string | null>(null);
-  const dragOverRef = useRef<string | null>(null);
-  const gridContainerRef = useRef<HTMLDivElement>(null);
-  const listContainerRef = useRef<HTMLDivElement>(null);
   
   // Get view mode from settings
   const bookViewMode: BookViewMode = state.gridSettings.viewMode || 'grid';
@@ -398,42 +395,55 @@ export function BookGrid() {
     return filteredAndSortedBooks.slice(start, start + state.pageSize);
   }, [filteredAndSortedBooks, state.currentPage, state.pageSize]);
 
-  // ─── Drag and Drop: swap on drop, visual feedback during drag ───
+  // ─── Drag and Drop: true swap between any two books ───
+  const dragSourceRef = useRef<string | null>(null);
+
   const handleDragStart = useCallback((e: React.DragEvent, bookId: string) => {
+    dragSourceRef.current = bookId;
     setDraggedBookId(bookId);
     e.dataTransfer.effectAllowed = 'move';
     e.dataTransfer.setData('text/plain', bookId);
-    document.body.classList.add('dragging-book');
   }, []);
 
   const handleDragEnd = useCallback(() => {
+    dragSourceRef.current = null;
     setDraggedBookId(null);
     setDragOverBookId(null);
-    dragOverRef.current = null;
-    document.body.classList.remove('dragging-book');
   }, []);
 
-  // Set the visual drop target (no reorder yet)
-  const setDropTarget = useCallback((targetBookId: string) => {
-    if (!draggedBookId || targetBookId === draggedBookId) return;
-    if (dragOverRef.current === targetBookId) return;
-    dragOverRef.current = targetBookId;
-    setDragOverBookId(targetBookId);
-  }, [draggedBookId]);
+  const handleItemDragOver = useCallback((e: React.DragEvent, bookId: string) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+    if (dragSourceRef.current && bookId !== dragSourceRef.current) {
+      setDragOverBookId(bookId);
+    }
+  }, []);
 
-  // Perform the SWAP only on drop
-  const performSwap = useCallback((targetBookId: string) => {
-    if (!draggedBookId || targetBookId === draggedBookId) return;
+  // Allow dropping on the container (enables cross-row)
+  const handleContainerDragOver = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+  }, []);
+
+  const handleItemDrop = useCallback((e: React.DragEvent, targetBookId: string) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const sourceId = dragSourceRef.current;
+    if (!sourceId || sourceId === targetBookId) {
+      handleDragEnd();
+      return;
+    }
 
     const allBookIds = state.books.map(b => b.id);
     const currentBookIds = customOrder.length > 0 ? [...customOrder] : allBookIds;
-    const sourceIndex = currentBookIds.indexOf(draggedBookId);
+    const sourceIndex = currentBookIds.indexOf(sourceId);
     const destIndex = currentBookIds.indexOf(targetBookId);
 
     if (sourceIndex !== -1 && destIndex !== -1 && sourceIndex !== destIndex) {
       const newOrder = [...currentBookIds];
+      // True swap: exchange positions
       newOrder[sourceIndex] = targetBookId;
-      newOrder[destIndex] = draggedBookId;
+      newOrder[destIndex] = sourceId;
 
       setCustomOrder(newOrder);
       saveCustomOrder(newOrder);
@@ -442,82 +452,14 @@ export function BookGrid() {
         dispatch({ type: 'SET_SORT', payload: 'custom' });
       }
     }
-  }, [draggedBookId, customOrder, state.books, state.sort, dispatch]);
-
-  // Find nearest book from mouse position in a container
-  const findNearestBookId = useCallback((
-    e: React.DragEvent,
-    selector: string,
-    container: HTMLElement | null,
-    useYOnly = false,
-  ): string | null => {
-    if (!draggedBookId || !container) return null;
-
-    const items = container.querySelectorAll(selector);
-    if (items.length === 0) return null;
-
-    const mouseX = e.clientX;
-    const mouseY = e.clientY;
-    let targetIndex = -1;
-    let minDistance = Infinity;
-
-    // First check direct hit
-    for (let i = 0; i < items.length; i++) {
-      const r = items[i].getBoundingClientRect();
-      if (mouseX >= r.left && mouseX <= r.right && mouseY >= r.top && mouseY <= r.bottom) {
-        targetIndex = i;
-        break;
-      }
-    }
-
-    // Fallback: nearest center
-    if (targetIndex === -1) {
-      items.forEach((item, index) => {
-        const r = item.getBoundingClientRect();
-        const cx = r.left + r.width / 2;
-        const cy = r.top + r.height / 2;
-        const d = useYOnly
-          ? Math.abs(mouseY - cy)
-          : Math.sqrt((mouseX - cx) ** 2 + (mouseY - cy) ** 2);
-        if (d < minDistance) { minDistance = d; targetIndex = index; }
-      });
-    }
-
-    if (targetIndex === -1 || targetIndex >= paginatedBooks.length) return null;
-    const book = paginatedBooks[targetIndex];
-    return book && book.id !== draggedBookId ? book.id : null;
-  }, [draggedBookId, paginatedBooks]);
-
-  // Container-level dragOver handlers (visual feedback only)
-  const handleGridDragOver = useCallback((e: React.DragEvent) => {
-    e.preventDefault();
-    e.dataTransfer.dropEffect = 'move';
-    const id = findNearestBookId(e, '.book-grid__card-wrapper', gridContainerRef.current);
-    if (id) setDropTarget(id);
-  }, [findNearestBookId, setDropTarget]);
-
-  const handleListDragOver = useCallback((e: React.DragEvent) => {
-    e.preventDefault();
-    e.dataTransfer.dropEffect = 'move';
-    const id = findNearestBookId(e, '.list-item', listContainerRef.current, true);
-    if (id) setDropTarget(id);
-  }, [findNearestBookId, setDropTarget]);
-
-  const handleBookshelfDragOver = useCallback((e: React.DragEvent) => {
-    e.preventDefault();
-    e.dataTransfer.dropEffect = 'move';
-    const id = findNearestBookId(e, '.book-spine', bookshelfContainerRef.current);
-    if (id) setDropTarget(id);
-  }, [findNearestBookId, setDropTarget]);
-
-  // Drop handler: perform swap then cleanup
-  const handleDrop = useCallback((e: React.DragEvent) => {
-    e.preventDefault();
-    if (dragOverBookId && draggedBookId && dragOverBookId !== draggedBookId) {
-      performSwap(dragOverBookId);
-    }
     handleDragEnd();
-  }, [dragOverBookId, draggedBookId, performSwap, handleDragEnd]);
+  }, [customOrder, state.books, state.sort, dispatch, handleDragEnd]);
+
+  // Container drop fallback (if dropped on empty space, do nothing)
+  const handleContainerDrop = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    handleDragEnd();
+  }, [handleDragEnd]);
 
   const totalPages = Math.max(1, Math.ceil(filteredAndSortedBooks.length / state.pageSize));
 
@@ -722,7 +664,6 @@ export function BookGrid() {
               {/* Grid View */}
               {bookViewMode === 'grid' && (
                 <div
-                  ref={gridContainerRef}
                   className="book-grid__grid"
                   style={{
                     '--shelf-card-width': `${state.gridSettings.shelfWidth}px`,
@@ -731,8 +672,8 @@ export function BookGrid() {
                       ? { gridTemplateColumns: `repeat(${state.gridSettings.shelfPerRow}, 1fr)` }
                       : {}),
                   } as React.CSSProperties}
-                  onDragOver={handleGridDragOver}
-                  onDrop={handleDrop}
+                  onDragOver={handleContainerDragOver}
+                  onDrop={handleContainerDrop}
                 >
                   {paginatedBooks.map((book) => (
                     <div
@@ -741,6 +682,8 @@ export function BookGrid() {
                       draggable
                       onDragStart={(e) => handleDragStart(e, book.id)}
                       onDragEnd={handleDragEnd}
+                      onDragOver={(e) => handleItemDragOver(e, book.id)}
+                      onDrop={(e) => handleItemDrop(e, book.id)}
                     >
                       <BookCard
                         book={book}
@@ -760,10 +703,9 @@ export function BookGrid() {
               {/* List View */}
               {bookViewMode === 'list' && (
                 <div 
-                  ref={listContainerRef}
                   className="book-grid__list"
-                  onDragOver={handleListDragOver}
-                  onDrop={handleDrop}
+                  onDragOver={handleContainerDragOver}
+                  onDrop={handleContainerDrop}
                 >
                   {paginatedBooks.map((book) => (
                     <ListBookItem
@@ -780,6 +722,8 @@ export function BookGrid() {
                       isDragOver={dragOverBookId === book.id && draggedBookId !== book.id}
                       onDragStart={(e) => handleDragStart(e, book.id)}
                       onDragEnd={handleDragEnd}
+                      onDragOver={(e) => handleItemDragOver(e, book.id)}
+                      onDrop={(e) => handleItemDrop(e, book.id)}
                     />
                   ))}
                 </div>
@@ -790,8 +734,8 @@ export function BookGrid() {
                 <div 
                   className="book-grid__bookshelf" 
                   ref={bookshelfContainerRef}
-                  onDragOver={handleBookshelfDragOver}
-                  onDrop={handleDrop}
+                  onDragOver={handleContainerDragOver}
+                  onDrop={handleContainerDrop}
                 >
                   {Array.from({ length: Math.ceil(paginatedBooks.length / booksPerShelf) }).map((_, shelfIndex) => {
                     const shelfBooks = paginatedBooks.slice(
@@ -813,6 +757,8 @@ export function BookGrid() {
                               isDragOver={dragOverBookId === book.id && draggedBookId !== book.id}
                               onDragStart={(e) => handleDragStart(e, book.id)}
                               onDragEnd={handleDragEnd}
+                              onDragOver={(e) => handleItemDragOver(e, book.id)}
+                              onDrop={(e) => handleItemDrop(e, book.id)}
                             />
                           ))}
                         </div>
