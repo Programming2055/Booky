@@ -48,8 +48,9 @@
 }
 
 .book-grid__card-wrapper.dragging {
-  opacity: 0.5;
+  opacity: 0.4;
   transform: scale(0.95);
+  pointer-events: none;
 }
 
 .book-grid__card-wrapper.drag-over::before {
@@ -65,8 +66,19 @@
   z-index: 5;
 }
 
+.book-grid__card-wrapper.drag-over {
+  transform: scale(1.03);
+}
+
 .book-grid__card-wrapper .book-card {
   height: var(--shelf-card-height, 220px);
+}
+
+/* Prevent children from capturing drag events during drag */
+body.dragging-book .book-grid__card-wrapper > *,
+body.dragging-book .list-item > *,
+body.dragging-book .book-spine > * {
+  pointer-events: none;
 }
 
 body.dragging-book * {
@@ -313,13 +325,15 @@ body.dragging-book * {
 }
 
 .list-item.dragging {
-  opacity: 0.5;
+  opacity: 0.4;
   transform: scale(0.98);
+  pointer-events: none;
 }
 
 .list-item.drag-over {
   border-color: var(--accent);
   box-shadow: 0 0 0 2px var(--accent);
+  transform: scale(1.01);
 }
 
 .list-item__cover {
@@ -570,12 +584,14 @@ body.dragging-book * {
 }
 
 .book-spine.dragging {
-  opacity: 0.5;
+  opacity: 0.4;
   transform: scale(0.9);
+  pointer-events: none;
 }
 
 .book-spine.drag-over {
   box-shadow: 0 0 0 2px var(--accent);
+  transform: scale(1.05);
 }
 
 .book-spine__content {

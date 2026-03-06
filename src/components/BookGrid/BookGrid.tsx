@@ -398,12 +398,11 @@ export function BookGrid() {
     return filteredAndSortedBooks.slice(start, start + state.pageSize);
   }, [filteredAndSortedBooks, state.currentPage, state.pageSize]);
 
-  // Drag and drop handlers with live swap
+  // ─── Drag and Drop: swap on drop, visual feedback during drag ───
   const handleDragStart = useCallback((e: React.DragEvent, bookId: string) => {
     setDraggedBookId(bookId);
     e.dataTransfer.effectAllowed = 'move';
     e.dataTransfer.setData('text/plain', bookId);
-    // Add dragging class to body
     document.body.classList.add('dragging-book');
   }, []);
 
@@ -414,171 +413,111 @@ export function BookGrid() {
     document.body.classList.remove('dragging-book');
   }, []);
 
-  // Perform the actual SWAP - books exchange positions
-  const performReorder = useCallback((targetBookId: string) => {
+  // Set the visual drop target (no reorder yet)
+  const setDropTarget = useCallback((targetBookId: string) => {
     if (!draggedBookId || targetBookId === draggedBookId) return;
     if (dragOverRef.current === targetBookId) return;
-    
     dragOverRef.current = targetBookId;
     setDragOverBookId(targetBookId);
-    
-    // Get all book IDs in current order
+  }, [draggedBookId]);
+
+  // Perform the SWAP only on drop
+  const performSwap = useCallback((targetBookId: string) => {
+    if (!draggedBookId || targetBookId === draggedBookId) return;
+
     const allBookIds = state.books.map(b => b.id);
     const currentBookIds = customOrder.length > 0 ? [...customOrder] : allBookIds;
     const sourceIndex = currentBookIds.indexOf(draggedBookId);
     const destIndex = currentBookIds.indexOf(targetBookId);
-    
+
     if (sourceIndex !== -1 && destIndex !== -1 && sourceIndex !== destIndex) {
-      // TRUE SWAP: Exchange positions of the two books
       const newOrder = [...currentBookIds];
       newOrder[sourceIndex] = targetBookId;
       newOrder[destIndex] = draggedBookId;
-      
+
       setCustomOrder(newOrder);
       saveCustomOrder(newOrder);
-      
+
       if (state.sort !== 'custom') {
         dispatch({ type: 'SET_SORT', payload: 'custom' });
       }
     }
   }, [draggedBookId, customOrder, state.books, state.sort, dispatch]);
 
-  const handleDrop = useCallback((e: React.DragEvent) => {
-    e.preventDefault();
-    handleDragEnd();
-  }, [handleDragEnd]);
+  // Find nearest book from mouse position in a container
+  const findNearestBookId = useCallback((
+    e: React.DragEvent,
+    selector: string,
+    container: HTMLElement | null,
+    useYOnly = false,
+  ): string | null => {
+    if (!draggedBookId || !container) return null;
 
-  // Grid container drag over - handles ALL positioning including cross-row drops
-  const handleGridDragOver = useCallback((e: React.DragEvent) => {
-    e.preventDefault();
-    e.dataTransfer.dropEffect = 'move';
-    
-    if (!draggedBookId || !gridContainerRef.current) return;
-    
-    const container = gridContainerRef.current;
-    const cards = container.querySelectorAll('.book-grid__card-wrapper');
-    if (cards.length === 0) return;
-    
+    const items = container.querySelectorAll(selector);
+    if (items.length === 0) return null;
+
     const mouseX = e.clientX;
     const mouseY = e.clientY;
-    
-    // Find the card we're hovering over or closest to
     let targetIndex = -1;
     let minDistance = Infinity;
-    
-    // First, check if we're directly over a card
-    for (let i = 0; i < cards.length; i++) {
-      const rect = cards[i].getBoundingClientRect();
-      if (mouseX >= rect.left && mouseX <= rect.right && 
-          mouseY >= rect.top && mouseY <= rect.bottom) {
+
+    // First check direct hit
+    for (let i = 0; i < items.length; i++) {
+      const r = items[i].getBoundingClientRect();
+      if (mouseX >= r.left && mouseX <= r.right && mouseY >= r.top && mouseY <= r.bottom) {
         targetIndex = i;
         break;
       }
     }
-    
-    // If not directly over a card, find the nearest one
+
+    // Fallback: nearest center
     if (targetIndex === -1) {
-      cards.forEach((card, index) => {
-        const rect = card.getBoundingClientRect();
-        const cardCenterX = rect.left + rect.width / 2;
-        const cardCenterY = rect.top + rect.height / 2;
-        
-        const distance = Math.sqrt(
-          Math.pow(mouseX - cardCenterX, 2) + Math.pow(mouseY - cardCenterY, 2)
-        );
-        
-        if (distance < minDistance) {
-          minDistance = distance;
-          targetIndex = index;
-        }
+      items.forEach((item, index) => {
+        const r = item.getBoundingClientRect();
+        const cx = r.left + r.width / 2;
+        const cy = r.top + r.height / 2;
+        const d = useYOnly
+          ? Math.abs(mouseY - cy)
+          : Math.sqrt((mouseX - cx) ** 2 + (mouseY - cy) ** 2);
+        if (d < minDistance) { minDistance = d; targetIndex = index; }
       });
     }
-    
-    if (targetIndex === -1) return;
-    
-    // Get the target book
-    const targetBook = paginatedBooks[targetIndex];
-    if (!targetBook || targetBook.id === draggedBookId) return;
-    
-    performReorder(targetBook.id);
-  }, [draggedBookId, paginatedBooks, performReorder]);
 
-  // List container drag over - handles cross-item drops
+    if (targetIndex === -1 || targetIndex >= paginatedBooks.length) return null;
+    const book = paginatedBooks[targetIndex];
+    return book && book.id !== draggedBookId ? book.id : null;
+  }, [draggedBookId, paginatedBooks]);
+
+  // Container-level dragOver handlers (visual feedback only)
+  const handleGridDragOver = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+    const id = findNearestBookId(e, '.book-grid__card-wrapper', gridContainerRef.current);
+    if (id) setDropTarget(id);
+  }, [findNearestBookId, setDropTarget]);
+
   const handleListDragOver = useCallback((e: React.DragEvent) => {
     e.preventDefault();
     e.dataTransfer.dropEffect = 'move';
-    
-    if (!draggedBookId || !listContainerRef.current) return;
-    
-    const container = listContainerRef.current;
-    const items = container.querySelectorAll('.list-item');
-    if (items.length === 0) return;
-    
-    const mouseY = e.clientY;
-    
-    // Find closest item based on Y position
-    let targetIndex = -1;
-    let minDistance = Infinity;
-    
-    items.forEach((item, index) => {
-      const rect = item.getBoundingClientRect();
-      const itemCenterY = rect.top + rect.height / 2;
-      const distance = Math.abs(mouseY - itemCenterY);
-      
-      if (distance < minDistance) {
-        minDistance = distance;
-        targetIndex = index;
-      }
-    });
-    
-    if (targetIndex === -1) return;
-    
-    const targetBook = paginatedBooks[targetIndex];
-    if (!targetBook || targetBook.id === draggedBookId) return;
-    
-    performReorder(targetBook.id);
-  }, [draggedBookId, paginatedBooks, performReorder]);
+    const id = findNearestBookId(e, '.list-item', listContainerRef.current, true);
+    if (id) setDropTarget(id);
+  }, [findNearestBookId, setDropTarget]);
 
-  // Bookshelf container drag over - handles cross-shelf drops
   const handleBookshelfDragOver = useCallback((e: React.DragEvent) => {
     e.preventDefault();
     e.dataTransfer.dropEffect = 'move';
-    
-    if (!draggedBookId || !bookshelfContainerRef.current) return;
-    
-    const container = bookshelfContainerRef.current;
-    const spines = container.querySelectorAll('.book-spine');
-    if (spines.length === 0) return;
-    
-    const mouseX = e.clientX;
-    const mouseY = e.clientY;
-    
-    // Find closest spine based on position
-    let targetIndex = -1;
-    let minDistance = Infinity;
-    
-    spines.forEach((spine, index) => {
-      const rect = spine.getBoundingClientRect();
-      const spineCenterX = rect.left + rect.width / 2;
-      const spineCenterY = rect.top + rect.height / 2;
-      
-      const distance = Math.sqrt(
-        Math.pow(mouseX - spineCenterX, 2) + Math.pow(mouseY - spineCenterY, 2)
-      );
-      
-      if (distance < minDistance) {
-        minDistance = distance;
-        targetIndex = index;
-      }
-    });
-    
-    if (targetIndex === -1) return;
-    
-    const targetBook = paginatedBooks[targetIndex];
-    if (!targetBook || targetBook.id === draggedBookId) return;
-    
-    performReorder(targetBook.id);
-  }, [draggedBookId, paginatedBooks, performReorder]);
+    const id = findNearestBookId(e, '.book-spine', bookshelfContainerRef.current);
+    if (id) setDropTarget(id);
+  }, [findNearestBookId, setDropTarget]);
+
+  // Drop handler: perform swap then cleanup
+  const handleDrop = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    if (dragOverBookId && draggedBookId && dragOverBookId !== draggedBookId) {
+      performSwap(dragOverBookId);
+    }
+    handleDragEnd();
+  }, [dragOverBookId, draggedBookId, performSwap, handleDragEnd]);
 
   const totalPages = Math.max(1, Math.ceil(filteredAndSortedBooks.length / state.pageSize));
 
@@ -793,7 +732,7 @@ export function BookGrid() {
                       : {}),
                   } as React.CSSProperties}
                   onDragOver={handleGridDragOver}
-                  onDrop={(e) => { e.preventDefault(); handleDragEnd(); }}
+                  onDrop={handleDrop}
                 >
                   {paginatedBooks.map((book) => (
                     <div
