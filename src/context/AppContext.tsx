@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useReducer, useEffect, type ReactNode } from 'react';
+import React, { createContext, useContext, useReducer, useEffect, useRef, type ReactNode } from 'react';
 import type { Book, SortOption, Theme, GridSettings, Collection, ReaderSettings, ReadingBook, ReadingProgress } from '../types';
 import { getAllBooks, saveBook, deleteBook as deleteBookFromDB } from '../services';
 
@@ -182,6 +182,7 @@ const AppContext = createContext<AppContextType | null>(null);
 
 export function AppProvider({ children }: { children: ReactNode }) {
   const [state, dispatch] = useReducer(reducer, initialState);
+  const hasMounted = useRef(false);
 
   // Load initial data
   useEffect(() => {
@@ -220,8 +221,12 @@ export function AppProvider({ children }: { children: ReactNode }) {
     loadData();
   }, []);
 
-  // Save preferences
+  // Save preferences (skip on first render to avoid overwriting saved prefs with defaults)
   useEffect(() => {
+    if (!hasMounted.current) {
+      hasMounted.current = true;
+      return;
+    }
     const prefs = {
       theme: state.theme,
       panelVisible: state.panelVisible,

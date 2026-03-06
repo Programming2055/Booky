@@ -282,24 +282,23 @@ export function BookGrid() {
   } = useApp();
 
   const [viewMode, setViewMode] = useState<ViewMode>('shelf');
-  const [customOrder, setCustomOrder] = useState<string[]>(() => getCustomOrder());
+  // Simple version counter — bump to re-read custom order from localStorage
+  const [orderVersion, setOrderVersion] = useState(0);
   const [draggedBookId, setDraggedBookId] = useState<string | null>(null);
   const [dragOverBookId, setDragOverBookId] = useState<string | null>(null);
   const gridContainerRef = useRef<HTMLDivElement>(null);
 
-  // Keep customOrder in sync with actual books (add new, remove deleted)
-  // Skip while books are still loading (empty) to avoid wiping saved order.
+  // When books load/change, ensure every book has a position in the saved order
   useEffect(() => {
     if (state.books.length === 0) return;
     const allIds = state.books.map(b => b.id);
-    const saved = getCustomOrder(); // always read fresh from localStorage
+    const saved = getCustomOrder();
     const synced = buildCompleteOrder(saved, allIds);
-    // Only update if something actually changed
-    if (synced.length !== customOrder.length || synced.some((id, i) => id !== customOrder[i])) {
-      setCustomOrder(synced);
+    if (synced.length !== saved.length || synced.some((id, i) => id !== saved[i])) {
       saveCustomOrder(synced);
+      setOrderVersion(v => v + 1);
     }
-  }, [state.books]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [state.books]);
   
   // Get view mode from settings
   const bookViewMode: BookViewMode = state.gridSettings.viewMode || 'grid';
@@ -388,8 +387,10 @@ export function BookGrid() {
       }
       return true;
     });
-    return sortBooks(filtered, state.sort, customOrder);
-  }, [state.books, state.filterReadLater, state.activeCollection, state.search, state.sort, customOrder]);
+    // Read custom order directly from localStorage (orderVersion triggers re-read)
+    const order = getCustomOrder();
+    return sortBooks(filtered, state.sort, order);
+  }, [state.books, state.filterReadLater, state.activeCollection, state.search, state.sort, orderVersion]);
 
   const paginatedBooks = useMemo(() => {
     const start = (state.currentPage - 1) * state.pageSize;
@@ -424,33 +425,35 @@ export function BookGrid() {
       return;
     }
 
+    // Always read fresh from localStorage — no stale closures possible
+    const saved = getCustomOrder();
+
     // If current sort is NOT 'custom', snapshot the current visual order
-    // so the swap matches what the user sees on screen.
     let newOrder: string[];
     if (state.sort !== 'custom') {
-      // Use all books sorted by the current criterion as the base
-      const allSorted = sortBooks([...state.books], state.sort, customOrder);
+      const allSorted = sortBooks([...state.books], state.sort, saved);
       const visualIds = allSorted.map(b => b.id);
       newOrder = buildCompleteOrder(visualIds, state.books.map(b => b.id));
     } else {
-      newOrder = [...customOrder];
+      newOrder = [...saved];
     }
 
     const srcIdx = newOrder.indexOf(sourceId);
     const dstIdx = newOrder.indexOf(targetBookId);
     if (srcIdx !== -1 && dstIdx !== -1) {
-      // Remove source from its position, insert at target position
       newOrder.splice(srcIdx, 1);
       newOrder.splice(dstIdx, 0, sourceId);
-      setCustomOrder(newOrder);
+      // Write directly to localStorage
       saveCustomOrder(newOrder);
+      // Bump version to trigger re-render with new order
+      setOrderVersion(v => v + 1);
       if (state.sort !== 'custom') {
         dispatch({ type: 'SET_SORT', payload: 'custom' });
       }
     }
     setDraggedBookId(null);
     setDragOverBookId(null);
-  }, [customOrder, state.sort, state.books, dispatch]);
+  }, [state.sort, state.books, dispatch]);
 
   const handleDragEnd = useCallback(() => {
     setDraggedBookId(null);
