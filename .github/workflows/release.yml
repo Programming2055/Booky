@@ -1,0 +1,62 @@
+name: Create Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Release version (e.g. V.0.1.0)'
+        required: true
+        default: 'V.0.1.0'
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
+      - name: Zip dist
+        run: zip -r booky-${{ github.event.inputs.version }}.zip dist/
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.event.inputs.version }}
+          name: Booky ${{ github.event.inputs.version }}
+          body: |
+            ## Booky ${{ github.event.inputs.version }}
+
+            First stable release of Booky – your personal eBook library manager.
+
+            ### What's New
+            - 📚 Multi-format support: PDF, EPUB, MOBI, FB2, CBZ, AZW3, DJVU
+            - 🎨 Multiple themes: Light, Dark, Sepia, Nord, Dracula
+            - 📂 Collections and library organisation
+            - 🛠️ PDF power tools (compress, rotate, extract, watermark, OCR)
+            - 🌐 Live demo at https://programming2055.github.io/Booky/
+
+            ### Installation
+            ```bash
+            git clone https://github.com/Programming2055/Booky.git
+            cd Booky
+            npm install
+            npm start
+            ```
+          files: booky-${{ github.event.inputs.version }}.zip
+          draft: false
+          prerelease: false
