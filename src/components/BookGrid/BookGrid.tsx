@@ -414,7 +414,7 @@ export function BookGrid() {
     document.body.classList.remove('dragging-book');
   }, []);
 
-  // Perform the actual reorder
+  // Perform the actual SWAP - books exchange positions
   const performReorder = useCallback((targetBookId: string) => {
     if (!draggedBookId || targetBookId === draggedBookId) return;
     if (dragOverRef.current === targetBookId) return;
@@ -429,9 +429,10 @@ export function BookGrid() {
     const destIndex = currentBookIds.indexOf(targetBookId);
     
     if (sourceIndex !== -1 && destIndex !== -1 && sourceIndex !== destIndex) {
+      // TRUE SWAP: Exchange positions of the two books
       const newOrder = [...currentBookIds];
-      newOrder.splice(sourceIndex, 1);
-      newOrder.splice(destIndex, 0, draggedBookId);
+      newOrder[sourceIndex] = targetBookId;
+      newOrder[destIndex] = draggedBookId;
       
       setCustomOrder(newOrder);
       saveCustomOrder(newOrder);
