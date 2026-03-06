@@ -209,6 +209,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       dispatch({ type: 'SET_READER_SETTINGS', payload: prefs.readerSettings });
     }
     if (prefs.pageSize) dispatch({ type: 'SET_PAGE_SIZE', payload: prefs.pageSize });
+    if (prefs.sort) dispatch({ type: 'SET_SORT', payload: prefs.sort });
     
     // Load collections from localStorage
     const collections = JSON.parse(localStorage.getItem('bookshelf_collections') || '[]');
@@ -227,9 +228,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
       gridSettings: state.gridSettings,
       readerSettings: state.readerSettings,
       pageSize: state.pageSize,
+      sort: state.sort,
     };
     localStorage.setItem('bookshelf_prefs', JSON.stringify(prefs));
-  }, [state.theme, state.panelVisible, state.gridSettings, state.readerSettings, state.pageSize]);
+  }, [state.theme, state.panelVisible, state.gridSettings, state.readerSettings, state.pageSize, state.sort]);
 
   // Save collections
   useEffect(() => {

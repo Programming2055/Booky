@@ -40,7 +40,7 @@
 .book-grid__card-wrapper {
   position: relative;
   cursor: grab;
-  transition: transform 0.15s ease, opacity 0.15s ease;
+  transition: transform 0.2s ease, opacity 0.2s ease;
 }
 
 .book-grid__card-wrapper:active {
@@ -50,30 +50,12 @@
 .book-grid__card-wrapper.dragging {
   opacity: 0.4;
   transform: scale(0.95);
-  pointer-events: none;
-}
-
-.book-grid__card-wrapper.drag-over::before {
-  content: '';
-  position: absolute;
-  top: -4px;
-  left: -4px;
-  right: -4px;
-  bottom: -4px;
-  border: 2px dashed var(--accent);
-  border-radius: 10px;
-  pointer-events: none;
-  z-index: 5;
 }
 
 .book-grid__card-wrapper.drag-over {
-  transform: scale(1.03);
-}
-
-/* During drag, make all children of draggable items transparent to pointer events
-   so elementFromPoint always hits the [data-book-id] wrapper */
-body.dragging-book [data-book-id] > * {
-  pointer-events: none !important;
+  outline: 2px dashed var(--accent, #6366f1);
+  outline-offset: 4px;
+  border-radius: 10px;
 }
 
 .book-grid__card-wrapper .book-card {
@@ -321,14 +303,11 @@ body.dragging-book [data-book-id] > * {
 
 .list-item.dragging {
   opacity: 0.4;
-  transform: scale(0.98);
-  pointer-events: none;
 }
 
 .list-item.drag-over {
-  border-color: var(--accent);
-  box-shadow: 0 0 0 2px var(--accent);
-  transform: scale(1.01);
+  outline: 2px dashed var(--accent, #6366f1);
+  outline-offset: 2px;
 }
 
 .list-item__cover {
@@ -580,13 +559,11 @@ body.dragging-book [data-book-id] > * {
 
 .book-spine.dragging {
   opacity: 0.4;
-  transform: scale(0.9);
-  pointer-events: none;
 }
 
 .book-spine.drag-over {
-  box-shadow: 0 0 0 2px var(--accent);
-  transform: scale(1.05);
+  outline: 2px dashed var(--accent, #6366f1);
+  outline-offset: 4px;
 }
 
 .book-spine__content {
