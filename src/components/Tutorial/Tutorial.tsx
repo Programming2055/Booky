@@ -219,10 +219,10 @@ export function Tutorial({ onComplete, isOpen }: TutorialProps) {
         <div
           className="tutorial-spotlight"
           style={{
-            top: targetRect.top - 8,
-            left: targetRect.left - 8,
-            width: targetRect.width + 16,
-            height: targetRect.height + 16,
+            top: targetRect.top - 12,
+            left: targetRect.left - 12,
+            width: targetRect.width + 24,
+            height: targetRect.height + 24,
           }}
         />
       )}
