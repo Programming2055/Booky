@@ -16,8 +16,8 @@ import math
 SIZES = [16, 32, 48, 128]
 
 # Modern color palette
-TEAL = (32, 178, 170)        # Main teal color
-TEAL_DARK = (20, 140, 135)   # Darker teal for depth
+BLUE = (66, 133, 244)        # Main blue color
+BLUE_DARK = (48, 99, 182)    # Darker blue for depth
 WHITE = (255, 255, 255)
 CREAM = (255, 250, 240)      # Warm page color
 GOLD = (255, 193, 7)         # Bookmark accent
@@ -55,8 +55,8 @@ def create_icon(size):
     img = Image.alpha_composite(img, shadow_img)
     draw = ImageDraw.Draw(img)
     
-    # Draw main book body (teal background)
-    draw.rounded_rectangle([x1, y1, x2, y2], radius=radius, fill=TEAL)
+    # Draw main book body (blue background)
+    draw.rounded_rectangle([x1, y1, x2, y2], radius=radius, fill=BLUE)
     
     # Draw open book pages (cream/white area)
     page_margin = max(2, size // 8)
@@ -73,7 +73,7 @@ def create_icon(size):
     center_x = (page_x1 + page_x2) // 2
     spine_width = max(1, size // 20)
     draw.line([(center_x, page_y1 + 2), (center_x, page_y2 - 2)], 
-              fill=TEAL_DARK, width=spine_width)
+              fill=BLUE_DARK, width=spine_width)
     
     # Draw text lines on left page
     line_color = (200, 200, 200)
