@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Booky Reader</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    body {
+      font-family: Georgia, 'Times New Roman', serif;
+      background: #faf9f6;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .toolbar {
+      background: white;
+      padding: 12px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid #e2e8f0;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .toolbar-left {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .back-btn {
+      background: #f1f5f9;
+      border: none;
+      padding: 8px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 14px;
+      color: #475569;
+    }
+
+    .back-btn:hover {
+      background: #e2e8f0;
+    }
+
+    .book-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: #1e293b;
+    }
+
+    .toolbar-center {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .nav-btn {
+      background: #667eea;
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    .nav-btn:hover {
+      background: #5a6fd6;
+    }
+
+    .nav-btn:disabled {
+      background: #cbd5e1;
+      cursor: not-allowed;
+    }
+
+    .page-info {
+      font-size: 14px;
+      color: #64748b;
+      min-width: 100px;
+      text-align: center;
+    }
+
+    .toolbar-right {
+      display: flex;
+      gap: 8px;
+    }
+
+    .tool-btn {
+      background: #f1f5f9;
+      border: none;
+      padding: 8px;
+      border-radius: 6px;
+      cursor: pointer;
+      color: #475569;
+    }
+
+    .tool-btn:hover {
+      background: #e2e8f0;
+    }
+
+    .reader-container {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      padding: 40px 20px;
+    }
+
+    .reader-content {
+      max-width: 750px;
+      width: 100%;
+      background: white;
+      padding: 60px 80px;
+      box-shadow: 0 2px 20px rgba(0,0,0,0.08);
+      border-radius: 4px;
+      min-height: 800px;
+      font-size: 18px;
+      line-height: 1.8;
+      color: #2d3748;
+    }
+
+    .reader-content h1, .reader-content h2, .reader-content h3 {
+      margin: 1.5em 0 0.5em;
+      line-height: 1.3;
+      color: #1a202c;
+    }
+
+    .reader-content p {
+      margin-bottom: 1em;
+      text-align: justify;
+    }
+
+    .reader-content img {
+      max-width: 100%;
+      height: auto;
+      margin: 1em 0;
+    }
+
+    .loading {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 400px;
+      color: #64748b;
+    }
+
+    .loading-spinner {
+      width: 40px;
+      height: 40px;
+      border: 3px solid #e2e8f0;
+      border-top-color: #667eea;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin-bottom: 16px;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .error {
+      text-align: center;
+      padding: 60px;
+      color: #dc2626;
+    }
+
+    .error h2 {
+      margin-bottom: 8px;
+    }
+
+    /* Font size controls */
+    .font-controls {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+      padding: 8px;
+      display: flex;
+      gap: 4px;
+    }
+
+    .font-btn {
+      width: 36px;
+      height: 36px;
+      border: none;
+      background: #f1f5f9;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: 600;
+    }
+
+    .font-btn:hover {
+      background: #e2e8f0;
+    }
+  </style>
+</head>
+<body>
+  <div class="toolbar">
+    <div class="toolbar-left">
+      <button class="back-btn" id="backBtn">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M19 12H5M12 19l-7-7 7-7"/>
+        </svg>
+        Library
+      </button>
+      <span class="book-title" id="bookTitle">Loading...</span>
+    </div>
+    
+    <div class="toolbar-center">
+      <button class="nav-btn" id="prevBtn" disabled>← Prev</button>
+      <span class="page-info" id="pageInfo">Loading...</span>
+      <button class="nav-btn" id="nextBtn" disabled>Next →</button>
+    </div>
+    
+    <div class="toolbar-right">
+      <button class="tool-btn" id="tocBtn" title="Table of Contents">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="3" y1="6" x2="21" y2="6"></line>
+          <line x1="3" y1="12" x2="21" y2="12"></line>
+          <line x1="3" y1="18" x2="21" y2="18"></line>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <div class="reader-container">
+    <div class="reader-content" id="readerContent">
+      <div class="loading">
+        <div class="loading-spinner"></div>
+        <span>Loading book...</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="font-controls">
+    <button class="font-btn" id="fontSmaller">A-</button>
+    <button class="font-btn" id="fontLarger">A+</button>
+  </div>
+
+  <script src="db.js"></script>
+  <script>
+    let currentBook = null;
+    let fontSize = 18;
+
+    async function init() {
+      const params = new URLSearchParams(window.location.search);
+      const bookId = params.get('id');
+
+      if (!bookId) {
+        showError('No book specified');
+        return;
+      }
+
+      try {
+        currentBook = await BookyDB.getBook(bookId);
+        if (!currentBook) {
+          showError('Book not found');
+          return;
+        }
+
+        document.getElementById('bookTitle').textContent = currentBook.title;
+        document.title = `${currentBook.title} - Booky Reader`;
+
+        const blob = await BookyDB.getBookFile(bookId);
+        if (!blob) {
+          showError('Book file not found');
+          return;
+        }
+
+        // For now, show a message about format support
+        // Full EPUB rendering would require a library like epub.js
+        if (currentBook.type === 'epub') {
+          showEpubInfo(blob);
+        } else if (currentBook.type === 'pdf') {
+          // Redirect to PDF viewer
+          const url = URL.createObjectURL(blob);
+          window.location.href = url;
+        } else {
+          showDownloadOption(blob);
+        }
+
+      } catch (error) {
+        console.error('Load error:', error);
+        showError('Failed to load book');
+      }
+    }
+
+    async function showEpubInfo(blob) {
+      const content = document.getElementById('readerContent');
+      content.innerHTML = `
+        <div style="text-align: center; padding: 40px;">
+          <div style="font-size: 64px; margin-bottom: 20px;">📖</div>
+          <h2 style="margin-bottom: 16px;">${escapeHtml(currentBook.title)}</h2>
+          <p style="color: #64748b; margin-bottom: 8px;">by ${escapeHtml(currentBook.author)}</p>
+          <p style="color: #94a3b8; margin-bottom: 32px;">EPUB Format • ${formatSize(currentBook.size)}</p>
+          
+          <p style="color: #64748b; margin-bottom: 24px;">
+            For the best reading experience, download and open in an ebook reader app.
+          </p>
+          
+          <button onclick="downloadBook()" style="
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 14px 32px;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-bottom: 16px;
+          ">
+            Download EPUB
+          </button>
+          
+          <p style="color: #94a3b8; font-size: 13px;">
+            Recommended readers: Calibre, Sumatra PDF, Apple Books
+          </p>
+        </div>
+      `;
+
+      document.getElementById('prevBtn').style.display = 'none';
+      document.getElementById('nextBtn').style.display = 'none';
+      document.getElementById('pageInfo').style.display = 'none';
+    }
+
+    function showDownloadOption(blob) {
+      const content = document.getElementById('readerContent');
+      content.innerHTML = `
+        <div style="text-align: center; padding: 40px;">
+          <div style="font-size: 64px; margin-bottom: 20px;">📄</div>
+          <h2 style="margin-bottom: 16px;">${escapeHtml(currentBook.title)}</h2>
+          <p style="color: #64748b; margin-bottom: 32px;">
+            ${currentBook.type.toUpperCase()} format • ${formatSize(currentBook.size)}
+          </p>
+          
+          <button onclick="downloadBook()" style="
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 14px 32px;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+          ">
+            Download File
+          </button>
+        </div>
+      `;
+    }
+
+    async function downloadBook() {
+      const blob = await BookyDB.getBookFile(currentBook.id);
+      if (blob) {
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `${currentBook.title}.${currentBook.type}`;
+        a.click();
+      }
+    }
+
+    function showError(message) {
+      const content = document.getElementById('readerContent');
+      content.innerHTML = `
+        <div class="error">
+          <h2>Error</h2>
+          <p>${message}</p>
+          <button onclick="window.close()" style="
+            margin-top: 20px;
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+          ">Close</button>
+        </div>
+      `;
+    }
+
+    function escapeHtml(str) {
+      const div = document.createElement('div');
+      div.textContent = str || '';
+      return div.innerHTML;
+    }
+
+    function formatSize(bytes) {
+      if (!bytes) return '0 B';
+      if (bytes < 1024) return bytes + ' B';
+      if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+      return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+    }
+
+    // Event listeners
+    document.getElementById('backBtn').addEventListener('click', () => {
+      window.location.href = chrome.runtime.getURL('library.html');
+    });
+
+    document.getElementById('fontSmaller').addEventListener('click', () => {
+      fontSize = Math.max(12, fontSize - 2);
+      document.getElementById('readerContent').style.fontSize = fontSize + 'px';
+    });
+
+    document.getElementById('fontLarger').addEventListener('click', () => {
+      fontSize = Math.min(28, fontSize + 2);
+      document.getElementById('readerContent').style.fontSize = fontSize + 'px';
+    });
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', init);
+  </script>
+</body>
+</html>

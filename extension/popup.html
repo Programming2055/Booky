@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Booky Library</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="container">
+    <header class="header">
+      <div class="logo">
+        <img src="icons/icon48.png" alt="Booky" width="28" height="28">
+        <h1>Booky</h1>
+      </div>
+      <div class="header-actions">
+        <button class="icon-btn" id="scanPage" title="Scan page for ebooks">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="8"></circle>
+            <path d="m21 21-4.35-4.35"></path>
+          </svg>
+        </button>
+        <button class="icon-btn" id="openLibrary" title="Open full library">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+            <line x1="9" y1="3" x2="9" y2="21"></line>
+          </svg>
+        </button>
+      </div>
+    </header>
+
+    <main class="main">
+      <!-- Stats Bar -->
+      <div class="stats-bar" id="statsBar">
+        <span class="stat"><strong id="bookCount">0</strong> books</span>
+        <span class="stat"><strong id="bookSize">0</strong> MB</span>
+      </div>
+
+      <!-- Search -->
+      <div class="search-box">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8"></circle>
+          <path d="m21 21-4.35-4.35"></path>
+        </svg>
+        <input type="text" id="searchInput" placeholder="Search library...">
+      </div>
+
+      <!-- Found Ebooks (from page scan) -->
+      <section class="section" id="foundSection" style="display: none;">
+        <div class="section-header">
+          <h2>Found on Page</h2>
+          <button class="btn-text" id="hideFound">Hide</button>
+        </div>
+        <div class="found-list" id="foundList"></div>
+      </section>
+
+      <!-- Books Grid -->
+      <section class="section">
+        <div class="section-header">
+          <h2>My Library</h2>
+          <button class="btn-text" id="addBook">+ Add</button>
+        </div>
+        <div class="books-grid" id="booksGrid">
+          <div class="empty-state" id="emptyState">
+            <div class="empty-icon">📚</div>
+            <p>No books yet</p>
+            <button class="btn btn-primary" id="addFirstBook">Add your first book</button>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Add Book Modal -->
+    <div class="modal" id="addModal" style="display: none;">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3>Add Book</h3>
+          <button class="close-btn" id="closeModal">&times;</button>
+        </div>
+        <div class="modal-body">
+          <div class="tabs">
+            <button class="tab active" data-tab="file">From File</button>
+            <button class="tab" data-tab="url">From URL</button>
+          </div>
+          
+          <div class="tab-content active" id="tab-file">
+            <label class="file-drop" id="fileDrop">
+              <input type="file" id="fileInput" accept=".epub,.pdf,.mobi,.djvu,.fb2,.azw,.azw3,.cbz,.cbr" hidden>
+              <div class="drop-content">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                  <polyline points="17 8 12 3 7 8"></polyline>
+                  <line x1="12" y1="3" x2="12" y2="15"></line>
+                </svg>
+                <span>Click or drag file here</span>
+                <small>EPUB, PDF, MOBI, DJVU, FB2</small>
+              </div>
+            </label>
+          </div>
+          
+          <div class="tab-content" id="tab-url">
+            <input type="text" id="urlInput" class="input" placeholder="https://example.com/book.epub">
+            <button class="btn btn-primary" id="fetchUrl" style="margin-top: 10px; width: 100%;">
+              Download & Add
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Book Context Menu -->
+    <div class="context-menu" id="contextMenu" style="display: none;">
+      <button class="context-item" data-action="read">📖 Read</button>
+      <button class="context-item" data-action="download">💾 Download</button>
+      <button class="context-item" data-action="delete">🗑️ Delete</button>
+    </div>
+  </div>
+
+  <script src="db.js"></script>
+  <script src="popup.js"></script>
+</body>
+</html>

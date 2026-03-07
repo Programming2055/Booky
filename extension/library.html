@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Booky Library</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #f8fafc;
+      color: #1e293b;
+      min-height: 100vh;
+    }
+
+    /* Header */
+    .header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 20px 40px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 24px;
+      font-weight: 700;
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .search-box {
+      display: flex;
+      align-items: center;
+      background: rgba(255,255,255,0.2);
+      border-radius: 8px;
+      padding: 8px 16px;
+      gap: 8px;
+      width: 300px;
+    }
+
+    .search-box input {
+      background: transparent;
+      border: none;
+      color: white;
+      font-size: 14px;
+      width: 100%;
+      outline: none;
+    }
+
+    .search-box input::placeholder { color: rgba(255,255,255,0.7); }
+
+    .btn {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s;
+    }
+
+    .btn-white {
+      background: white;
+      color: #667eea;
+    }
+
+    .btn-white:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+
+    /* Stats */
+    .stats-bar {
+      background: white;
+      padding: 16px 40px;
+      display: flex;
+      gap: 40px;
+      border-bottom: 1px solid #e2e8f0;
+    }
+
+    .stat {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .stat-value {
+      font-size: 24px;
+      font-weight: 700;
+      color: #667eea;
+    }
+
+    .stat-label {
+      font-size: 12px;
+      color: #64748b;
+      text-transform: uppercase;
+    }
+
+    /* Main Content */
+    .main {
+      padding: 30px 40px;
+    }
+
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .section-header h2 {
+      font-size: 20px;
+      font-weight: 600;
+    }
+
+    .view-toggle {
+      display: flex;
+      gap: 8px;
+    }
+
+    .view-btn {
+      padding: 8px;
+      border: 1px solid #e2e8f0;
+      background: white;
+      border-radius: 6px;
+      cursor: pointer;
+      color: #64748b;
+    }
+
+    .view-btn.active {
+      background: #667eea;
+      border-color: #667eea;
+      color: white;
+    }
+
+    /* Books Grid */
+    .books-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 24px;
+    }
+
+    .book-card {
+      background: white;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .book-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+    }
+
+    .book-cover {
+      height: 200px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      font-weight: 700;
+      font-size: 18px;
+    }
+
+    .book-cover img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .book-info {
+      padding: 16px;
+    }
+
+    .book-title {
+      font-weight: 600;
+      font-size: 14px;
+      line-height: 1.4;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      margin-bottom: 4px;
+    }
+
+    .book-author {
+      font-size: 12px;
+      color: #64748b;
+      margin-bottom: 8px;
+    }
+
+    .book-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 11px;
+      color: #94a3b8;
+    }
+
+    .book-type {
+      background: #f1f5f9;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-weight: 500;
+      text-transform: uppercase;
+    }
+
+    /* Empty State */
+    .empty-state {
+      text-align: center;
+      padding: 80px 20px;
+      color: #64748b;
+    }
+
+    .empty-icon {
+      font-size: 64px;
+      margin-bottom: 20px;
+    }
+
+    .empty-state h3 {
+      font-size: 20px;
+      margin-bottom: 8px;
+      color: #1e293b;
+    }
+
+    .empty-state p {
+      margin-bottom: 24px;
+    }
+
+    /* Modal */
+    .modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0,0,0,0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 200;
+    }
+
+    .modal-content {
+      background: white;
+      border-radius: 16px;
+      width: 90%;
+      max-width: 500px;
+      overflow: hidden;
+    }
+
+    .modal-header {
+      padding: 20px 24px;
+      border-bottom: 1px solid #e2e8f0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .modal-header h3 {
+      font-size: 18px;
+    }
+
+    .close-btn {
+      background: none;
+      border: none;
+      font-size: 28px;
+      color: #94a3b8;
+      cursor: pointer;
+    }
+
+    .modal-body {
+      padding: 24px;
+    }
+
+    .file-drop {
+      border: 2px dashed #cbd5e1;
+      border-radius: 12px;
+      padding: 60px 20px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .file-drop:hover, .file-drop.dragover {
+      border-color: #667eea;
+      background: #f8fafc;
+    }
+
+    .file-drop svg {
+      width: 48px;
+      height: 48px;
+      color: #94a3b8;
+      margin-bottom: 16px;
+    }
+
+    .file-drop p {
+      color: #64748b;
+      margin-bottom: 8px;
+    }
+
+    .file-drop small {
+      color: #94a3b8;
+      font-size: 12px;
+    }
+
+    /* Toast */
+    .toast {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      background: #1f2937;
+      color: white;
+      padding: 14px 24px;
+      border-radius: 10px;
+      font-size: 14px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+      animation: slideIn 0.3s ease;
+    }
+
+    .toast.success { background: #10b981; }
+    .toast.error { background: #ef4444; }
+
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateX(20px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+
+    /* Context Menu */
+    .context-menu {
+      position: fixed;
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.15);
+      min-width: 180px;
+      z-index: 300;
+      overflow: hidden;
+    }
+
+    .context-item {
+      display: block;
+      width: 100%;
+      padding: 12px 16px;
+      border: none;
+      background: none;
+      text-align: left;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    .context-item:hover {
+      background: #f1f5f9;
+    }
+  </style>
+</head>
+<body>
+  <header class="header">
+    <div class="logo">
+      📚 Booky Library
+    </div>
+    <div class="header-actions">
+      <div class="search-box">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8"></circle>
+          <path d="m21 21-4.35-4.35"></path>
+        </svg>
+        <input type="text" id="searchInput" placeholder="Search books...">
+      </div>
+      <button class="btn btn-white" id="addBook">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="12" y1="5" x2="12" y2="19"></line>
+          <line x1="5" y1="12" x2="19" y2="12"></line>
+        </svg>
+        Add Book
+      </button>
+    </div>
+  </header>
+
+  <div class="stats-bar">
+    <div class="stat">
+      <span class="stat-value" id="totalBooks">0</span>
+      <span class="stat-label">Total Books</span>
+    </div>
+    <div class="stat">
+      <span class="stat-value" id="totalSize">0 MB</span>
+      <span class="stat-label">Library Size</span>
+    </div>
+    <div class="stat">
+      <span class="stat-value" id="recentCount">0</span>
+      <span class="stat-label">Added This Week</span>
+    </div>
+  </div>
+
+  <main class="main">
+    <div class="section-header">
+      <h2>All Books</h2>
+      <div class="view-toggle">
+        <button class="view-btn active" data-view="grid" title="Grid view">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="3" width="7" height="7"></rect>
+            <rect x="14" y="3" width="7" height="7"></rect>
+            <rect x="3" y="14" width="7" height="7"></rect>
+            <rect x="14" y="14" width="7" height="7"></rect>
+          </svg>
+        </button>
+        <button class="view-btn" data-view="list" title="List view">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="8" y1="6" x2="21" y2="6"></line>
+            <line x1="8" y1="12" x2="21" y2="12"></line>
+            <line x1="8" y1="18" x2="21" y2="18"></line>
+            <line x1="3" y1="6" x2="3.01" y2="6"></line>
+            <line x1="3" y1="12" x2="3.01" y2="12"></line>
+            <line x1="3" y1="18" x2="3.01" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <div class="books-grid" id="booksGrid">
+      <div class="empty-state">
+        <div class="empty-icon">📚</div>
+        <h3>Your library is empty</h3>
+        <p>Add your first ebook to get started</p>
+        <button class="btn btn-white" style="background: #667eea; color: white; margin: 0 auto;" id="addFirstBook">
+          Add Your First Book
+        </button>
+      </div>
+    </div>
+  </main>
+
+  <!-- Add Modal -->
+  <div class="modal" id="addModal" style="display: none;">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Add Book to Library</h3>
+        <button class="close-btn" id="closeModal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <label class="file-drop" id="fileDrop">
+          <input type="file" id="fileInput" accept=".epub,.pdf,.mobi,.djvu,.fb2,.azw,.azw3,.cbz,.cbr" multiple hidden>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+            <polyline points="17 8 12 3 7 8"></polyline>
+            <line x1="12" y1="3" x2="12" y2="15"></line>
+          </svg>
+          <p>Click to select files or drag & drop</p>
+          <small>Supports EPUB, PDF, MOBI, DJVU, FB2, CBZ, CBR</small>
+        </label>
+      </div>
+    </div>
+  </div>
+
+  <!-- Context Menu -->
+  <div class="context-menu" id="contextMenu" style="display: none;">
+    <button class="context-item" data-action="read">📖 Open & Read</button>
+    <button class="context-item" data-action="download">💾 Download</button>
+    <button class="context-item" data-action="edit">✏️ Edit Details</button>
+    <button class="context-item" data-action="delete">🗑️ Delete</button>
+  </div>
+
+  <script src="db.js"></script>
+  <script>
+    let books = [];
+    let selectedBook = null;
+
+    async function init() {
+      await loadBooks();
+      setupEventListeners();
+      
+      // Check URL for search param
+      const params = new URLSearchParams(window.location.search);
+      const search = params.get('search');
+      if (search) {
+        document.getElementById('searchInput').value = search;
+        filterBooks(search);
+      }
+    }
+
+    async function loadBooks() {
+      books = await BookyDB.getAllBooks();
+      renderBooks(books);
+      updateStats();
+    }
+
+    function renderBooks(booksToShow) {
+      const grid = document.getElementById('booksGrid');
+      
+      if (booksToShow.length === 0) {
+        grid.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-icon">📚</div>
+            <h3>No books found</h3>
+            <p>Add ebooks to your library</p>
+          </div>
+        `;
+        return;
+      }
+
+      grid.innerHTML = booksToShow.map(book => `
+        <div class="book-card" data-id="${book.id}">
+          <div class="book-cover">${book.type.toUpperCase()}</div>
+          <div class="book-info">
+            <div class="book-title">${escapeHtml(book.title)}</div>
+            <div class="book-author">${escapeHtml(book.author)}</div>
+            <div class="book-meta">
+              <span class="book-type">${book.type}</span>
+              <span>${formatSize(book.size)}</span>
+            </div>
+          </div>
+        </div>
+      `).join('');
+
+      document.querySelectorAll('.book-card').forEach(card => {
+        card.addEventListener('click', () => openBook(card.dataset.id));
+        card.addEventListener('contextmenu', (e) => {
+          e.preventDefault();
+          showContextMenu(e, card.dataset.id);
+        });
+      });
+    }
+
+    async function updateStats() {
+      const stats = await BookyDB.getStats();
+      document.getElementById('totalBooks').textContent = stats.totalBooks;
+      document.getElementById('totalSize').textContent = formatSize(stats.totalSize);
+      
+      // Count recent (last 7 days)
+      const weekAgo = Date.now() - 7 * 24 * 60 * 60 * 1000;
+      const recent = books.filter(b => b.addedAt > weekAgo).length;
+      document.getElementById('recentCount').textContent = recent;
+    }
+
+    async function openBook(id) {
+      const book = await BookyDB.getBook(id);
+      const blob = await BookyDB.getBookFile(id);
+      
+      if (!blob) {
+        showToast('Book file not found', 'error');
+        return;
+      }
+
+      await BookyDB.updateBook(id, { lastRead: Date.now() });
+      
+      const url = URL.createObjectURL(blob);
+      
+      if (book.type === 'pdf') {
+        window.open(url, '_blank');
+      } else {
+        // Download for other formats
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `${book.title}.${book.type}`;
+        a.click();
+        showToast('Downloading...', 'success');
+      }
+    }
+
+    function showContextMenu(e, id) {
+      selectedBook = id;
+      const menu = document.getElementById('contextMenu');
+      menu.style.display = 'block';
+      menu.style.left = `${e.clientX}px`;
+      menu.style.top = `${e.clientY}px`;
+    }
+
+    function hideContextMenu() {
+      document.getElementById('contextMenu').style.display = 'none';
+    }
+
+    async function handleContextAction(action) {
+      if (!selectedBook) return;
+      const book = await BookyDB.getBook(selectedBook);
+
+      switch (action) {
+        case 'read':
+          openBook(selectedBook);
+          break;
+        case 'download':
+          const blob = await BookyDB.getBookFile(selectedBook);
+          if (blob) {
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `${book.title}.${book.type}`;
+            a.click();
+          }
+          break;
+        case 'delete':
+          if (confirm(`Delete "${book.title}"?`)) {
+            await BookyDB.deleteBook(selectedBook);
+            await loadBooks();
+            showToast('Book deleted', 'success');
+          }
+          break;
+      }
+      hideContextMenu();
+    }
+
+    async function handleFiles(files) {
+      for (const file of files) {
+        const ext = file.name.match(/\.[^.]+$/)?.[0]?.toLowerCase().replace('.', '');
+        await BookyDB.addBook({
+          title: file.name.replace(/\.[^.]+$/, ''),
+          author: 'Unknown',
+          type: ext || 'unknown'
+        }, file);
+      }
+      await loadBooks();
+      hideModal();
+      showToast(`Added ${files.length} book(s)`, 'success');
+    }
+
+    function filterBooks(query) {
+      const filtered = books.filter(b => 
+        b.title.toLowerCase().includes(query.toLowerCase()) ||
+        b.author.toLowerCase().includes(query.toLowerCase())
+      );
+      renderBooks(filtered);
+    }
+
+    function showModal() {
+      document.getElementById('addModal').style.display = 'flex';
+    }
+
+    function hideModal() {
+      document.getElementById('addModal').style.display = 'none';
+    }
+
+    function showToast(msg, type) {
+      const existing = document.querySelector('.toast');
+      if (existing) existing.remove();
+      
+      const toast = document.createElement('div');
+      toast.className = `toast ${type}`;
+      toast.textContent = msg;
+      document.body.appendChild(toast);
+      setTimeout(() => toast.remove(), 3000);
+    }
+
+    function escapeHtml(str) {
+      const div = document.createElement('div');
+      div.textContent = str;
+      return div.innerHTML;
+    }
+
+    function formatSize(bytes) {
+      if (bytes < 1024) return bytes + ' B';
+      if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+      return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+    }
+
+    function setupEventListeners() {
+      document.getElementById('addBook').addEventListener('click', showModal);
+      document.getElementById('addFirstBook')?.addEventListener('click', showModal);
+      document.getElementById('closeModal').addEventListener('click', hideModal);
+      document.getElementById('addModal').addEventListener('click', (e) => {
+        if (e.target.id === 'addModal') hideModal();
+      });
+
+      document.getElementById('searchInput').addEventListener('input', (e) => {
+        filterBooks(e.target.value);
+      });
+
+      const fileInput = document.getElementById('fileInput');
+      const fileDrop = document.getElementById('fileDrop');
+
+      fileInput.addEventListener('change', () => {
+        if (fileInput.files.length) handleFiles(fileInput.files);
+      });
+
+      fileDrop.addEventListener('click', () => fileInput.click());
+      fileDrop.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        fileDrop.classList.add('dragover');
+      });
+      fileDrop.addEventListener('dragleave', () => fileDrop.classList.remove('dragover'));
+      fileDrop.addEventListener('drop', (e) => {
+        e.preventDefault();
+        fileDrop.classList.remove('dragover');
+        if (e.dataTransfer.files.length) handleFiles(e.dataTransfer.files);
+      });
+
+      document.querySelectorAll('.context-item').forEach(item => {
+        item.addEventListener('click', () => handleContextAction(item.dataset.action));
+      });
+
+      document.addEventListener('click', (e) => {
+        if (!e.target.closest('.context-menu')) hideContextMenu();
+      });
+    }
+
+    document.addEventListener('DOMContentLoaded', init);
+  </script>
+</body>
+</html>
