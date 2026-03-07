@@ -55,6 +55,18 @@
   border-color: var(--border-hover);
 }
 
+.header__help {
+  font-weight: 700;
+  font-size: 1rem;
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+.header__help:hover {
+  background: var(--accent);
+  color: white;
+}
+
 .header__search {
   flex: 1;
   max-width: 500px;

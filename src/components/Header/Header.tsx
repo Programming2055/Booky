@@ -5,9 +5,10 @@ interface HeaderProps {
   onAddBook: () => void;
   onImportPDFs: () => void;
   importing?: boolean;
+  onHelp?: () => void;
 }
 
-export function Header({ onAddBook, onImportPDFs, importing }: HeaderProps) {
+export function Header({ onAddBook, onImportPDFs, importing, onHelp }: HeaderProps) {
   const { state, dispatch } = useApp();
 
   const togglePanel = () => {
@@ -35,6 +36,12 @@ export function Header({ onAddBook, onImportPDFs, importing }: HeaderProps) {
       <button className="header__toggle" onClick={openSettings} title="Settings">
         ⚙
       </button>
+
+      {onHelp && (
+        <button className="header__toggle header__help" onClick={onHelp} title="Help & Tutorial">
+          ?
+        </button>
+      )}
 
       <div className="header__search">
         <span className="header__search-icon">⌕</span>

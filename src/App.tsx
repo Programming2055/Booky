@@ -1,6 +1,6 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { AppProvider, useApp } from './context/AppContext';
-import { Header, Sidebar, BookGrid, BookFormModal, SettingsModal, EbookReader, EpubReader, PdfReader } from './components';
+import { Header, Sidebar, BookGrid, BookFormModal, SettingsModal, EbookReader, EpubReader, PdfReader, Tutorial } from './components';
 import { pickEbookFiles, generateCover, detectFormat } from './services';
 import type { Book } from './types';
 import './index.css';
@@ -12,6 +12,16 @@ function generateId(): string {
 function AppContent() {
   const { dispatch, addBook, state } = useApp();
   const [importing, setImporting] = useState(false);
+  const [showTutorial, setShowTutorial] = useState(false);
+
+  // Show tutorial for first-time users
+  useEffect(() => {
+    const tutorialCompleted = localStorage.getItem('booky-tutorial-completed');
+    if (!tutorialCompleted) {
+      // Small delay to let the UI render first
+      setTimeout(() => setShowTutorial(true), 500);
+    }
+  }, []);
 
   const handleAddBook = () => {
     dispatch({ type: 'OPEN_MODAL', payload: null });
@@ -123,11 +133,18 @@ function AppContent() {
           onAddBook={handleAddBook} 
           onImportPDFs={handleImportBooks}
           importing={importing}
+          onHelp={() => setShowTutorial(true)}
         />
         <BookGrid />
       </main>
       <BookFormModal />
       <SettingsModal />
+      
+      {/* Tutorial */}
+      <Tutorial 
+        isOpen={showTutorial} 
+        onComplete={() => setShowTutorial(false)} 
+      />
       
       {/* Reader Modal */}
       {readingBook && renderReader()}

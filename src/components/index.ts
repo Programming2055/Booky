@@ -9,3 +9,4 @@ export { EbookReader } from './EbookReader';
 export { EpubReader } from './EpubReader';
 export { PdfReader } from './PdfReader';
 export { PdfTools } from './PdfTools';
+export { Tutorial } from './Tutorial';
