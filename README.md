@@ -102,6 +102,15 @@ npm start
 ### 📖 Reader View
 ![Reader View](screenshots/reader.png)
 
+### 🌙 Dark Theme
+![Dark Theme](screenshots/dark-theme.png)
+
+### 🛠️ PDF Tools
+![PDF Tools](screenshots/pdf-tools.png)
+
+### ⚙️ Settings
+![Settings](screenshots/settings.png)
+
 </div>
 
 ---
