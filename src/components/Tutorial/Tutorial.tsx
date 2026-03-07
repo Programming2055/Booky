@@ -8,95 +8,109 @@ interface TutorialStep {
   target?: string; // CSS selector for element to highlight
   position: 'top' | 'bottom' | 'left' | 'right' | 'center';
   action?: string; // Optional action hint
+  icon?: string; // Optional emoji icon
 }
 
 const tutorialSteps: TutorialStep[] = [
   {
     id: 'welcome',
-    title: 'Welcome to Booky! 📚',
-    description: 'Your personal eBook library manager. Let me show you around! This quick tour will help you get started.',
+    title: 'Welcome to Booky!',
+    description: 'Your personal eBook library manager. Let me give you a quick tour to help you get started.',
     position: 'center',
+    icon: '📚',
   },
   {
     id: 'add-book',
-    title: 'Adding Books',
-    description: 'Click the "+ Add Book" button to add ebooks to your library. Booky supports PDF, EPUB, MOBI, FB2, DJVU, CBZ, and AZW3 formats.',
+    title: 'Add Your First Book',
+    description: 'Click this button to add ebooks to your library. We support PDF, EPUB, MOBI, FB2, DJVU, CBZ, and AZW3 formats.',
     target: '.btn--primary',
     position: 'bottom',
-    action: 'Click to add your first book',
+    action: 'Click to add a book',
+    icon: '➕',
   },
   {
     id: 'import-books',
-    title: 'Import Multiple Books',
-    description: 'Use "Import Books" to add many ebooks at once from a folder. All supported formats will be detected automatically.',
+    title: 'Bulk Import',
+    description: 'Have many ebooks? Use Import Books to add an entire folder at once. All supported formats will be detected automatically.',
     target: '.btn--ghost',
     position: 'bottom',
-    action: 'Bulk import ebooks',
+    action: 'Import multiple books',
+    icon: '📁',
   },
   {
     id: 'search',
-    title: 'Search Your Library',
-    description: 'Use the search bar to quickly find books by title or author. Press Ctrl+K for quick access.',
+    title: 'Find Books Quickly',
+    description: 'Use the search bar to instantly find books by title or author. Pro tip: Press Ctrl+K for quick access!',
     target: '.header__search',
     position: 'bottom',
-    action: 'Type to search',
+    action: 'Start typing to search',
+    icon: '🔍',
   },
   {
     id: 'sidebar',
-    title: 'Collections & Organization',
-    description: 'The sidebar shows your collections. Create new collections to organize your books by genre, topic, or any category you like.',
+    title: 'Organize with Collections',
+    description: 'Create collections to organize your library by genre, topic, reading status, or any way you like.',
     target: '.sidebar',
     position: 'right',
-    action: 'Click "+ New Collection"',
+    action: 'Create a new collection',
+    icon: '📂',
   },
   {
     id: 'view-modes',
-    title: 'View Modes',
-    description: 'Switch between Grid, List, and Compact views to display your library the way you prefer.',
+    title: 'Choose Your View',
+    description: 'Switch between Grid, List, and Compact views to display your library exactly how you prefer.',
     target: '.sidebar__view-buttons',
     position: 'right',
-    action: 'Try different views',
+    action: 'Try different layouts',
+    icon: '🎨',
   },
   {
     id: 'themes',
-    title: 'Themes & Appearance',
-    description: 'Choose from multiple themes: Light, Dark, Sepia, Nord, and Dracula. Click the settings icon (⚙) to customize.',
+    title: 'Personalize Your Theme',
+    description: 'Choose from Light, Dark, Sepia, Nord, or Dracula themes. Click the settings gear to customize your experience.',
     target: '.header__toggle:last-of-type',
     position: 'bottom',
     action: 'Open settings',
+    icon: '⚙️',
   },
   {
     id: 'book-card',
-    title: 'Opening Books',
-    description: 'Click any book cover to open it in the built-in reader. Right-click for more options like edit, delete, or open with system app.',
+    title: 'Read Your Books',
+    description: 'Click any book cover to open it in our built-in reader. Right-click for more options like edit, delete, or open with system app.',
     target: '.book-card',
     position: 'top',
-    action: 'Click to read',
+    action: 'Click to start reading',
+    icon: '📖',
   },
   {
     id: 'reader-nav',
-    title: 'Reader Navigation',
-    description: 'In the reader, use arrow keys (← →) to navigate pages. Click the edges of the screen or use the toolbar for more controls.',
+    title: 'Navigate While Reading',
+    description: 'Use arrow keys (← →) to flip pages, click screen edges, or use the toolbar. Reading progress is saved automatically.',
     position: 'center',
+    icon: '📄',
   },
   {
     id: 'pdf-tools',
-    title: 'PDF Tools',
-    description: 'When reading a PDF, click the 🔧 Tools button to access powerful features: compress, rotate, extract pages, add watermarks, and more!',
+    title: 'Powerful PDF Tools',
+    description: 'When reading PDFs, access tools to compress, rotate, extract pages, add watermarks, convert to images, and more!',
     position: 'center',
+    action: 'Look for the 🔧 button',
+    icon: '🛠️',
   },
   {
     id: 'keyboard',
-    title: 'Keyboard Shortcuts',
-    description: 'Speed up your workflow with shortcuts:\n• Ctrl+K - Quick search\n• ← → - Navigate pages\n• Esc - Close reader\n• +/- - Zoom in/out',
+    title: 'Pro Shortcuts',
+    description: 'Master these shortcuts:\n• Ctrl+K — Quick search\n• ← → — Navigate pages\n• Esc — Close reader\n• +/- — Zoom in/out',
     position: 'center',
+    icon: '⌨️',
   },
   {
     id: 'complete',
-    title: "You're All Set! 🎉",
-    description: "That's everything you need to know to get started. Enjoy managing your eBook library with Booky!",
+    title: "You're Ready!",
+    description: "That's everything you need to know. Start building your digital library and enjoy reading with Booky!",
     position: 'center',
-    action: 'Start exploring',
+    action: 'Let\'s get started',
+    icon: '🎉',
   },
 ];
 
@@ -108,9 +122,58 @@ interface TutorialProps {
 export function Tutorial({ onComplete, isOpen }: TutorialProps) {
   const [currentStep, setCurrentStep] = useState(0);
   const [targetRect, setTargetRect] = useState<DOMRect | null>(null);
+  const [isMobile, setIsMobile] = useState(false);
+  const [showControls, setShowControls] = useState(true);
+  const [touchTimeout, setTouchTimeout] = useState<NodeJS.Timeout | null>(null);
 
   const step = tutorialSteps[currentStep];
   const progress = ((currentStep + 1) / tutorialSteps.length) * 100;
+
+  // Detect mobile device
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth <= 600);
+    };
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
+  // Handle touch to show/hide controls on mobile
+  const handleTouch = useCallback(() => {
+    if (!isMobile) return;
+    
+    setShowControls(true);
+    
+    if (touchTimeout) {
+      clearTimeout(touchTimeout);
+    }
+    
+    const timeout = setTimeout(() => {
+      setShowControls(false);
+    }, 4000); // Hide after 4 seconds of no touch
+    
+    setTouchTimeout(timeout);
+  }, [isMobile, touchTimeout]);
+
+  // Reset controls visibility when step changes
+  useEffect(() => {
+    if (isMobile) {
+      setShowControls(true);
+      if (touchTimeout) {
+        clearTimeout(touchTimeout);
+      }
+      const timeout = setTimeout(() => {
+        setShowControls(false);
+      }, 4000);
+      setTouchTimeout(timeout);
+    }
+    return () => {
+      if (touchTimeout) {
+        clearTimeout(touchTimeout);
+      }
+    };
+  }, [currentStep, isMobile]);
 
   const updateTargetRect = useCallback(() => {
     if (step.target) {
@@ -143,6 +206,24 @@ export function Tutorial({ onComplete, isOpen }: TutorialProps) {
     }
   }, [currentStep, isOpen, updateTargetRect]);
 
+  // Keyboard navigation
+  useEffect(() => {
+    if (!isOpen) return;
+    
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'ArrowRight' || e.key === 'Enter') {
+        handleNext();
+      } else if (e.key === 'ArrowLeft') {
+        handlePrev();
+      } else if (e.key === 'Escape') {
+        handleSkip();
+      }
+    };
+    
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, currentStep]);
+
   const handleNext = () => {
     if (currentStep < tutorialSteps.length - 1) {
       setCurrentStep(currentStep + 1);
@@ -169,7 +250,12 @@ export function Tutorial({ onComplete, isOpen }: TutorialProps) {
 
   if (!isOpen) return null;
 
-  const getTooltipPosition = () => {
+  const getTooltipPosition = (): React.CSSProperties => {
+    // Mobile: always position at bottom
+    if (isMobile) {
+      return {};
+    }
+
     if (!targetRect || step.position === 'center') {
       return {
         top: '50%',
@@ -178,9 +264,9 @@ export function Tutorial({ onComplete, isOpen }: TutorialProps) {
       };
     }
 
-    const padding = 20;
-    const tooltipWidth = 380;
-    const tooltipHeight = 200;
+    const padding = 24;
+    const tooltipWidth = 420;
+    const tooltipHeight = 280;
 
     switch (step.position) {
       case 'top':
@@ -213,56 +299,71 @@ export function Tutorial({ onComplete, isOpen }: TutorialProps) {
   };
 
   return (
-    <div className="tutorial-overlay">
+    <div 
+      className="tutorial-overlay" 
+      onClick={handleTouch}
+      onTouchStart={handleTouch}
+    >
       {/* Spotlight effect for targeted element */}
-      {targetRect && (
+      {targetRect && !isMobile && (
         <div
           className="tutorial-spotlight"
           style={{
-            top: targetRect.top - 12,
-            left: targetRect.left - 12,
-            width: targetRect.width + 24,
-            height: targetRect.height + 24,
+            top: targetRect.top - 16,
+            left: targetRect.left - 16,
+            width: targetRect.width + 32,
+            height: targetRect.height + 32,
           }}
         />
       )}
 
       {/* Tutorial tooltip */}
-      <div className="tutorial-tooltip" style={getTooltipPosition()}>
+      <div 
+        className="tutorial-tooltip" 
+        style={getTooltipPosition()}
+        onClick={(e) => e.stopPropagation()}
+      >
         {/* Progress bar */}
         <div className="tutorial-progress">
           <div className="tutorial-progress-bar" style={{ width: `${progress}%` }} />
         </div>
 
-        {/* Step indicator */}
-        <div className="tutorial-step-indicator">
-          Step {currentStep + 1} of {tutorialSteps.length}
-        </div>
-
         {/* Content */}
-        <h3 className="tutorial-title">{step.title}</h3>
-        <p className="tutorial-description">{step.description}</p>
+        <div className="tutorial-content">
+          {/* Step indicator */}
+          <div className="tutorial-step-indicator">
+            Step {currentStep + 1} of {tutorialSteps.length}
+          </div>
+
+          {/* Title with icon */}
+          <h3 className="tutorial-title">
+            {step.icon && <span style={{ marginRight: '8px' }}>{step.icon}</span>}
+            {step.title}
+          </h3>
+          
+          <p className="tutorial-description">{step.description}</p>
+        </div>
 
         {step.action && (
           <div className="tutorial-action-hint">
-            💡 {step.action}
+            {step.action}
           </div>
         )}
 
         {/* Navigation */}
-        <div className="tutorial-nav">
+        <div className={`tutorial-nav ${isMobile ? (showControls ? 'mobile-show-controls' : 'mobile-hide-controls') : ''}`}>
           <button className="tutorial-btn tutorial-btn--skip" onClick={handleSkip}>
-            Skip Tutorial
+            Skip
           </button>
           
           <div className="tutorial-nav-main">
             {currentStep > 0 && (
               <button className="tutorial-btn tutorial-btn--prev" onClick={handlePrev}>
-                ← Back
+                <span>←</span> Back
               </button>
             )}
             <button className="tutorial-btn tutorial-btn--next" onClick={handleNext}>
-              {currentStep === tutorialSteps.length - 1 ? 'Finish' : 'Next →'}
+              {currentStep === tutorialSteps.length - 1 ? 'Finish' : 'Next'} <span>→</span>
             </button>
           </div>
         </div>
@@ -274,7 +375,7 @@ export function Tutorial({ onComplete, isOpen }: TutorialProps) {
               key={index}
               className={`tutorial-dot ${index === currentStep ? 'active' : ''} ${index < currentStep ? 'completed' : ''}`}
               onClick={() => setCurrentStep(index)}
-              title={`Step ${index + 1}`}
+              aria-label={`Go to step ${index + 1}`}
             />
           ))}
         </div>
