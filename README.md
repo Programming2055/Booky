@@ -81,6 +81,16 @@
 
 ## 🚀 Installation
 
+### 💻 Windows Installer (Recommended)
+
+Download the latest **Booky Setup** `.exe` from the [**Releases page**](https://github.com/Programming2055/Booky/releases) and run it. The installer will:
+
+- Create a Start Menu shortcut
+- Create a Desktop shortcut
+- Register Booky in Add/Remove Programs
+
+### 🛠️ From Source
+
 ```bash
 git clone https://github.com/Programming2055/Booky.git
 cd Booky
