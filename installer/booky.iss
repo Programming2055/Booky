@@ -48,11 +48,8 @@ Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{
 Name: "quicklaunchicon"; Description: "{cm:CreateQuickLaunchIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked; OnlyBelowVersion: 6.1; Check: not IsAdminInstallMode
 
 [Files]
-; Main executable (built with PyInstaller)
-Source: "dist\Booky.exe"; DestDir: "{app}"; Flags: ignoreversion
-
-; Application icon (if exists)
-Source: "..\public\favicon.ico"; DestDir: "{app}"; Flags: ignoreversion; Check: FileExists(ExpandConstant('{src}\..\public\favicon.ico'))
+; All files from PyInstaller directory build
+Source: "dist\Booky\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
 
 [Icons]
 Name: "{group}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"
@@ -63,10 +60,11 @@ Name: "{autodesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; Tasks: de
 Filename: "{app}\{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#StringChange(MyAppName, '&', '&&')}}"; Flags: nowait postinstall skipifsilent
 
 [Registry]
-; Associate .epub files (optional)
-Root: HKCR; Subkey: ".epub"; ValueType: string; ValueName: ""; ValueData: "BookyEpubFile"; Flags: uninsdeletevalue; Tasks: ; Check: False
-Root: HKCR; Subkey: "BookyEpubFile"; ValueType: string; ValueName: ""; ValueData: "EPUB Ebook"; Flags: uninsdeletekey; Tasks: ; Check: False
-Root: HKCR; Subkey: "BookyEpubFile\shell\open\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#MyAppExeName}"" ""%1"""; Tasks: ; Check: False
+; File associations can be added here if desired
+; Example (uncomment to enable):
+; Root: HKCR; Subkey: ".epub"; ValueType: string; ValueName: ""; ValueData: "BookyEpubFile"; Flags: uninsdeletevalue
+; Root: HKCR; Subkey: "BookyEpubFile"; ValueType: string; ValueName: ""; ValueData: "EPUB Ebook"; Flags: uninsdeletekey
+; Root: HKCR; Subkey: "BookyEpubFile\shell\open\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#MyAppExeName}"" ""%1"""
 
 [Code]
 function FileExists(FileName: String): Boolean;

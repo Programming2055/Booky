@@ -17,9 +17,9 @@ $ErrorActionPreference = "Stop"
 
 # Colors for output
 function Write-Step { param($msg) Write-Host "`n[$((Get-Date).ToString('HH:mm:ss'))] $msg" -ForegroundColor Cyan }
-function Write-Success { param($msg) Write-Host "  ✓ $msg" -ForegroundColor Green }
-function Write-Warning { param($msg) Write-Host "  ! $msg" -ForegroundColor Yellow }
-function Write-ErrorMsg { param($msg) Write-Host "  ✗ $msg" -ForegroundColor Red }
+function Write-Success { param($msg) Write-Host "  [OK] $msg" -ForegroundColor Green }
+function Write-Warning { param($msg) Write-Host "  [!] $msg" -ForegroundColor Yellow }
+function Write-ErrorMsg { param($msg) Write-Host "  [X] $msg" -ForegroundColor Red }
 
 # Get script directory and project root
 $ScriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
@@ -55,10 +55,15 @@ if (-not $SkipNpmBuild) {
             if ($LASTEXITCODE -ne 0) { throw "npm install failed" }
         }
         
-        # Build the React app
-        Write-Host "  Running npm build..."
+        # Build the React app for desktop (uses relative paths)
+        Write-Host "  Running npm build for desktop..."
+        $env:DESKTOP_BUILD = "1"
+        $ErrorActionPreference = "Continue"
         npm run build
-        if ($LASTEXITCODE -ne 0) { throw "npm build failed" }
+        $buildExitCode = $LASTEXITCODE
+        $env:DESKTOP_BUILD = $null
+        $ErrorActionPreference = "Stop"
+        if ($buildExitCode -ne 0) { throw "npm build failed with exit code $buildExitCode" }
         
         Write-Success "React app built successfully"
     }
@@ -96,13 +101,15 @@ if (-not $SkipPyInstaller) {
         
         # Build with PyInstaller
         Write-Host "  Running PyInstaller..."
+        $env:PYTHONIOENCODING = "utf-8"
+        $ErrorActionPreference = "Continue"
         if ($Debug) {
             pyinstaller booky.spec --clean
         } else {
-            pyinstaller booky.spec --clean 2>&1 | Out-Null
+            $null = pyinstaller booky.spec --clean 2>&1
         }
-        
-        if ($LASTEXITCODE -ne 0) { throw "PyInstaller build failed" }
+        $pyExitCode = $LASTEXITCODE
+        $ErrorActionPreference = "Stop"
         
         # Verify executable was created
         $exePath = Join-Path $InstallerDir "dist\Booky.exe"
@@ -111,7 +118,8 @@ if (-not $SkipPyInstaller) {
         }
         
         $exeSize = (Get-Item $exePath).Length / 1MB
-        Write-Success "Executable built: Booky.exe ($([math]::Round($exeSize, 2)) MB)"
+        $exeSizeRound = [math]::Round($exeSize, 2)
+        Write-Success "Executable built: Booky.exe ($exeSizeRound MB)"
     }
     finally {
         Pop-Location
@@ -168,7 +176,8 @@ if (-not $SkipInnoSetup) {
         $setupFile = Get-ChildItem -Path $OutputDir -Filter "BookySetup*.exe" | Sort-Object LastWriteTime -Descending | Select-Object -First 1
         if ($setupFile) {
             $setupSize = $setupFile.Length / 1MB
-            Write-Success "Installer created: $($setupFile.Name) ($([math]::Round($setupSize, 2)) MB)"
+            $setupSizeRound = [math]::Round($setupSize, 2)
+            Write-Success "Installer created: $($setupFile.Name) ($setupSizeRound MB)"
             Write-Host ""
             Write-Host "  Output location: $($setupFile.FullName)" -ForegroundColor White
         }

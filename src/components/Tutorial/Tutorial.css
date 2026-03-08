@@ -1,16 +1,20 @@
-/* ========================================
-   BOOKY TUTORIAL - Professional Design
-   ======================================== */
+/* ============================================
+   TUTORIAL OVERLAY - Professional & Responsive
+   ============================================ */
 
-/* Base overlay */
 .tutorial-overlay {
   position: fixed;
-  inset: 0;
-  background: linear-gradient(135deg, rgba(15, 23, 42, 0.92), rgba(30, 41, 59, 0.88));
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: transparent;
   z-index: 10000;
-  animation: fadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
+  animation: fadeIn 0.3s ease;
+}
+
+.tutorial-overlay--mobile {
+  background: transparent;
 }
 
 @keyframes fadeIn {
@@ -18,62 +22,55 @@
   to { opacity: 1; }
 }
 
-/* ========================================
+/* ============================================
    SPOTLIGHT EFFECT
-   ======================================== */
+   ============================================ */
 
 .tutorial-spotlight {
   position: fixed;
-  border-radius: 16px;
+  border-radius: 12px;
   box-shadow: 
-    0 0 0 9999px rgba(15, 23, 42, 0.88),
-    0 0 0 4px rgba(99, 102, 241, 0.8),
-    0 0 40px rgba(99, 102, 241, 0.5),
-    0 0 80px rgba(99, 102, 241, 0.3),
-    inset 0 0 30px rgba(255, 255, 255, 0.1);
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.05));
+    0 0 0 9999px rgba(0, 0, 0, 0.6),
+    0 0 0 4px #6366f1,
+    0 0 0 8px rgba(99, 102, 241, 0.3);
+  background: transparent;
   pointer-events: none;
   z-index: 10001;
-  animation: spotlight-glow 2.5s ease-in-out infinite;
+  animation: spotlight-pulse 2s ease-in-out infinite;
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-@keyframes spotlight-glow {
+@keyframes spotlight-pulse {
   0%, 100% {
     box-shadow: 
-      0 0 0 9999px rgba(15, 23, 42, 0.88),
-      0 0 0 4px rgba(99, 102, 241, 0.8),
-      0 0 40px rgba(99, 102, 241, 0.5),
-      0 0 80px rgba(99, 102, 241, 0.3),
-      inset 0 0 30px rgba(255, 255, 255, 0.1);
+      0 0 0 9999px rgba(0, 0, 0, 0.6),
+      0 0 0 4px #6366f1,
+      0 0 0 8px rgba(99, 102, 241, 0.3);
   }
   50% {
     box-shadow: 
-      0 0 0 9999px rgba(15, 23, 42, 0.88),
-      0 0 0 4px rgba(129, 140, 248, 1),
-      0 0 60px rgba(99, 102, 241, 0.7),
-      0 0 100px rgba(99, 102, 241, 0.5),
-      inset 0 0 40px rgba(255, 255, 255, 0.15);
+      0 0 0 9999px rgba(0, 0, 0, 0.6),
+      0 0 0 5px #818cf8,
+      0 0 0 12px rgba(99, 102, 241, 0.4);
   }
 }
 
-/* ========================================
+/* ============================================
    TOOLTIP CARD
-   ======================================== */
+   ============================================ */
 
 .tutorial-tooltip {
   position: fixed;
-  width: 420px;
+  width: 480px;
   max-width: calc(100vw - 32px);
-  background: linear-gradient(165deg, #1e293b 0%, #0f172a 100%);
-  border-radius: 24px;
-  padding: 0;
+  background: #ffffff;
+  border-radius: 20px;
   box-shadow: 
-    0 25px 80px rgba(0, 0, 0, 0.5),
-    0 0 0 1px rgba(255, 255, 255, 0.08),
-    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    0 20px 60px rgba(0, 0, 0, 0.15),
+    0 8px 24px rgba(0, 0, 0, 0.1),
+    0 0 0 1px rgba(0, 0, 0, 0.05);
   z-index: 10002;
-  animation: tooltipEnter 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+  animation: tooltipEnter 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
   overflow: hidden;
 }
 
@@ -88,138 +85,137 @@
   }
 }
 
-/* Header gradient bar */
-.tutorial-tooltip::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 3px;
-  background: linear-gradient(90deg, #6366f1, #8b5cf6, #a855f7);
-}
-
-/* ========================================
+/* ============================================
    PROGRESS BAR
-   ======================================== */
+   ============================================ */
 
 .tutorial-progress {
-  height: 3px;
-  background: rgba(255, 255, 255, 0.06);
-  margin-top: 3px;
+  height: 4px;
+  background: #e5e7eb;
   overflow: hidden;
 }
 
 .tutorial-progress-bar {
   height: 100%;
   background: linear-gradient(90deg, #6366f1, #8b5cf6);
-  border-radius: 0 3px 3px 0;
+  border-radius: 0 4px 4px 0;
   transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 0 20px rgba(99, 102, 241, 0.5);
 }
 
-/* ========================================
-   CONTENT
-   ======================================== */
+/* ============================================
+   CONTENT AREA
+   ============================================ */
 
 .tutorial-content {
-  padding: 24px 28px 0;
+  padding: 28px 28px 20px;
+}
+
+.tutorial-icon {
+  font-size: 3rem;
+  margin-bottom: 12px;
+  animation: iconBounce 0.5s ease;
+  line-height: 1;
+}
+
+@keyframes iconBounce {
+  0% { transform: scale(0); }
+  50% { transform: scale(1.15); }
+  100% { transform: scale(1); }
 }
 
 .tutorial-step-indicator {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 6px 12px;
-  background: rgba(99, 102, 241, 0.15);
+  display: inline-block;
+  padding: 6px 14px;
+  background: #f0f0ff;
   border-radius: 20px;
-  font-size: 0.7rem;
+  font-size: 0.75rem;
   font-weight: 600;
-  color: #a5b4fc;
+  color: #6366f1;
   text-transform: uppercase;
-  letter-spacing: 1.5px;
+  letter-spacing: 1px;
   margin-bottom: 16px;
-}
-
-.tutorial-step-indicator::before {
-  content: '';
-  width: 6px;
-  height: 6px;
-  background: #6366f1;
-  border-radius: 50%;
-  animation: pulse 1.5s ease-in-out infinite;
-}
-
-@keyframes pulse {
-  0%, 100% { transform: scale(1); opacity: 1; }
-  50% { transform: scale(1.3); opacity: 0.7; }
 }
 
 .tutorial-title {
   margin: 0 0 12px;
   font-size: 1.5rem;
-  font-weight: 800;
-  color: #f8fafc;
+  font-weight: 700;
+  color: #1f2937;
   line-height: 1.3;
-  letter-spacing: -0.02em;
 }
 
 .tutorial-description {
   margin: 0;
-  font-size: 0.95rem;
-  color: #94a3b8;
+  font-size: 1rem;
+  color: #6b7280;
   line-height: 1.7;
   white-space: pre-line;
 }
 
-/* ========================================
+/* ============================================
    ACTION HINT
-   ======================================== */
+   ============================================ */
 
 .tutorial-action-hint {
   display: flex;
   align-items: center;
-  gap: 12px;
-  margin: 20px 28px 0;
-  padding: 14px 18px;
-  background: linear-gradient(135deg, rgba(99, 102, 241, 0.12), rgba(139, 92, 246, 0.08));
-  border-radius: 14px;
-  font-size: 0.88rem;
-  color: #c7d2fe;
-  border: 1px solid rgba(99, 102, 241, 0.2);
+  gap: 10px;
+  margin-top: 18px;
+  padding: 12px 16px;
+  background: linear-gradient(135deg, #f0f0ff 0%, #e8e8ff 100%);
+  border-radius: 12px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #6366f1;
+  border: 1px solid #e0e0ff;
 }
 
-.tutorial-action-hint::before {
-  content: '💡';
+.tutorial-action-icon {
   font-size: 1.2rem;
 }
 
-/* ========================================
+/* ============================================
    NAVIGATION
-   ======================================== */
+   ============================================ */
 
 .tutorial-nav {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 24px 28px;
-  margin-top: 20px;
-  background: rgba(0, 0, 0, 0.2);
-  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  padding: 16px 24px 20px;
+  border-top: 1px solid #f0f0f0;
+  background: #fafafa;
+  gap: 16px;
 }
 
-.tutorial-nav-main {
+.tutorial-nav--hidden {
+  opacity: 0;
+  transform: translateY(10px);
+  pointer-events: none;
+}
+
+.tutorial-nav-center {
   display: flex;
-  gap: 12px;
+  justify-content: center;
+  flex-shrink: 0;
 }
 
-/* ========================================
+.tutorial-nav-buttons {
+  display: flex;
+  gap: 10px;
+  margin-left: auto;
+}
+
+/* ============================================
    BUTTONS
-   ======================================== */
+   ============================================ */
 
 .tutorial-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
   border: none;
-  border-radius: 12px;
+  border-radius: 10px;
   font-size: 0.9rem;
   font-weight: 600;
   cursor: pointer;
@@ -227,65 +223,70 @@
   font-family: inherit;
 }
 
+.tutorial-btn .btn-icon {
+  font-size: 1.1rem;
+  transition: transform 0.2s ease;
+}
+
+.tutorial-btn .btn-text {
+  white-space: nowrap;
+}
+
 .tutorial-btn--skip {
-  padding: 12px 18px;
+  padding: 10px 16px;
   background: transparent;
-  color: #64748b;
+  color: #9ca3af;
 }
 
 .tutorial-btn--skip:hover {
-  color: #94a3b8;
-  background: rgba(255, 255, 255, 0.05);
+  color: #6b7280;
+  background: #f3f4f6;
 }
 
 .tutorial-btn--prev {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 12px 20px;
-  background: rgba(255, 255, 255, 0.08);
-  color: #e2e8f0;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 10px 18px;
+  background: #f3f4f6;
+  color: #374151;
+  border: 1px solid #e5e7eb !important;
 }
 
 .tutorial-btn--prev:hover {
-  background: rgba(255, 255, 255, 0.12);
-  border-color: rgba(255, 255, 255, 0.15);
-  transform: translateX(-2px);
+  background: #e5e7eb;
+  border-color: #d1d5db !important;
+}
+
+.tutorial-btn--prev:hover .btn-icon {
+  transform: translateX(-3px);
 }
 
 .tutorial-btn--next {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 12px 28px;
-  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  padding: 10px 24px;
+  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
   color: white;
-  box-shadow: 
-    0 4px 20px rgba(99, 102, 241, 0.4),
-    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  box-shadow: 0 2px 8px rgba(99, 102, 241, 0.3);
 }
 
 .tutorial-btn--next:hover {
-  transform: translateY(-2px) translateX(2px);
-  box-shadow: 
-    0 8px 30px rgba(99, 102, 241, 0.5),
-    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 16px rgba(99, 102, 241, 0.4);
+}
+
+.tutorial-btn--next:hover .btn-icon {
+  transform: translateX(3px);
 }
 
 .tutorial-btn--next:active {
   transform: translateY(0);
 }
 
-/* ========================================
+/* ============================================
    STEP DOTS
-   ======================================== */
+   ============================================ */
 
 .tutorial-dots {
   display: flex;
   justify-content: center;
-  gap: 8px;
-  padding: 0 28px 24px;
+  gap: 6px;
 }
 
 .tutorial-dot {
@@ -293,82 +294,77 @@
   height: 8px;
   border-radius: 50%;
   border: none;
-  background: rgba(255, 255, 255, 0.15);
+  background: #e5e7eb;
   cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.25s ease;
   padding: 0;
 }
 
 .tutorial-dot:hover {
-  background: rgba(255, 255, 255, 0.3);
-  transform: scale(1.3);
+  background: #d1d5db;
+  transform: scale(1.2);
 }
 
 .tutorial-dot.completed {
-  background: rgba(34, 197, 94, 0.6);
+  background: #a5b4fc;
 }
 
 .tutorial-dot.active {
-  width: 24px;
-  border-radius: 10px;
-  background: linear-gradient(90deg, #6366f1, #8b5cf6);
-  box-shadow: 0 0 15px rgba(99, 102, 241, 0.5);
+  background: #6366f1;
+  transform: scale(1.3);
+  box-shadow: 0 0 8px rgba(99, 102, 241, 0.4);
 }
 
-/* ========================================
-   TABLET STYLES (768px - 1024px)
-   ======================================== */
+/* ============================================
+   MOBILE TOUCH HINT
+   ============================================ */
 
-@media (max-width: 1024px) and (min-width: 601px) {
+.tutorial-touch-hint {
+  position: absolute;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 10px 20px;
+  background: rgba(0, 0, 0, 0.7);
+  border-radius: 20px;
+  font-size: 0.85rem;
+  color: white;
+  animation: pulseHint 2s ease-in-out infinite;
+}
+
+@keyframes pulseHint {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; }
+}
+
+/* ============================================
+   TABLET STYLES (769px - 1024px)
+   ============================================ */
+
+@media (max-width: 1024px) and (min-width: 769px) {
   .tutorial-tooltip {
     width: 400px;
-    border-radius: 20px;
   }
 
   .tutorial-content {
-    padding: 20px 24px 0;
+    padding: 24px 24px 18px;
   }
 
   .tutorial-title {
-    font-size: 1.35rem;
+    font-size: 1.4rem;
   }
 
   .tutorial-description {
-    font-size: 0.92rem;
-  }
-
-  .tutorial-action-hint {
-    margin: 16px 24px 0;
-    padding: 12px 16px;
-  }
-
-  .tutorial-nav {
-    padding: 20px 24px;
-  }
-
-  .tutorial-dots {
-    padding: 0 24px 20px;
+    font-size: 0.95rem;
   }
 }
 
-/* ========================================
-   MOBILE STYLES (< 600px)
-   ======================================== */
+/* ============================================
+   MOBILE STYLES (≤768px)
+   ============================================ */
 
-@media (max-width: 600px) {
-  .tutorial-overlay {
-    background: linear-gradient(135deg, rgba(15, 23, 42, 0.95), rgba(30, 41, 59, 0.92));
-  }
-
-  .tutorial-spotlight {
-    border-radius: 12px;
-    box-shadow: 
-      0 0 0 9999px rgba(15, 23, 42, 0.92),
-      0 0 0 3px rgba(99, 102, 241, 0.9),
-      0 0 30px rgba(99, 102, 241, 0.6);
-  }
-
-  .tutorial-tooltip {
+@media (max-width: 768px) {
+  .tutorial-tooltip--mobile {
     position: fixed;
     bottom: 0;
     left: 0;
@@ -376,14 +372,12 @@
     top: auto;
     width: 100%;
     max-width: 100%;
-    border-radius: 24px 24px 0 0;
-    transform: none;
-    animation: slideUp 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    max-height: 70vh;
-    overflow-y: auto;
+    border-radius: 28px 28px 0 0;
+    transform: none !important;
+    animation: slideUpMobile 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
   }
 
-  @keyframes slideUp {
+  @keyframes slideUpMobile {
     from {
       opacity: 0;
       transform: translateY(100%);
@@ -394,158 +388,208 @@
     }
   }
 
-  .tutorial-content {
-    padding: 20px 20px 0;
+  .tutorial-tooltip--mobile .tutorial-content {
+    padding: 24px 24px 16px;
   }
 
-  .tutorial-step-indicator {
-    font-size: 0.65rem;
-    padding: 5px 10px;
-    margin-bottom: 12px;
+  .tutorial-tooltip--mobile .tutorial-icon {
+    font-size: 2.5rem;
+    margin-bottom: 8px;
   }
 
-  .tutorial-title {
-    font-size: 1.25rem;
+  .tutorial-tooltip--mobile .tutorial-title {
+    font-size: 1.35rem;
     margin-bottom: 10px;
   }
 
-  .tutorial-description {
-    font-size: 0.9rem;
+  .tutorial-tooltip--mobile .tutorial-description {
+    font-size: 0.92rem;
     line-height: 1.6;
   }
 
-  .tutorial-action-hint {
-    margin: 14px 20px 0;
-    padding: 12px 14px;
-    font-size: 0.82rem;
-    gap: 10px;
+  .tutorial-tooltip--mobile .tutorial-action-hint {
+    padding: 12px 16px;
+    margin-top: 16px;
+    font-size: 0.85rem;
   }
 
-  .tutorial-action-hint::before {
+  .tutorial-tooltip--mobile .tutorial-nav {
+    flex-direction: column;
+    gap: 16px;
+    padding: 16px 24px 28px;
+  }
+
+  .tutorial-tooltip--mobile .tutorial-nav-center {
+    order: 3;
+    width: 100%;
+  }
+
+  .tutorial-tooltip--mobile .tutorial-nav-buttons {
+    order: 1;
+    width: 100%;
+    justify-content: stretch;
+  }
+
+  .tutorial-tooltip--mobile .tutorial-btn--skip {
+    order: 2;
+    padding: 10px;
+  }
+
+  .tutorial-tooltip--mobile .tutorial-btn--prev,
+  .tutorial-tooltip--mobile .tutorial-btn--next {
+    flex: 1;
+    justify-content: center;
+    padding: 16px 20px;
     font-size: 1rem;
   }
 
-  .tutorial-nav {
-    padding: 16px 20px;
-    margin-top: 14px;
-    flex-wrap: wrap;
+  .tutorial-tooltip--mobile .tutorial-dots {
     gap: 10px;
   }
 
-  .tutorial-nav-main {
-    width: 100%;
-    order: 1;
+  .tutorial-tooltip--mobile .tutorial-dot {
+    width: 12px;
+    height: 12px;
   }
 
-  .tutorial-btn--skip {
-    order: 2;
-    width: 100%;
-    text-align: center;
-    padding: 10px;
-    font-size: 0.85rem;
-  }
-
-  .tutorial-btn--prev,
-  .tutorial-btn--next {
-    flex: 1;
-    justify-content: center;
-    padding: 14px 16px;
-  }
-
-  .tutorial-dots {
-    padding: 0 20px 20px;
-    gap: 6px;
-  }
-
-  .tutorial-dot {
-    width: 6px;
-    height: 6px;
-  }
-
-  .tutorial-dot.active {
-    width: 20px;
-  }
-
-  /* Touch-friendly: Hide skip button initially on mobile */
-  .tutorial-nav.mobile-hide-controls .tutorial-btn--skip {
+  /* Hide/Show controls animation */
+  .tutorial-tooltip--mobile.hide-controls .tutorial-nav {
     opacity: 0;
+    transform: translateY(20px);
     pointer-events: none;
-    transition: opacity 0.3s ease;
+    transition: all 0.3s ease;
   }
 
-  .tutorial-nav.mobile-show-controls .tutorial-btn--skip {
+  .tutorial-tooltip--mobile.show-controls .tutorial-nav {
     opacity: 1;
+    transform: translateY(0);
     pointer-events: auto;
+    transition: all 0.3s ease;
+  }
+
+  .tutorial-step-indicator {
+    font-size: 0.7rem;
+    padding: 5px 12px;
   }
 }
 
-/* ========================================
-   SMALL MOBILE (< 380px)
-   ======================================== */
+/* ============================================
+   SMALL MOBILE STYLES (≤480px)
+   ============================================ */
 
-@media (max-width: 380px) {
-  .tutorial-content {
-    padding: 16px 16px 0;
+@media (max-width: 480px) {
+  .tutorial-tooltip--mobile .tutorial-content {
+    padding: 20px 20px 14px;
   }
 
-  .tutorial-title {
-    font-size: 1.15rem;
+  .tutorial-tooltip--mobile .tutorial-icon {
+    font-size: 2rem;
   }
 
-  .tutorial-description {
-    font-size: 0.85rem;
+  .tutorial-tooltip--mobile .tutorial-title {
+    font-size: 1.2rem;
   }
 
-  .tutorial-action-hint {
-    margin: 12px 16px 0;
-    padding: 10px 12px;
-    font-size: 0.8rem;
+  .tutorial-tooltip--mobile .tutorial-description {
+    font-size: 0.88rem;
   }
 
-  .tutorial-nav {
+  .tutorial-tooltip--mobile .tutorial-nav {
+    padding: 14px 20px 24px;
+    gap: 14px;
+  }
+
+  .tutorial-tooltip--mobile .tutorial-btn--prev,
+  .tutorial-tooltip--mobile .tutorial-btn--next {
     padding: 14px 16px;
+    font-size: 0.95rem;
   }
 
-  .tutorial-btn--prev,
-  .tutorial-btn--next {
-    padding: 12px 14px;
+  .tutorial-tooltip--mobile .tutorial-btn .btn-text {
+    display: block;
+  }
+}
+
+/* ============================================
+   LANDSCAPE MOBILE
+   ============================================ */
+
+@media (max-height: 500px) and (max-width: 900px) {
+  .tutorial-tooltip--mobile {
+    max-height: 85vh;
+    overflow-y: auto;
+    border-radius: 20px 20px 0 0;
+  }
+
+  .tutorial-tooltip--mobile .tutorial-content {
+    padding: 16px 20px 12px;
+  }
+
+  .tutorial-tooltip--mobile .tutorial-icon {
+    font-size: 1.8rem;
+    margin-bottom: 6px;
+  }
+
+  .tutorial-tooltip--mobile .tutorial-title {
+    font-size: 1.1rem;
+    margin-bottom: 6px;
+  }
+
+  .tutorial-tooltip--mobile .tutorial-description {
+    font-size: 0.85rem;
+    line-height: 1.5;
+  }
+
+  .tutorial-tooltip--mobile .tutorial-action-hint {
+    display: none;
+  }
+
+  .tutorial-tooltip--mobile .tutorial-nav {
+    flex-direction: row;
+    padding: 12px 20px 16px;
+    gap: 12px;
+  }
+
+  .tutorial-tooltip--mobile .tutorial-nav-buttons {
+    order: 2;
+    flex: 0 0 auto;
+  }
+
+  .tutorial-tooltip--mobile .tutorial-nav-center {
+    order: 1;
+    flex: 1;
+  }
+
+  .tutorial-tooltip--mobile .tutorial-btn--skip {
+    order: 0;
+    padding: 8px 12px;
     font-size: 0.85rem;
   }
 
-  .tutorial-dots {
-    padding: 0 16px 16px;
+  .tutorial-tooltip--mobile .tutorial-btn--prev,
+  .tutorial-tooltip--mobile .tutorial-btn--next {
+    padding: 10px 16px;
+    font-size: 0.9rem;
   }
 }
 
-/* ========================================
-   LIGHT THEME
-   ======================================== */
-
-[data-theme="light"] .tutorial-overlay {
-  background: linear-gradient(135deg, rgba(241, 245, 249, 0.95), rgba(226, 232, 240, 0.92));
-}
-
-[data-theme="light"] .tutorial-spotlight {
-  box-shadow: 
-    0 0 0 9999px rgba(241, 245, 249, 0.92),
-    0 0 0 4px rgba(99, 102, 241, 0.9),
-    0 0 40px rgba(99, 102, 241, 0.4);
-}
+/* ============================================
+   LIGHT THEME SUPPORT
+   ============================================ */
 
 [data-theme="light"] .tutorial-tooltip {
-  background: linear-gradient(165deg, #ffffff 0%, #f8fafc 100%);
+  background: linear-gradient(
+    165deg,
+    rgba(255, 255, 255, 0.98) 0%,
+    rgba(248, 250, 252, 0.98) 100%
+  );
   box-shadow: 
     0 25px 80px rgba(0, 0, 0, 0.15),
-    0 0 0 1px rgba(0, 0, 0, 0.05),
-    inset 0 1px 0 rgba(255, 255, 255, 1);
+    0 0 0 1px rgba(0, 0, 0, 0.05);
 }
 
-[data-theme="light"] .tutorial-title {
-  color: #0f172a;
-}
-
-[data-theme="light"] .tutorial-description {
-  color: #475569;
+[data-theme="light"] .tutorial-progress {
+  background: rgba(0, 0, 0, 0.06);
 }
 
 [data-theme="light"] .tutorial-step-indicator {
@@ -553,9 +597,17 @@
   color: #6366f1;
 }
 
+[data-theme="light"] .tutorial-title {
+  color: #1e293b;
+}
+
+[data-theme="light"] .tutorial-description {
+  color: #475569;
+}
+
 [data-theme="light"] .tutorial-action-hint {
-  background: linear-gradient(135deg, rgba(99, 102, 241, 0.08), rgba(139, 92, 246, 0.04));
-  color: #4338ca;
+  background: rgba(99, 102, 241, 0.08);
+  color: #6366f1;
   border-color: rgba(99, 102, 241, 0.15);
 }
 
@@ -565,22 +617,22 @@
 }
 
 [data-theme="light"] .tutorial-btn--skip {
-  color: #94a3b8;
+  color: rgba(0, 0, 0, 0.4);
 }
 
 [data-theme="light"] .tutorial-btn--skip:hover {
-  color: #64748b;
-  background: rgba(0, 0, 0, 0.04);
+  color: rgba(0, 0, 0, 0.7);
+  background: rgba(0, 0, 0, 0.05);
 }
 
 [data-theme="light"] .tutorial-btn--prev {
-  background: rgba(0, 0, 0, 0.05);
+  background: rgba(0, 0, 0, 0.06);
   color: #334155;
-  border-color: rgba(0, 0, 0, 0.08);
+  border-color: rgba(0, 0, 0, 0.1);
 }
 
 [data-theme="light"] .tutorial-btn--prev:hover {
-  background: rgba(0, 0, 0, 0.08);
+  background: rgba(0, 0, 0, 0.1);
 }
 
 [data-theme="light"] .tutorial-dot {
@@ -591,59 +643,27 @@
   background: rgba(0, 0, 0, 0.2);
 }
 
-[data-theme="light"] .tutorial-progress {
-  background: rgba(0, 0, 0, 0.05);
+[data-theme="light"] .tutorial-dot.completed {
+  background: rgba(99, 102, 241, 0.4);
 }
 
-/* ========================================
-   LANDSCAPE MODE MOBILE
-   ======================================== */
-
-@media (max-height: 500px) and (max-width: 900px) {
-  .tutorial-tooltip {
-    max-height: 85vh;
-    border-radius: 16px;
-  }
-
-  .tutorial-content {
-    padding: 12px 16px 0;
-  }
-
-  .tutorial-title {
-    font-size: 1.1rem;
-    margin-bottom: 6px;
-  }
-
-  .tutorial-description {
-    font-size: 0.85rem;
-    line-height: 1.5;
-  }
-
-  .tutorial-action-hint {
-    margin: 8px 16px 0;
-    padding: 8px 12px;
-    font-size: 0.8rem;
-  }
-
-  .tutorial-nav {
-    padding: 10px 16px;
-    margin-top: 8px;
-  }
-
-  .tutorial-dots {
-    padding: 0 16px 12px;
-  }
+[data-theme="light"] .tutorial-touch-hint {
+  background: rgba(0, 0, 0, 0.08);
+  color: rgba(0, 0, 0, 0.5);
 }
 
-/* ========================================
+/* ============================================
    REDUCED MOTION
-   ======================================== */
+   ============================================ */
 
 @media (prefers-reduced-motion: reduce) {
   .tutorial-overlay,
   .tutorial-tooltip,
   .tutorial-spotlight,
-  .tutorial-btn {
+  .tutorial-progress-bar,
+  .tutorial-icon,
+  .tutorial-btn,
+  .tutorial-dot {
     animation: none;
     transition: none;
   }

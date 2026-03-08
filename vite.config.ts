@@ -4,7 +4,8 @@ import react from '@vitejs/plugin-react'
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react()],
-  base: '/Booky/',  // GitHub Pages base path
+  // Use /Booky/ for GitHub Pages, ./ for desktop builds
+  base: process.env.DESKTOP_BUILD ? './' : '/Booky/',
   server: {
     port: 5073,
   },

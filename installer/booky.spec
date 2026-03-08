@@ -7,10 +7,19 @@ Run with: pyinstaller booky.spec
 import os
 import sys
 
-# Get the project root directory
-SPEC_DIR = os.path.dirname(os.path.abspath(SPECPATH))
+# SPECPATH is already the directory containing the spec file
+SPEC_DIR = os.path.abspath(SPECPATH)
+# Go up one level to get project root
 PROJECT_ROOT = os.path.dirname(SPEC_DIR)
+# The dist folder is inside project root
 DIST_DIR = os.path.join(PROJECT_ROOT, 'dist')
+
+# Debug: print paths
+print(f"SPECPATH: {SPECPATH}")
+print(f"SPEC_DIR: {SPEC_DIR}")
+print(f"PROJECT_ROOT: {PROJECT_ROOT}")
+print(f"DIST_DIR: {DIST_DIR}")
+print(f"DIST exists: {os.path.exists(DIST_DIR)}")
 
 block_cipher = None
 
@@ -35,13 +44,12 @@ a = Analysis(
 
 pyz = PYZ(a.pure, a.zipped_data, cipher=block_cipher)
 
+# Use directory mode (onedir) - less likely to trigger antivirus
 exe = EXE(
     pyz,
     a.scripts,
-    a.binaries,
-    a.zipfiles,
-    a.datas,
     [],
+    exclude_binaries=True,
     name='Booky',
     debug=False,
     bootloader_ignore_signals=False,
@@ -56,4 +64,15 @@ exe = EXE(
     codesign_identity=None,
     entitlements_file=None,
     icon=os.path.join(PROJECT_ROOT, 'public', 'favicon.ico') if os.path.exists(os.path.join(PROJECT_ROOT, 'public', 'favicon.ico')) else None,
+)
+
+coll = COLLECT(
+    exe,
+    a.binaries,
+    a.zipfiles,
+    a.datas,
+    strip=False,
+    upx=True,
+    upx_exclude=[],
+    name='Booky',
 )
