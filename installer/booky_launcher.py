@@ -71,6 +71,19 @@ class BookyHTTPHandler(SimpleHTTPRequestHandler):
         elif self.path.startswith('/api/'):
             self._send_json_response({"error": "Unknown API endpoint"}, 404)
         else:
+            # Handle /Booky/ base path (for GitHub Pages compatibility)
+            if self.path == '/' or self.path == '':
+                self.send_response(302)
+                self.send_header('Location', '/Booky/')
+                self.end_headers()
+                return
+            
+            # Strip /Booky/ prefix for file serving
+            if self.path.startswith('/Booky/'):
+                self.path = self.path[6:]  # Remove '/Booky'
+            elif self.path == '/Booky':
+                self.path = '/'
+            
             # For SPA routing, serve index.html for non-file paths
             if '.' not in os.path.basename(self.path) and self.path != '/':
                 self.path = '/index.html'

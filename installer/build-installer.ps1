@@ -55,13 +55,11 @@ if (-not $SkipNpmBuild) {
             if ($LASTEXITCODE -ne 0) { throw "npm install failed" }
         }
         
-        # Build the React app for desktop (uses relative paths)
-        Write-Host "  Running npm build for desktop..."
-        $env:DESKTOP_BUILD = "1"
+        # Build the React app
+        Write-Host "  Running npm build..."
         $ErrorActionPreference = "Continue"
         npm run build
         $buildExitCode = $LASTEXITCODE
-        $env:DESKTOP_BUILD = $null
         $ErrorActionPreference = "Stop"
         if ($buildExitCode -ne 0) { throw "npm build failed with exit code $buildExitCode" }
         

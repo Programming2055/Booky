@@ -81,8 +81,6 @@
 
 ## 🚀 Installation
 
-### 🌐 Web Version (Recommended)
-
 ```bash
 git clone https://github.com/Programming2055/Booky.git
 cd Booky
@@ -91,24 +89,6 @@ npm start
 ```
 
 **Windows Users:** Double-click `start.bat` to launch!
-
-### 🖥️ Windows Desktop App
-
-Download and install the standalone Windows application:
-
-1. Download [BookySetup-1.0.0.exe](https://github.com/Programming2055/Booky/releases/latest)
-2. Run the installer
-3. Launch Booky from the Start Menu or Desktop shortcut
-
-> **Note:** The Windows app runs locally without requiring Node.js or npm.
-
-### 🧩 Chrome Extension
-
-Install the Booky Chrome Extension for quick access:
-
-1. Download the extension from [Chrome Web Store](https://chrome.google.com/webstore) or load unpacked from `extension/` folder
-2. Click the Booky icon in your browser toolbar
-3. Your ebook library syncs via IndexedDB
 
 ---
 
@@ -239,15 +219,6 @@ booky/
 │   └── booky-icon.svg      # App icon
 ├── 📂 server/
 │   └── ebook_server.py     # Python server for system apps
-├── 📂 installer/           # Windows installer (PyInstaller + Inno Setup)
-│   ├── booky_launcher.py   # Desktop app launcher
-│   ├── booky.spec          # PyInstaller spec
-│   ├── booky.iss           # Inno Setup script
-│   └── output/             # Built installer
-├── 📂 extension/           # Chrome extension
-│   ├── manifest.json       # Extension manifest
-│   ├── popup.html          # Extension popup
-│   └── icons/              # Extension icons
 ├── 📂 src/
 │   ├── 📂 components/
 │   │   ├── BookCard/       # Book cover cards
@@ -256,12 +227,10 @@ booky/
 │   │   ├── PdfReader/      # PDF reader with highlights
 │   │   ├── PdfTools/       # Stirling-PDF integration
 │   │   ├── CollectionTree/ # Sidebar collections
-│   │   ├── Tutorial/       # Interactive onboarding
 │   │   └── ...
 │   ├── 📂 context/         # React context (state)
 │   ├── 📂 services/        # IndexedDB, API services
 │   └── 📂 types/           # TypeScript definitions
-├── 📂 screenshots/         # App screenshots
 ├── package.json
 └── README.md
 ```
