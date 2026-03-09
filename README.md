@@ -24,7 +24,7 @@
 <td width="50%">
 
 ### 📖 Multi-Format Support
-- **PDF** - Full-featured reader with text highlights
+- **PDF** - Mozilla pdf.js viewer with search, thumbnails & print
 - **EPUB** - Beautiful reflowable text
 - **MOBI** - Kindle format support
 - **FB2** - Fiction Book format
@@ -150,13 +150,15 @@ npm start
 | `+` / `-` | Zoom in / out |
 | `Ctrl + F` | Search in book |
 
+> **Note:** PDF reader uses the standard Mozilla pdf.js viewer which has its own toolbar and keyboard shortcuts.
+
 ---
 
 ## 📋 Format Support
 
 | Format | Built-in Reader | System App | Notes |
 |--------|:---------------:|:----------:|-------|
-| PDF | ✅ | ✅ | Text selection & highlights |
+| PDF | ✅ | ✅ | Mozilla pdf.js viewer with full toolbar |
 | EPUB | ✅ | - | Reflowable text, TOC support |
 | MOBI | ✅ | - | Kindle format |
 | FB2 | ✅ | - | Fiction Book format |
@@ -215,6 +217,7 @@ Once running, the **🔧 Tools** button in the PDF reader will be active!
 booky/
 ├── 📂 public/
 │   ├── 📂 foliate-js/      # EPUB/MOBI reader engine
+│   ├── 📂 pdfjs/           # Mozilla pdf.js viewer (v4.10.38)
 │   ├── djvu.js             # DJVU support
 │   └── booky-icon.svg      # App icon
 ├── 📂 server/
@@ -224,7 +227,7 @@ booky/
 │   │   ├── BookCard/       # Book cover cards
 │   │   ├── BookGrid/       # Library grid view
 │   │   ├── EbookReader/    # EPUB/MOBI/FB2 reader
-│   │   ├── PdfReader/      # PDF reader with highlights
+│   │   ├── PdfReader/      # pdf.js viewer iframe wrapper
 │   │   ├── PdfTools/       # Stirling-PDF integration
 │   │   ├── CollectionTree/ # Sidebar collections
 │   │   └── ...
@@ -266,7 +269,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## 🙏 Acknowledgments
 
 - [Foliate-js](https://github.com/johnfactotum/foliate-js) - EPUB rendering engine
-- [PDF.js](https://github.com/nicholasweston/pdf-viewer-reactjs) - PDF rendering
+- [PDF.js](https://mozilla.github.io/pdf.js/) - Mozilla's PDF viewer
 - [Stirling-PDF](https://github.com/Stirling-Tools/Stirling-PDF) - PDF tools
 - [DjVu.js](https://djvu.js.org/) - DJVU support
 
