@@ -146,6 +146,7 @@ export function EpubReader({
   const [toc, setToc] = useState<NavItem[]>([]);
   const [showTocPanel, setShowTocPanel] = useState(false);
   const [readerKey, setReaderKey] = useState(0);
+  const [readingPercentage, setReadingPercentage] = useState(0);
 
   const renditionRef = useRef<Rendition | null>(null);
   const settingsRef = useRef<HTMLDivElement>(null);
@@ -191,13 +192,28 @@ export function EpubReader({
     renditionRef.current = rendition;
     applyRenditionStyles(rendition);
     rendition.spread(spreadMode === 'auto' ? 'auto' : 'none');
+
+    // Generate locations for better progress tracking
+    const book = rendition.book as any;
+    if (book && !book.locations?.length) {
+      book.locations.generate(1600).then(() => {
+        // Update percentage after locations are generated
+        if (location && typeof location === 'string' && book.locations.percentageFromCfi) {
+          const percentage = Math.round(book.locations.percentageFromCfi(location) * 100);
+          setReadingPercentage(percentage);
+        }
+      }).catch(() => {
+        // Silent fail - locations not critical
+      });
+    }
+
     highlights.forEach(h => {
       try {
         rendition.annotations.highlight(h.cfi, {}, undefined, 'epub-hl',
           { fill: h.color, 'fill-opacity': '0.35', 'mix-blend-mode': 'multiply' });
       } catch { /* skip */ }
     });
-  }, [applyRenditionStyles, spreadMode, highlights]);
+  }, [applyRenditionStyles, spreadMode, highlights, location]);
 
   useEffect(() => {
     if (renditionRef.current) applyRenditionStyles(renditionRef.current);
@@ -216,7 +232,17 @@ export function EpubReader({
     setLocation(cfi);
     if (cfi && cfi !== lastSavedRef.current) {
       lastSavedRef.current = cfi;
-      saveReadingProgress(bookId, { cfi, percentage: 0 });
+      // Calculate reading percentage
+      if (renditionRef.current) {
+        const book = renditionRef.current.book as any;
+        if (book?.locations?.percentageFromCfi) {
+          const percentage = Math.round(book.locations.percentageFromCfi(cfi) * 100);
+          setReadingPercentage(percentage);
+          saveReadingProgress(bookId, { cfi, percentage });
+        } else {
+          saveReadingProgress(bookId, { cfi, percentage: 0 });
+        }
+      }
     }
   }, [bookId, saveReadingProgress]);
 
@@ -284,6 +310,11 @@ export function EpubReader({
             <path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z" />
           </svg>
           <span>{title}</span>
+          {readingPercentage > 0 && (
+            <span className="epub-reading-progress" style={{ color: t.headerFg, opacity: 0.7 }}>
+              ({readingPercentage}%)
+            </span>
+          )}
         </div>
 
         <div className="epub-reader-topbar-actions">

@@ -74,6 +74,12 @@
   text-overflow: ellipsis;
 }
 
+.epub-reading-progress {
+  font-size: 12px;
+  font-weight: 400;
+  margin-left: 6px;
+}
+
 .epub-reader-topbar-actions {
   display: flex;
   align-items: center;
